@@ -25,24 +25,22 @@ public class EconomicManager {
          updateInfo(globalStatistic);
          MyPlayer myPlayer = globalManager.getGlobalStatistic().getMyPlayer();
 
-         actionHashMap.putAll(builder(myPlayer,playerView,globalStatistic));
+         actionHashMap.putAll(builder(myPlayer,playerView,globalManager));
 
         BuildAction b = null;
 
         ArrayList<MyEntity> arrayList1 = myPlayer.getEntityArrayList(EntityType.RANGED_BASE);
-        Final.DEBUG(TAG, "arrayList RANGED_BASE BASE: " + arrayList1.size());
-        for (int i=0; i<arrayList1.size(); i++)
-        {
-            b = new BuildAction(
-                    EntityType.RANGED_UNIT, new Vec2Int(
-                    arrayList1.get(i).getPosition().getX() + globalStatistic.getEntityPropertiesRANGED_BASE().getSize(),
-                    arrayList1.get(i).getPosition().getY() + globalStatistic.getEntityPropertiesRANGED_BASE().getSize() - 1
-            )
-            );
+        Final.DEBUG(TAG, "arrayList RANGED_BASE BASE: " + arrayList1.size() + " resource: " + myPlayer.getResource());
+        if (myPlayer.getResource()>29) {
+            for (int i = 0; i < arrayList1.size(); i++) {
+                b = new BuildAction(
+                        EntityType.RANGED_UNIT, globalManager.getGlobalMap().getPositionBuildUnit(globalStatistic, arrayList1.get(i))
+                );
 
-            actionHashMap.put(arrayList1.get(i).getId(), new EntityAction(null, b, null, null));
+                actionHashMap.put(arrayList1.get(i).getId(), new EntityAction(null, b, null, null));
+            }
+
         }
-
          Final.DEBUG(TAG, "hashMap: " + actionHashMap.size());
 
          return actionHashMap;
@@ -50,14 +48,17 @@ public class EconomicManager {
 
 
 
-    private HashMap builder(MyPlayer myPlayer,PlayerView playerView, GlobalStatistic globalStatistic ){
+    private HashMap builder(MyPlayer myPlayer,PlayerView playerView, GlobalManager globalManager ){
         HashMap<Integer, EntityAction> actionHashMap = new HashMap<>();
+
+        GlobalStatistic globalStatistic = globalManager.getGlobalStatistic();
 
         ArrayList<MyEntity> builderUnitArrayList = myPlayer.getEntityArrayList(EntityType.BUILDER_UNIT);
 
         Final.DEBUG(TAG, "BUILDER_UNIT: " + builderUnitArrayList.size());
 
         ArrayList<MyEntity> buildingArrayList = myPlayer.getBuildingArrayList();
+
 
         for (int i=0; i<builderUnitArrayList.size(); i++)
         {
@@ -86,26 +87,65 @@ public class EconomicManager {
                 );
             }
 
-            // чиним здания
-
-            for (int j=0; j<buildingArrayList.size(); j++)
+            if (myPlayer.getResource()>1100 && myPlayer.getEntityArrayList(EntityType.RANGED_BASE).size()<2 )
             {
-                MyEntity myEntity = buildingArrayList.get(j);
-                EntityProperties entityProperties = globalStatistic.getEntityProperties(myEntity.getEntityType());
-                if (myEntity.getHealth()<entityProperties.getMaxHealth())
-                {
-                    r = new RepairAction(
-                            myEntity.getId()
-                    );
-                }
+                b = new BuildAction(
+                        EntityType.RANGED_BASE, new Vec2Int(
+                        builderUnitArrayList.get(i).getPosition().getX()+1,
+                        builderUnitArrayList.get(i).getPosition().getY()
+                )
+                );
             }
+
+
 
             Final.DEBUG(TAG, "arrayList.get(i).getId() " + builderUnitArrayList.get(i).getId() + " " +builderUnitArrayList.get(i).getPosition().toString());
 
             actionHashMap.put(builderUnitArrayList.get(i).getId(), new EntityAction(m, b, a, r));
         }
 
-        if (builderUnitArrayList.size()<myPlayer.getPopulationMax()*0.7 && builderUnitArrayList.size()<70)
+        //чиним здания
+        // чиним здания
+        for (int i=0; i<buildingArrayList.size(); i++)
+        {
+            MyEntity myEntityUnit =null;
+            MyEntity myEntityBuilding = buildingArrayList.get(i);
+            MyEntity currentUnit = null;
+            double minDis = 0xFFFFF;
+            for (int j=0; j<builderUnitArrayList.size(); j++)
+            {
+                myEntityUnit = builderUnitArrayList.get(j);
+                double dis = myEntityUnit.getPosition().distance(myEntityBuilding.getPosition());
+                if (dis <minDis)
+                {
+                    currentUnit = myEntityUnit;
+                    minDis = dis;
+                }
+            }
+
+            if (currentUnit!=null)
+            {
+                EntityProperties entityProperties = globalStatistic.getEntityProperties(myEntityBuilding.getEntityType());
+                if (myEntityBuilding.getHealth()<entityProperties.getMaxHealth())
+                {
+                    MoveAction m = null;
+                    BuildAction b = null;
+                    AttackAction a = null;
+                    RepairAction r = null;
+
+                    r = new RepairAction(
+                            myEntityBuilding.getId()
+                    );
+                    //a = null;
+                    m = new MoveAction(myEntityBuilding.getPosition(), true, false);
+
+                    actionHashMap.put(currentUnit.getId(), new EntityAction(m, b, a, r));
+                }
+            }
+        }
+
+        // создаем новые юниты
+        if (builderUnitArrayList.size()<myPlayer.getPopulationMax()*0.75 && builderUnitArrayList.size()<70)
         {
             BuildAction b = null;
 
@@ -114,9 +154,10 @@ public class EconomicManager {
             for (int i=0; i<arrayList1.size(); i++)
             {
                 b = new BuildAction(
-                        EntityType.BUILDER_UNIT, new Vec2Int(
+                        EntityType.BUILDER_UNIT,globalManager.getGlobalMap().getPositionBuildUnit(globalStatistic, arrayList1.get(i)
+            /*new Vec2Int(
                         arrayList1.get(i).getPosition().getX() + globalStatistic.getEntityPropertiesBUILDER_BASE().getSize(),
-                        arrayList1.get(i).getPosition().getY() + globalStatistic.getEntityPropertiesBUILDER_BASE().getSize() - 1
+                        arrayList1.get(i).getPosition().getY() + globalStatistic.getEntityPropertiesBUILDER_BASE().getSize() - 1*/
                 )
                 );
 

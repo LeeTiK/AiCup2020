@@ -1,7 +1,4 @@
-import model.Entity;
-import model.EntityType;
-import model.PlayerView;
-import model.Vec2Int;
+import model.*;
 
 import java.util.ArrayList;
 
@@ -28,7 +25,11 @@ public class GlobalMap {
         for (int i=0; i<playerView.getEntities().length; i++)
         {
             Entity entity = playerView.getEntities()[i];
-            map[entity.getPosition().getX()][entity.getPosition().getY()] = entity;
+            if (entity.getPosition().getX()>=0 && entity.getPosition().getX() <80 &&
+                    entity.getPosition().getY()>=0 && entity.getPosition().getY() <80
+            ) {
+                map[entity.getPosition().getX()][entity.getPosition().getY()] = entity;
+            }
           //  playerView.getEntityProperties().get()
         }
     }
@@ -43,7 +44,59 @@ public class GlobalMap {
         }
     }
 
-    boolean checkEmpty(PlayerView playerView, Vec2Int vec2Int)
+    public Vec2Int getPositionBuildUnit(GlobalStatistic globalStatistic, Entity building)
+    {
+        EntityProperties entityProperties = globalStatistic.getEntityProperties(building);
+
+        Vec2Int vec2Int = building.getPosition().copy();
+
+        for (int x=entityProperties.getSize()-1; x>=0; x--)
+        {
+            if (checkEmpty(vec2Int.add(x,entityProperties.getSize())))
+            {
+                return vec2Int.add(x,entityProperties.getSize());
+            }
+        }
+
+        for (int y=entityProperties.getSize()-1; y>=0; y--)
+        {
+            if (checkEmpty(vec2Int.add(entityProperties.getSize(), y)))
+            {
+                return vec2Int.add(entityProperties.getSize(),y);
+            }
+        }
+
+        return vec2Int;
+
+    }
+
+    public Vec2Int getPositionBuildHouse(GlobalStatistic globalStatistic)
+    {
+      /*  EntityProperties entityProperties = globalStatistic.getEntityProperties(building);
+
+        Vec2Int vec2Int = building.getPosition().copy();
+
+        for (int x=entityProperties.getSize()-1; x>=0; x--)
+        {
+            if (checkEmpty(vec2Int.add(x,entityProperties.getSize())))
+            {
+                return vec2Int.add(x,entityProperties.getSize());
+            }
+        }
+
+        for (int y=entityProperties.getSize()-1; y>=0; y--)
+        {
+            if (checkEmpty(vec2Int.add(entityProperties.getSize(), y)))
+            {
+                return vec2Int.add(entityProperties.getSize(),y);
+            }
+        }*/
+
+        return null;
+
+    }
+
+    public boolean checkEmpty(Vec2Int vec2Int)
     {
         return map[vec2Int.getX()][vec2Int.getY()].getEntityType()==EntityType.Empty;
     }

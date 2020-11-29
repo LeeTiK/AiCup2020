@@ -113,6 +113,10 @@ public class Vec2Int {
         return new Vec2Int(x + a, y + a);
     }
 
+    public Vec2Int add(int x1, int y1) {
+        return new Vec2Int(x + x1, y + y1);
+    }
+
     public String toString() {
         return "(" + x + "," + y + ")";
     }

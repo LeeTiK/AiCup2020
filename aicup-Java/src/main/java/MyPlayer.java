@@ -147,7 +147,9 @@ public class MyPlayer extends Player {
                 case BUILDER_BASE:
                 case MELEE_BASE:
                 case RANGED_BASE:
-                    populationMax+=5;
+                    if (mBuildingArrayList.get(i).isActive()) {
+                        populationMax += 5;
+                    }
                     break;
             }
         }

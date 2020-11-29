@@ -1,3 +1,4 @@
+import model.Entity;
 import model.EntityProperties;
 import model.EntityType;
 import model.PlayerView;
@@ -209,6 +210,11 @@ public class GlobalStatistic {
         return mEntityPropertiesWALL;
     }
 
+    public EntityProperties getEntityProperties(Entity entity)
+    {
+        return getEntityProperties(entity.getEntityType());
+    }
+
     public EntityProperties getEntityProperties(EntityType entityType)
     {
         switch (entityType)
@@ -238,5 +244,13 @@ public class GlobalStatistic {
                 break;
         }
         return null;
+    }
+
+    public static int getCurrentTik() {
+        return currentTik;
+    }
+
+    public int getMyID() {
+        return myID;
     }
 }

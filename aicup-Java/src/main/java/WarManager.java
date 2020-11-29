@@ -21,6 +21,8 @@ public class WarManager {
         ArrayList<MyPlayer> arrayList = globalStatistic.getPlayers();
         MyPlayer targetPlayerAttack;
 
+        if (globalStatistic.getCurrentTik()<60) return actionHashMap;
+
         for (int i=0; i<arrayList1.size(); i++) {
             MoveAction m = new MoveAction(globalManager.getGlobalMap().getNearestPlayer(arrayList1.get(i).getPosition(),playerView.getMyId()), true, false);
             AttackAction a = new AttackAction(
