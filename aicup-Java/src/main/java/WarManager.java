@@ -38,7 +38,7 @@ public class WarManager {
         ArrayList<MyEntity> arrayList2 = myPlayer.getEntityArrayList(EntityType.MELEE_UNIT);
 
         for (int i=0; i<arrayList2.size(); i++) {
-            MoveAction m = new MoveAction(globalManager.getGlobalMap().getNearestPlayer(arrayList1.get(i).getPosition(),playerView.getMyId()), true, false);
+            MoveAction m = new MoveAction(globalManager.getGlobalMap().getNearestPlayer(arrayList2.get(i).getPosition(),playerView.getMyId()), true, false);
             AttackAction a = new AttackAction(
                     //Arrays.stream(playerView.getEntities()).filter(e -> myId.equals(e.getEntityType()) & e.getEntityType() == EntityType.MELEE_BASE).findAny().get().getId(),
                     null,
