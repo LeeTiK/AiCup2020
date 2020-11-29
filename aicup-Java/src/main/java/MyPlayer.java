@@ -14,6 +14,11 @@ public class MyPlayer extends Player {
     int populationCurrent =0;
     int populationMax =0;
 
+    int countDeadMelee =0;
+    int countDeadRange =0;
+    int countDeadBiuld =0;
+    int countDeadHouse =0;
+
     int historyAll;
 
     /*WALL(0),
@@ -32,6 +37,7 @@ public class MyPlayer extends Player {
      //   mEntityArrayList = new ArrayList<>();
         mUnitArrayList = new ArrayList<>();
         mBuildingArrayList = new ArrayList<>();
+
     }
 
 
@@ -118,6 +124,12 @@ public class MyPlayer extends Player {
         {
             if (!mBuildingArrayList.get(i).isUpdate()){
                 EntityType entityType = mBuildingArrayList.get(i).getEntityType();
+                switch (entityType) {
+
+                    case HOUSE:
+                        countDeadHouse++;
+                        break;
+                }
                 mBuildingArrayList.remove(i);
                 return entityType;
             }
@@ -127,6 +139,19 @@ public class MyPlayer extends Player {
         {
             if (!mUnitArrayList.get(i).isUpdate()){
                 EntityType entityType = mUnitArrayList.get(i).getEntityType();
+                switch (entityType)
+                {
+
+                    case BUILDER_UNIT:
+                        countDeadBiuld++;
+                        break;
+                    case MELEE_UNIT:
+                        countDeadMelee++;
+                        break;
+                    case RANGED_UNIT:
+                        countDeadRange++;
+                        break;
+                }
                 mUnitArrayList.remove(i);
                 return entityType;
             }
@@ -257,5 +282,21 @@ public class MyPlayer extends Player {
 
     public int getPopulationMax() {
         return populationMax;
+    }
+
+    public int getCountDeadBiuld() {
+        return countDeadBiuld;
+    }
+
+    public int getCountDeadMelee() {
+        return countDeadMelee;
+    }
+
+    public int getCountDeadRange() {
+        return countDeadRange;
+    }
+
+    public int getCountDeadHouse() {
+        return countDeadHouse;
     }
 }

@@ -3,8 +3,8 @@ import model.PlayerView;
 
 public class Final {
 
-    final static boolean debug =true;
-    final static boolean debugRelease =false;
+    final static boolean debug =false;
+    final static boolean debugRelease =true;
 
     static public Player getMyPlayer(PlayerView playerView){
         int myID = playerView.getMyId();

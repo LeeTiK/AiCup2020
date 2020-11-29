@@ -54,15 +54,32 @@ public class GlobalMap {
         {
             if (checkEmpty(vec2Int.add(x,entityProperties.getSize())))
             {
-                return vec2Int.add(x,entityProperties.getSize());
+               return vec2Int.add(x,entityProperties.getSize());
             }
         }
+
 
         for (int y=entityProperties.getSize()-1; y>=0; y--)
         {
             if (checkEmpty(vec2Int.add(entityProperties.getSize(), y)))
             {
-                return vec2Int.add(entityProperties.getSize(),y);
+               return vec2Int.add(entityProperties.getSize(),y);
+            }
+        }
+
+        for (int x=entityProperties.getSize()-1; x>=0; x--)
+        {
+            if (checkEmpty(vec2Int.add(x,-1)))
+            {
+                return vec2Int.add(x,-1);
+            }
+        }
+
+        for (int y=entityProperties.getSize()-1; y>=0; y--)
+        {
+            if (checkEmpty(vec2Int.add(-1, y)))
+            {
+                   return vec2Int.add(-1,y);
             }
         }
 
@@ -98,6 +115,7 @@ public class GlobalMap {
 
     public boolean checkEmpty(Vec2Int vec2Int)
     {
+        if (vec2Int.getX()<0 || vec2Int.getX()>=80 || vec2Int.getY()<=0 || vec2Int.getY()>=80) return false;
         return map[vec2Int.getX()][vec2Int.getY()].getEntityType()==EntityType.Empty;
     }
 

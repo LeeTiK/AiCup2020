@@ -46,7 +46,7 @@ public class Runner {
 
     public static void main(String[] args) throws IOException {
         String host = args.length < 1 ? "127.0.0.1" : args[0];
-        int port = args.length < 2 ? 31001 : Integer.parseInt(args[1]);
+        int port = args.length < 2 ? 31002 : Integer.parseInt(args[1]);
         String token = args.length < 3 ? "0000000000000000" : args[2];
         new Runner(host, port, token).run();
     }

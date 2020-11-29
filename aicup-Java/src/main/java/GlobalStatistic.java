@@ -55,7 +55,7 @@ public class GlobalStatistic {
 
         if (Final.debugRelease)
         {
-            if (currentTik%10==0) logInfo();
+            if (currentTik%100==0) logInfo();
         }
 
 
@@ -144,9 +144,8 @@ public class GlobalStatistic {
         {
             MyPlayer myPlayer = mMyPlayers.get(i);
             Final.DEBUGRelease(TAG,"Player: " + myPlayer.getId() + " Size Builder: " + myPlayer.getBuildingArrayList().size() + " Size Unit: " + myPlayer.getUnitArrayList().size() + " Population: " + myPlayer.getPopulationCurrent() + "/" + myPlayer.getPopulationMax());
-            Final.DEBUGRelease(TAG,"Player: " + myPlayer.getId() + " BUILDER: " + myPlayer.getEntityArrayList(EntityType.BUILDER_UNIT).size());
-            Final.DEBUGRelease(TAG,"Player: " + myPlayer.getId() + " MELEE: " + myPlayer.getEntityArrayList(EntityType.MELEE_UNIT).size());
-            Final.DEBUGRelease(TAG,"Player: " + myPlayer.getId() + " RANGED: " + myPlayer.getEntityArrayList(EntityType.RANGED_UNIT).size());
+            Final.DEBUGRelease(TAG,"Player: " + myPlayer.getId() + " B: " + myPlayer.getEntityArrayList(EntityType.BUILDER_UNIT).size() + " M: " + myPlayer.getEntityArrayList(EntityType.MELEE_UNIT).size() + " R: " + myPlayer.getEntityArrayList(EntityType.RANGED_UNIT).size() + " DeadB: " + myPlayer.getCountDeadBiuld() + " DeadM: " + myPlayer.getCountDeadMelee() + " DeadR: " + myPlayer.getCountDeadRange() + " DeadH " + myPlayer.getCountDeadHouse() );
+
         }
     }
 
