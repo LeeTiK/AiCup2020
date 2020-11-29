@@ -52,7 +52,7 @@ public class GlobalStatistic {
         currentTik = playerView.getCurrentTick();
         Final.DEBUG(TAG,"CurrentTik: " + currentTik);
 
-        if (Final.debug)
+        if (Final.debugRelease)
         {
             if (currentTik%10==0) logInfo();
         }
@@ -142,10 +142,10 @@ public class GlobalStatistic {
         for (int i=0; i<mMyPlayers.size(); i++)
         {
             MyPlayer myPlayer = mMyPlayers.get(i);
-            Final.DEBUG(TAG,"Player: " + myPlayer.getId() + " Size Builder: " + myPlayer.getBuildingArrayList().size() + " Size Unit: " + myPlayer.getUnitArrayList().size() + " Population: " + myPlayer.getPopulationCurrent() + "/" + myPlayer.getPopulationMax());
-            Final.DEBUG(TAG,"Player: " + myPlayer.getId() + " BUILDER: " + myPlayer.getEntityArrayList(EntityType.BUILDER_UNIT).size());
-            Final.DEBUG(TAG,"Player: " + myPlayer.getId() + " MELEE: " + myPlayer.getEntityArrayList(EntityType.MELEE_UNIT).size());
-            Final.DEBUG(TAG,"Player: " + myPlayer.getId() + " RANGED: " + myPlayer.getEntityArrayList(EntityType.RANGED_UNIT).size());
+            Final.DEBUGRelease(TAG,"Player: " + myPlayer.getId() + " Size Builder: " + myPlayer.getBuildingArrayList().size() + " Size Unit: " + myPlayer.getUnitArrayList().size() + " Population: " + myPlayer.getPopulationCurrent() + "/" + myPlayer.getPopulationMax());
+            Final.DEBUGRelease(TAG,"Player: " + myPlayer.getId() + " BUILDER: " + myPlayer.getEntityArrayList(EntityType.BUILDER_UNIT).size());
+            Final.DEBUGRelease(TAG,"Player: " + myPlayer.getId() + " MELEE: " + myPlayer.getEntityArrayList(EntityType.MELEE_UNIT).size());
+            Final.DEBUGRelease(TAG,"Player: " + myPlayer.getId() + " RANGED: " + myPlayer.getEntityArrayList(EntityType.RANGED_UNIT).size());
         }
     }
 
@@ -163,6 +163,11 @@ public class GlobalStatistic {
 
         return null;
     }
+
+    public ArrayList<MyPlayer> getPlayers() {
+        return mMyPlayers;
+    }
+
 
     public EntityProperties getEntityPropertiesBUILDER_BASE() {
         return mEntityPropertiesBUILDER_BASE;
@@ -202,5 +207,36 @@ public class GlobalStatistic {
 
     public EntityProperties getEntityPropertiesWALL() {
         return mEntityPropertiesWALL;
+    }
+
+    public EntityProperties getEntityProperties(EntityType entityType)
+    {
+        switch (entityType)
+        {
+
+            case WALL:
+                return getEntityPropertiesWALL();
+            case HOUSE:
+                return getEntityPropertiesHOUSE();
+            case BUILDER_BASE:
+                return getEntityPropertiesBUILDER_BASE();
+            case BUILDER_UNIT:
+                return getEntityPropertiesRANGED_UNIT();
+            case MELEE_BASE:
+                return getEntityPropertiesMELEE_BASE();
+            case MELEE_UNIT:
+                return getEntityPropertiesMELEE_UNIT();
+            case RANGED_BASE:
+                return getEntityPropertiesRANGED_BASE();
+            case RANGED_UNIT:
+                return getEntityPropertiesRANGED_UNIT();
+            case RESOURCE:
+                return getEntityPropertiesRESOURCE();
+            case TURRET:
+                return getEntityPropertiesTURRET();
+            case Empty:
+                break;
+        }
+        return null;
     }
 }

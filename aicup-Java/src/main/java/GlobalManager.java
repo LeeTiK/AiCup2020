@@ -15,12 +15,15 @@ public class GlobalManager {
     // количество от
     GlobalStatistic mGlobalStatistic;
 
+    GlobalMap mGlobalMap;
+
 
 
     public GlobalManager(){
         mEconomicManager = new EconomicManager();
         mWarManager = new WarManager();
         mGlobalStatistic = new GlobalStatistic();
+        mGlobalMap = new GlobalMap();
     }
 
 
@@ -28,13 +31,30 @@ public class GlobalManager {
         HashMap<Integer, model.EntityAction> hashMap = new HashMap<>();
         // глобальная статистика и информация о мире
         mGlobalStatistic.updateInfo(playerView,debugInterface);
+        mGlobalMap.update(playerView);
 
         /////////////////////////////////////////////////////
 
-        hashMap.putAll(mEconomicManager.update(playerView,mGlobalStatistic));
+        hashMap.putAll(mEconomicManager.update(playerView,this));
 
-        hashMap.putAll(mWarManager.update(playerView,mGlobalStatistic));
+        hashMap.putAll(mWarManager.update(playerView,this));
 
         return new Action(hashMap);
+    }
+
+    public EconomicManager getEconomicManager() {
+        return mEconomicManager;
+    }
+
+    public GlobalStatistic getGlobalStatistic() {
+        return mGlobalStatistic;
+    }
+
+    public WarManager getWarManager() {
+        return mWarManager;
+    }
+
+    public GlobalMap getGlobalMap() {
+        return mGlobalMap;
     }
 }

@@ -3,7 +3,8 @@ import model.PlayerView;
 
 public class Final {
 
-    final static boolean debug =true;
+    final static boolean debug =false;
+    final static boolean debugRelease =false;
 
     static public Player getMyPlayer(PlayerView playerView){
         int myID = playerView.getMyId();
@@ -18,6 +19,13 @@ public class Final {
 
     public static void DEBUG (String TAG, String text){
         if (debug)
+        {
+            System.out.println(TAG + " " + text);
+        }
+    }
+
+    public static void DEBUGRelease (String TAG, String text){
+        if (debugRelease)
         {
             System.out.println(TAG + " " + text);
         }
