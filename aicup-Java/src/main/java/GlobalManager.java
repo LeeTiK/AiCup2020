@@ -31,7 +31,7 @@ public class GlobalManager {
         HashMap<Integer, model.EntityAction> hashMap = new HashMap<>();
         // глобальная статистика и информация о мире
         mGlobalStatistic.updateInfo(playerView,debugInterface);
-        mGlobalMap.update(playerView);
+        mGlobalMap.update(playerView,getGlobalStatistic());
 
         /////////////////////////////////////////////////////
 
@@ -56,5 +56,9 @@ public class GlobalManager {
 
     public GlobalMap getGlobalMap() {
         return mGlobalMap;
+    }
+
+    public void debugUpdate(PlayerView playerView, DebugInterface debugInterface) {
+        mGlobalMap.debugUpdate(playerView,debugInterface);
     }
 }

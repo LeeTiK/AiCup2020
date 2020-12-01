@@ -152,4 +152,8 @@ public class Vec2Int {
         this.y += y;
     }
 
+    public Vec2Float getVec2Float(){
+        return new Vec2Float(x,y);
+    }
+
 }

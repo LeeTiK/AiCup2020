@@ -136,6 +136,7 @@ public class GlobalStatistic {
             mMyPlayers.get(j).finishUpdate();
         }
 
+        //playerView.getPlayers()[i].getResource()
 
     }
 

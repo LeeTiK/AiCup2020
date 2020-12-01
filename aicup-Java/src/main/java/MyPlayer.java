@@ -38,6 +38,7 @@ public class MyPlayer extends Player {
         mUnitArrayList = new ArrayList<>();
         mBuildingArrayList = new ArrayList<>();
 
+
     }
 
 

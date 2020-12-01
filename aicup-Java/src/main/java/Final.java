@@ -5,6 +5,9 @@ public class Final {
 
     final static boolean debug =false;
     final static boolean debugRelease =true;
+    final static boolean debugGraphic =false;
+
+    final static boolean OFF_WAR = false;
 
     static public Player getMyPlayer(PlayerView playerView){
         int myID = playerView.getMyId();
