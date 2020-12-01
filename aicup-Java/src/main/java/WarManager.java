@@ -23,14 +23,122 @@ public class WarManager {
 
         if (Final.OFF_WAR) return actionHashMap;
 
-        if (globalStatistic.getCurrentTik()<30) return actionHashMap;
+        //if (globalStatistic.getCurrentTik()<30) return actionHashMap;
 
-        for (int i=0; i<arrayList1.size(); i++) {
-            Vec2Int vec2Int = globalManager.getGlobalMap().getNearestPlayer(arrayList1.get(i).getPosition(),playerView.getMyId());
+        if (globalStatistic.getCurrentTik()<300)
+        {
+            actionHashMap = attack(playerView,globalManager,30);
+        }
+        else {
+            actionHashMap = attack(playerView,globalManager,1000);
+        }
+
+
+
+        return actionHashMap;
+
+    }
+
+    private HashMap<Integer, EntityAction> attack(PlayerView playerView, GlobalManager globalManager, int dis) {
+        HashMap<Integer, EntityAction> actionHashMap = new HashMap<>();
+
+        GlobalStatistic globalStatistic = globalManager.getGlobalStatistic();
+
+        MyPlayer myPlayer = globalStatistic.getMyPlayer();
+
+        ArrayList<MyEntity> rangeArrayList = myPlayer.getEntityArrayList(EntityType.RANGED_UNIT);
+
+        ArrayList<MyPlayer> arrayList = globalStatistic.getPlayers();
+        MyPlayer targetPlayerAttack;
+
+
+        for (int i=0; i<rangeArrayList.size(); i++) {
+            Vec2Int vec2Int = globalManager.getGlobalMap().getNearestPlayer(rangeArrayList.get(i).getPosition(),playerView.getMyId());
+
+            Final.DEBUG(TAG,"distance: " + vec2Int.distance(rangeArrayList.get(i).getPosition()));
+
             MoveAction m = null;
             if (vec2Int!=null)
             {
-                m = new MoveAction(globalManager.getGlobalMap().getNearestPlayer(arrayList1.get(i).getPosition(),playerView.getMyId()), true, true);
+                 if (vec2Int.distance(rangeArrayList.get(i).getPosition())<dis) {
+                     m = new MoveAction(vec2Int, true, true);
+                 }
+            }
+
+            AttackAction a = new AttackAction(
+                    //Arrays.stream(playerView.getEntities()).filter(e -> myId.equals(e.getEntityType()) & e.getEntityType() == EntityType.MELEE_BASE).findAny().get().getId(),
+                    null,
+                    new AutoAttack(
+                            globalStatistic.getEntityPropertiesRANGED_UNIT().getSightRange(),
+                            new EntityType[]{}
+                    )
+            );
+
+            actionHashMap.put(rangeArrayList.get(i).getId(), new EntityAction(m, null, a, null));
+        }
+
+        ArrayList<MyEntity> meleeArrayList = myPlayer.getEntityArrayList(EntityType.MELEE_UNIT);
+
+        for (int i=0; i<meleeArrayList.size(); i++) {
+            Vec2Int vec2Int = globalManager.getGlobalMap().getNearestPlayer(rangeArrayList.get(i).getPosition(),playerView.getMyId());
+
+            Final.DEBUG(TAG,"distance: " + vec2Int.distance(rangeArrayList.get(i).getPosition()));
+
+            MoveAction m = null;
+            if (vec2Int!=null)
+            {
+                if (vec2Int.distance(rangeArrayList.get(i).getPosition())<dis) {
+                    m = new MoveAction(vec2Int, true, true);
+                }
+            }
+
+
+            AttackAction a = new AttackAction(
+                    //Arrays.stream(playerView.getEntities()).filter(e -> myId.equals(e.getEntityType()) & e.getEntityType() == EntityType.MELEE_BASE).findAny().get().getId(),
+                    null,
+                    new AutoAttack(
+                            globalStatistic.getEntityPropertiesRANGED_UNIT().getSightRange(),
+                            new EntityType[]{}
+                    )
+            );
+
+            actionHashMap.put(meleeArrayList.get(i).getId(), new EntityAction(m, null, a, null));
+        }
+
+        return actionHashMap;
+    }
+
+    private HashMap<Integer, EntityAction> defence(PlayerView playerView, GlobalManager globalManager) {
+        HashMap<Integer, EntityAction> actionHashMap = new HashMap<>();
+
+      //  globalManager.getGlobalMap().
+        GlobalStatistic globalStatistic = globalManager.getGlobalStatistic();
+
+        MyPlayer myPlayer = globalStatistic.getMyPlayer();
+
+        ArrayList<MyEntity> rangeArrayList = myPlayer.getEntityArrayList(EntityType.RANGED_UNIT);
+
+        ArrayList<MyPlayer> arrayList = globalStatistic.getPlayers();
+        MyPlayer targetPlayerAttack;
+
+
+        AreaPlayer areaPlayer = globalManager.getGlobalMap().getAreaPlayer();
+
+        for (int i=0; i<rangeArrayList.size(); i++) {
+           // Vec2Int vec2Int = globalManager.getGlobalMap().getNearestPlayer(rangeArrayList.get(i).getPosition(),playerView.getMyId());
+            Vec2Int vec2Int = null;
+            if (i%2==0)
+            {
+                vec2Int = new Vec2Int(areaPlayer.width/2,areaPlayer.height);
+            }
+            else {
+                vec2Int = new Vec2Int(areaPlayer.width,areaPlayer.height/2);
+            }
+
+            MoveAction m = null;
+            if (vec2Int!=null)
+            {
+                m = new MoveAction(vec2Int, true, false);
             }
             AttackAction a = new AttackAction(
                     //Arrays.stream(playerView.getEntities()).filter(e -> myId.equals(e.getEntityType()) & e.getEntityType() == EntityType.MELEE_BASE).findAny().get().getId(),
@@ -41,13 +149,29 @@ public class WarManager {
                     )
             );
 
-            actionHashMap.put(arrayList1.get(i).getId(), new EntityAction(m, null, a, null));
+            actionHashMap.put(rangeArrayList.get(i).getId(), new EntityAction(m, null, a, null));
         }
 
-        ArrayList<MyEntity> arrayList2 = myPlayer.getEntityArrayList(EntityType.MELEE_UNIT);
+        ArrayList<MyEntity> meleeArrayList = myPlayer.getEntityArrayList(EntityType.MELEE_UNIT);
 
-        for (int i=0; i<arrayList2.size(); i++) {
-            MoveAction m = new MoveAction(globalManager.getGlobalMap().getNearestPlayer(arrayList2.get(i).getPosition(),playerView.getMyId()), true, true);
+        for (int i=0; i<meleeArrayList.size(); i++) {
+           // Vec2Int vec2Int = globalManager.getGlobalMap().getNearestPlayer(rangeArrayList.get(i).getPosition(),playerView.getMyId());
+
+            Vec2Int vec2Int = null;
+            if (i%2==0)
+            {
+                vec2Int = new Vec2Int(areaPlayer.width/2,areaPlayer.height);
+            }
+            else {
+                vec2Int = new Vec2Int(areaPlayer.width,areaPlayer.height/2);
+            }
+
+            MoveAction m = null;
+            if (vec2Int!=null)
+            {
+                m = new MoveAction(vec2Int, true, false);
+            }
+
             AttackAction a = new AttackAction(
                     //Arrays.stream(playerView.getEntities()).filter(e -> myId.equals(e.getEntityType()) & e.getEntityType() == EntityType.MELEE_BASE).findAny().get().getId(),
                     null,
@@ -57,11 +181,10 @@ public class WarManager {
                     )
             );
 
-            actionHashMap.put(arrayList2.get(i).getId(), new EntityAction(m, null, a, null));
+            actionHashMap.put(meleeArrayList.get(i).getId(), new EntityAction(m, null, a, null));
         }
 
         return actionHashMap;
-
     }
 
 }

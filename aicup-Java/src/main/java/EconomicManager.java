@@ -116,7 +116,7 @@ public class EconomicManager {
                 }
             }*/
 
-            if (myPlayer.getResource()>1100 && myPlayer.getEntityArrayList(EntityType.RANGED_BASE).size()<3 )
+            if (myPlayer.getResource()>globalStatistic.getEntityProperties(EntityType.RANGED_BASE).getCost()+100 && myPlayer.getEntityArrayList(EntityType.RANGED_BASE).size()<3 )
             {
                 b = new BuildAction(
                         EntityType.RANGED_BASE, new Vec2Int(
@@ -126,9 +126,23 @@ public class EconomicManager {
                 );
             }
 
+            if (myPlayer.getResource()>globalStatistic.getEntityProperties(EntityType.MELEE_BASE).getCost()+100 && myPlayer.getEntityArrayList(EntityType.BUILDER_BASE).size()<1 &&  myPlayer.getEntityArrayList(EntityType.RANGED_BASE).size()>0)
+            {
+                if (b==null) {
+                    b = new BuildAction(
+                            EntityType.RANGED_BASE, new Vec2Int(
+                            builderUnitArrayList.get(i).getPosition().getX() + 1,
+                            builderUnitArrayList.get(i).getPosition().getY()
+                    )
+                    );
+                }
+            }
 
 
-           // Final.DEBUG(TAG, "arrayList.get(i).getId() " + builderUnitArrayList.get(i).getId() + " " +builderUnitArrayList.get(i).getPosition().toString());
+
+            r = getNearbyBuildNeedHeal(builderUnitArrayList.get(i).getPosition(),globalManager);
+
+                    // Final.DEBUG(TAG, "arrayList.get(i).getId() " + builderUnitArrayList.get(i).getId() + " " +builderUnitArrayList.get(i).getPosition().toString());
 
             actionHashMap.put(builderUnitArrayList.get(i).getId(), new EntityAction(m, b, a, r));
         }
@@ -138,7 +152,9 @@ public class EconomicManager {
 
         boolean checkCreate = false;
 
-        if (myPlayer.getResource()>180 )//&& myPlayer.getPopulationCurrent()*1.2>=myPlayer.getPopulationMax() )
+        if (myPlayer.getResource()>globalStatistic.getEntityProperties(EntityType.HOUSE).getCost()-10 && (myPlayer.getPopulationCurrent()*1.2>=myPlayer.getPopulationMax() || myPlayer.getPopulationMax()<70)
+        && (myPlayer.getPopulationMax()<150 || myPlayer.getEntityArrayList(EntityType.RANGED_BASE).size()>1))
+
         {
 
             Vec2Int positionBuildHouse = globalManager.getGlobalMap().getPositionBuildHouse(globalStatistic.getEntityProperties(EntityType.HOUSE));
@@ -279,6 +295,33 @@ public class EconomicManager {
         }
 
         return actionHashMap;
+    }
+
+    private RepairAction getNearbyBuildNeedHeal(Vec2Int position, GlobalManager globalManager) {
+        byte[][] bytes= new byte[][]{
+                {1,0},{0,1},{-1,0},{0,-1},
+        };
+
+        for (int i=0; i<4; i++) {
+            Vec2Int vec2Int = position.add(bytes[i][0],bytes[i][1]);
+            Entity entity = globalManager.getGlobalMap().getMap(vec2Int);
+            if (entity != null) {
+                if (entity.getEntityType()==EntityType.BUILDER_BASE || entity.getEntityType()==EntityType.RANGED_BASE ||
+                        entity.getEntityType()==EntityType.HOUSE || entity.getEntityType()==EntityType.TURRET
+                || entity.getEntityType() == EntityType.WALL || entity.getEntityType()==EntityType.MELEE_BASE) {
+                    if (entity.getPlayerId() == globalManager.getGlobalStatistic().getMyID()) {
+                        EntityProperties entityProperties = globalManager.getGlobalStatistic().getEntityProperties(entity);
+                        if (entity.getHealth() < entityProperties.getMaxHealth()) {
+                            return new RepairAction(entity.getId());
+                        }
+                    }
+                }
+            }
+        }
+
+
+
+        return null;
     }
 
     private void updateInfo(GlobalStatistic globalStatistic){

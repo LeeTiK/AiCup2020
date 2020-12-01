@@ -8,6 +8,8 @@ public class GlobalMap {
 
     Entity[] allEntity;
 
+    AreaPlayer mAreaPlayer;
+
     public GlobalMap(){
 
     }
@@ -19,6 +21,65 @@ public class GlobalMap {
         }
 
         updateMap(playerView,globalStatistic);
+
+        mAreaPlayer= getPlayerArea(globalStatistic.getMyID());
+    }
+
+    public AreaPlayer getPlayerArea(int playerID) {
+
+        int xMax = 0;
+        int yMax = 0;
+        for (int i=0; i<map.length; i++)
+        {
+            for (int j=0; j<=i; j++)
+            {
+                Entity entity = map[i][j];
+                if (entity.getEntityType()!=EntityType.RANGED_UNIT &&
+                        entity.getEntityType()!=EntityType.MELEE_UNIT &&
+                        entity.getEntityType()!=EntityType.RESOURCE &&
+                        entity.getEntityType()!=EntityType.Empty
+                       )
+                {
+                    if (entity.getPlayerId()==playerID)
+                    {
+                        if (xMax<i)
+                        {
+                            xMax = i;
+                        }
+
+                        if (yMax<j)
+                        {
+                            yMax = j;
+                        }
+                    }
+                }
+
+                entity = map[j][i];
+                if (entity.getEntityType()!=EntityType.RANGED_UNIT &&
+                        entity.getEntityType()!=EntityType.MELEE_UNIT &&
+                        entity.getEntityType()!=EntityType.RESOURCE &&
+                        entity.getEntityType()!=EntityType.Empty
+                )
+                {
+                    if (entity.getPlayerId()==playerID)
+                    {
+                        if (xMax<j)
+                        {
+                            xMax = j;
+                        }
+
+                        if (yMax<i)
+                        {
+                            yMax = i;
+                        }
+                    }
+                }
+
+            }
+        }
+
+        return new AreaPlayer(new Vec2Int(0,0),xMax+4,yMax+4);
+
     }
 
     private void updateMap(PlayerView playerView, GlobalStatistic globalStatistic) {
@@ -285,7 +346,7 @@ public class GlobalMap {
 
         Vec2Int vec2IntRight = new Vec2Int(0,0);
         Vec2Int vec2IntLeft = new Vec2Int(4,0);
-        int iter = 8;
+        int iter = 6;
         while (!checkEmptyAndAround(vec2IntLeft,entityProperties) && !checkEmptyAndAround(vec2IntRight,entityProperties))
         {
             vec2IntRight = vec2IntRight.add(0,size);
@@ -512,10 +573,27 @@ public class GlobalMap {
                 for (int j=0; j<map[i].length; j++)
                 {
                     if (map[i][j].getEntityType()!=EntityType.Empty){
-                        FinalGraphic.sendSquare(debugInterface,new Vec2Int(i,j),1, FinalGraphic.COLOR_BLACK);
+                       // FinalGraphic.sendSquare(debugInterface,new Vec2Int(i,j),1, FinalGraphic.COLOR_BLACK);
                     }
                 }
             }
         }
+
+        FinalGraphic.sendSquare(debugInterface,new Vec2Int(0,0),getAreaPlayer().width, FinalGraphic.COLOR_WHITE);
+    }
+
+    public Entity[][] getMap() {
+        return map;
+    }
+
+    public Entity getMap(Vec2Int vec2Int)
+    {
+        if (vec2Int.getX()<0 || vec2Int.getX()>=80 || vec2Int.getY()<0 || vec2Int.getY()>=80) return null;
+
+        return map[vec2Int.getX()][vec2Int.getY()];
+    }
+
+    public AreaPlayer getAreaPlayer() {
+        return mAreaPlayer;
     }
 }
