@@ -80,14 +80,14 @@ public class WarManager {
         ArrayList<MyEntity> meleeArrayList = myPlayer.getEntityArrayList(EntityType.MELEE_UNIT);
 
         for (int i=0; i<meleeArrayList.size(); i++) {
-            Vec2Int vec2Int = globalManager.getGlobalMap().getNearestPlayer(rangeArrayList.get(i).getPosition(),playerView.getMyId());
+            Vec2Int vec2Int = globalManager.getGlobalMap().getNearestPlayer(meleeArrayList.get(i).getPosition(),playerView.getMyId());
 
-            Final.DEBUG(TAG,"distance: " + vec2Int.distance(rangeArrayList.get(i).getPosition()));
+            Final.DEBUG(TAG,"distance: " + vec2Int.distance(meleeArrayList.get(i).getPosition()));
 
             MoveAction m = null;
             if (vec2Int!=null)
             {
-                if (vec2Int.distance(rangeArrayList.get(i).getPosition())<dis) {
+                if (vec2Int.distance(meleeArrayList.get(i).getPosition())<dis) {
                     m = new MoveAction(vec2Int, true, true);
                 }
             }
