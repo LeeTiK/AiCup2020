@@ -50,11 +50,12 @@ public class EconomicManager {
         ArrayList<MyEntity> meleeUnitArrayList = myPlayer.getEntityArrayList(EntityType.MELEE_UNIT);
         ArrayList<MyEntity> rangedUnitArrayList = myPlayer.getEntityArrayList(EntityType.RANGED_UNIT);
 
-        if (myPlayer.getResource()>20 && 3*meleeUnitArrayList.size()<rangedUnitArrayList.size()) {
+        if (myPlayer.getResource()>20 && 4*meleeUnitArrayList.size()<rangedUnitArrayList.size()) {
             for (int i = 0; i < meleeBaseArrayList.size(); i++) {
                 b = new BuildAction(
                         EntityType.MELEE_UNIT, globalManager.getGlobalMap().getPositionBuildUnit(meleeBaseArrayList.get(i))
                 );
+               // b = null;
 
                 actionHashMap.put(meleeBaseArrayList.get(i).getId(), new EntityAction(null, b, null, null));
             }
@@ -126,7 +127,7 @@ public class EconomicManager {
                 }
             }*/
 
-            if (myPlayer.getResource()>FinalConstant.getEntityProperties(EntityType.RANGED_BASE).getCost()+300 && myPlayer.getEntityArrayList(EntityType.RANGED_BASE).size()<3 )
+            if (myPlayer.getResource()>FinalConstant.getEntityProperties(EntityType.RANGED_BASE).getCost()+300 && myPlayer.getEntityArrayList(EntityType.RANGED_BASE).size()<2 )
             {
                 if (builderUnitArrayList.get(i).getPosition().getX()<70 && builderUnitArrayList.get(i).getPosition().getY()<75) {
                     b = new BuildAction(

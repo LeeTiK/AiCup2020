@@ -53,11 +53,11 @@ public class WarManager {
 
         for (int i=0; i<turretArrayList.size(); i++)
         {
-            DataAttack idAttack = getTargetAttack(turretArrayList.get(i),globalManager);
+          //  DataAttack idAttack = getTargetAttack(turretArrayList.get(i),globalManager);
 
             AttackAction a = null;
 
-            if (idAttack!=null) {
+         //   if (idAttack!=null) {
                  a = new AttackAction(
                          null,
                         new AutoAttack(
@@ -66,7 +66,7 @@ public class WarManager {
                         )
                 );
 
-            }
+          //  }
 
             actionHashMap.put(turretArrayList.get(i).getId(), new EntityAction(null, null, a, null));
         }
@@ -137,7 +137,7 @@ public class WarManager {
                  else {
                      if (turretArrayList.size()>0)
                      {
-                         m = new MoveAction(turretArrayList.get(0).getPosition(), true, false);
+                         m = new MoveAction(turretArrayList.get(0).getPosition(), true, true);
                      }
                  }
             }
@@ -158,7 +158,7 @@ public class WarManager {
 
                     a = null;
 
-                    m = new MoveAction(dataAttack.getMyEntity().getPosition(), true, false);
+                    m = new MoveAction(dataAttack.getMyEntity().getPosition(), true, true);
                 }
                 else {
                     a = new AttackAction(
@@ -265,7 +265,7 @@ public class WarManager {
 
         int attackRange = entityProperties.getAttack().getAttackRange();
 
-        if (entity.getEntityType() == EntityType.RANGED_UNIT) attackRange++;
+       // if (entity.getEntityType() == EntityType.RANGED_UNIT) attackRange++;
 
         ArrayList<MyEntity> arrayList = globalManager.getGlobalMap().getEntityMap(entity.getPosition(),attackRange,FinalConstant.getMyID(),true,false);
 
