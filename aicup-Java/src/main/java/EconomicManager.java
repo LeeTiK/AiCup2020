@@ -126,7 +126,7 @@ public class EconomicManager {
                 }
             }*/
 
-            if (myPlayer.getResource()>FinalConstant.getEntityProperties(EntityType.RANGED_BASE).getCost()+100 && myPlayer.getEntityArrayList(EntityType.RANGED_BASE).size()<3 )
+            if (myPlayer.getResource()>FinalConstant.getEntityProperties(EntityType.RANGED_BASE).getCost()+300 && myPlayer.getEntityArrayList(EntityType.RANGED_BASE).size()<3 )
             {
                 if (builderUnitArrayList.get(i).getPosition().getX()<70 && builderUnitArrayList.get(i).getPosition().getY()<75) {
                     b = new BuildAction(
@@ -138,7 +138,7 @@ public class EconomicManager {
                 }
             }
 
-            if (myPlayer.getResource()>FinalConstant.getEntityProperties(EntityType.MELEE_BASE).getCost()+100 && myPlayer.getEntityArrayList(EntityType.BUILDER_BASE).size()<1 &&  myPlayer.getEntityArrayList(EntityType.RANGED_BASE).size()>0)
+            if (myPlayer.getResource()>FinalConstant.getEntityProperties(EntityType.MELEE_BASE).getCost()+400 && myPlayer.getEntityArrayList(EntityType.BUILDER_BASE).size()<1 &&  myPlayer.getEntityArrayList(EntityType.RANGED_BASE).size()>0)
             {
                 if (b==null) {
                     if (builderUnitArrayList.get(i).getPosition().getX()<70 && builderUnitArrayList.get(i).getPosition().getY()<75) {
@@ -278,7 +278,7 @@ public class EconomicManager {
         }
 
         // создаем новые юниты
-        if (builderUnitArrayList.size()<myPlayer.getPopulationMax()*0.75 && builderUnitArrayList.size()<70)
+        if (builderUnitArrayList.size()<myPlayer.getPopulationMax()*0.75 && builderUnitArrayList.size()<70 ||builderUnitArrayList.size()<22  )
         {
             BuildAction b = null;
 

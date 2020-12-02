@@ -53,7 +53,7 @@ public class GlobalStatistic {
 
         if (Final.debugRelease)
         {
-            if (FinalConstant.getCurrentTik()%100==0) {
+            if (FinalConstant.getCurrentTik()%50==0) {
                 Final.DEBUGRelease(TAG,"CurrentTik: " + FinalConstant.getCurrentTik());
                 logInfo();
             }
@@ -81,7 +81,7 @@ public class GlobalStatistic {
                 mMyPlayers.add(new MyPlayer(playerView.getPlayers()[i]));
             }
         }
-        mMyEntityArrayList.clear();
+
 
         // начала обновлений
         for (int j=0; j<mMyPlayers.size(); j++)
@@ -89,19 +89,26 @@ public class GlobalStatistic {
             mMyPlayers.get(j).startUpdate();
         }
 
+        for (int i=0; i<mMyEntityArrayList.size(); i++)
+        {
+            mMyEntityArrayList.get(i).setUpdate(false);
+        }
+
 
         // добавление и обновление информации о юнитах
         for (int i=0; i<playerView.getEntities().length; i++)
         {
-            mMyEntityArrayList.add(new MyEntity(playerView.getEntities()[i]));
 
-            if (playerView.getEntities()[i].getPlayerId() == null) continue;
+            MyEntity entity = addGlobalEntityList(playerView.getEntities()[i]);
+        //    mMyEntityArrayList.add(new MyEntity(playerView.getEntities()[i]));
 
-            MyPlayer myPlayer = getPlayer(playerView.getEntities()[i].getPlayerId());
+            if (entity.getPlayerId() == null) continue;
+
+            MyPlayer myPlayer = getPlayer(entity.getPlayerId());
 
             if (myPlayer == null) continue;
 
-            EStatus eStatus = myPlayer.updateEntity(mMyEntityArrayList.get(mMyEntityArrayList.size()-1));
+            EStatus eStatus = myPlayer.updateEntity(entity);
 
             switch (eStatus)
             {
@@ -142,8 +149,34 @@ public class GlobalStatistic {
             mMyPlayers.get(j).finishUpdate();
         }
 
+        finishGlobalList();
+
         //playerView.getPlayers()[i].getResource()
 
+    }
+
+    private void finishGlobalList() {
+        for (int i=0; i<mMyEntityArrayList.size(); i++)
+        {
+            if (!mMyEntityArrayList.get(i).isUpdate()){
+                mMyEntityArrayList.remove(i);
+            }
+        }
+    }
+
+    private MyEntity addGlobalEntityList(Entity entity) {
+
+        for (int i=0; i<mMyEntityArrayList.size(); i++)
+        {
+            if (mMyEntityArrayList.get(i).getId() == entity.getId()){
+                mMyEntityArrayList.get(i).update(entity);
+                return mMyEntityArrayList.get(i);
+            }
+        }
+
+        mMyEntityArrayList.add(new MyEntity(entity));
+
+        return mMyEntityArrayList.get(mMyEntityArrayList.size()-1);
     }
 
     private void logInfo() {

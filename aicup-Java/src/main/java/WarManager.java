@@ -25,7 +25,7 @@ public class WarManager {
 
         //if (globalStatistic.getCurrentTik()<30) return actionHashMap;
 
-        if (FinalConstant.getCurrentTik()<300)
+        if (FinalConstant.getCurrentTik()<210)
         {
             actionHashMap = attack(playerView,globalManager,20);
         }
@@ -48,44 +48,29 @@ public class WarManager {
 
         ArrayList<MyEntity> rangeArrayList = myPlayer.getEntityArrayList(EntityType.RANGED_UNIT);
 
-        ArrayList<MyPlayer> arrayList = globalStatistic.getPlayers();
-        MyPlayer targetPlayerAttack;
-
+        ArrayList<MyEntity> meleeArrayList = myPlayer.getEntityArrayList(EntityType.MELEE_UNIT);
         ArrayList<MyEntity> turretArrayList = myPlayer.getEntityArrayList(EntityType.TURRET);
 
+        for (int i=0; i<turretArrayList.size(); i++)
+        {
+            DataAttack idAttack = getTargetAttack(turretArrayList.get(i),globalManager);
 
-        for (int i=0; i<rangeArrayList.size(); i++) {
-            Vec2Int vec2Int = globalManager.getGlobalMap().getNearestPlayer(rangeArrayList.get(i).getPosition(),playerView.getMyId());
+            AttackAction a = null;
 
-            Final.DEBUG(TAG,"distance: " + vec2Int.distance(rangeArrayList.get(i).getPosition()));
+            if (idAttack!=null) {
+                 a = new AttackAction(
+                         null,
+                        new AutoAttack(
+                                FinalConstant.getEntityPropertiesTURRET().getSightRange(),
+                                new EntityType[]{}
+                        )
+                );
 
-            MoveAction m = null;
-            if (vec2Int!=null)
-            {
-                 if (vec2Int.distance(rangeArrayList.get(i).getPosition())<dis) {
-                     m = new MoveAction(vec2Int, true, true);
-                 }
-                 else {
-                     if (turretArrayList.size()>0)
-                     {
-                         m = new MoveAction(turretArrayList.get(0).getPosition(), true, false);
-                     }
-                 }
             }
 
-            AttackAction a = new AttackAction(
-                    //Arrays.stream(playerView.getEntities()).filter(e -> myId.equals(e.getEntityType()) & e.getEntityType() == EntityType.MELEE_BASE).findAny().get().getId(),
-                    null,
-                    new AutoAttack(
-                            FinalConstant.getEntityPropertiesRANGED_UNIT().getSightRange(),
-                            new EntityType[]{}
-                    )
-            );
-
-            actionHashMap.put(rangeArrayList.get(i).getId(), new EntityAction(m, null, a, null));
+            actionHashMap.put(turretArrayList.get(i).getId(), new EntityAction(null, null, a, null));
         }
 
-        ArrayList<MyEntity> meleeArrayList = myPlayer.getEntityArrayList(EntityType.MELEE_UNIT);
 
         for (int i=0; i<meleeArrayList.size(); i++) {
             Vec2Int vec2Int = globalManager.getGlobalMap().getNearestPlayer(meleeArrayList.get(i).getPosition(),playerView.getMyId());
@@ -98,19 +83,96 @@ public class WarManager {
                 if (vec2Int.distance(meleeArrayList.get(i).getPosition())<dis) {
                     m = new MoveAction(vec2Int, true, true);
                 }
+                else {
+                    if (turretArrayList.size()>0)
+                    {
+                        m = new MoveAction(turretArrayList.get(0).getPosition(), true, false);
+                    }
+                }
             }
 
 
-            AttackAction a = new AttackAction(
-                    //Arrays.stream(playerView.getEntities()).filter(e -> myId.equals(e.getEntityType()) & e.getEntityType() == EntityType.MELEE_BASE).findAny().get().getId(),
-                    null,
-                    new AutoAttack(
-                            FinalConstant.getEntityPropertiesRANGED_UNIT().getSightRange(),
-                            new EntityType[]{}
-                    )
-            );
+            DataAttack dataAttack = getTargetAttack(meleeArrayList.get(i),globalManager);
+
+            AttackAction a = null;
+
+            if (dataAttack!=null) {
+
+                if (dataAttack.getMyEntity()!=null)
+                {
+                    a = null;
+
+                            m = new MoveAction(dataAttack.getMyEntity().getPosition(), true, false);
+                }
+                else {
+                    a = new AttackAction(
+                            dataAttack.getIdEntity(),
+                            new AutoAttack(
+                                    FinalConstant.getEntityPropertiesRANGED_UNIT().getSightRange(),
+                                    new EntityType[]{}
+                            )
+                    );
+                    m = null;
+                }
+            }
 
             actionHashMap.put(meleeArrayList.get(i).getId(), new EntityAction(m, null, a, null));
+        }
+
+
+
+        for (int i=0; i<rangeArrayList.size(); i++) {
+            MyEntity range = rangeArrayList.get(i);
+
+            Vec2Int vec2Int = globalManager.getGlobalMap().getNearestPlayer(range.getPosition(),playerView.getMyId());
+
+            Final.DEBUG(TAG,"distance: " + vec2Int.distance(range.getPosition()));
+
+            MoveAction m = null;
+            if (vec2Int!=null)
+            {
+                 if (vec2Int.distance(range.getPosition())<dis) {
+                     m = new MoveAction(vec2Int, true, true);
+                 }
+                 else {
+                     if (turretArrayList.size()>0)
+                     {
+                         m = new MoveAction(turretArrayList.get(0).getPosition(), true, false);
+                     }
+                 }
+            }
+
+            if (vec2Int.distance(range.getPosition())<6)
+            {
+                int k=0;
+            }
+
+            DataAttack dataAttack = getTargetAttack(rangeArrayList.get(i),globalManager);
+
+            AttackAction a = null;
+
+            if (dataAttack!=null) {
+
+                if (dataAttack.getMyEntity()!=null)
+                {
+
+                    a = null;
+
+                    m = new MoveAction(dataAttack.getMyEntity().getPosition(), true, false);
+                }
+                else {
+                    a = new AttackAction(
+                            dataAttack.getIdEntity(),
+                            new AutoAttack(
+                                    FinalConstant.getEntityPropertiesRANGED_UNIT().getSightRange(),
+                                    new EntityType[]{}
+                            )
+                    );
+                    m = null;
+                }
+            }
+
+            actionHashMap.put(range.getId(), new EntityAction(m, null, a, null));
         }
 
         return actionHashMap;
@@ -196,9 +258,138 @@ public class WarManager {
     }
 
 
-    int getTargetAttack(MyEntity entity, GlobalManager globalManager)
+    DataAttack getTargetAttack(MyEntity entity, GlobalManager globalManager)
     {
 
-        return 0;
+        EntityProperties entityProperties = FinalConstant.getEntityProperties(entity);
+
+        int attackRange = entityProperties.getAttack().getAttackRange();
+
+        if (entity.getEntityType() == EntityType.RANGED_UNIT) attackRange++;
+
+        ArrayList<MyEntity> arrayList = globalManager.getGlobalMap().getEntityMap(entity.getPosition(),attackRange,FinalConstant.getMyID(),true,false);
+
+        if (arrayList.size()==0) return null;
+
+        int minHPRange=0xFFFF;
+        int minHPBuild=0xFFFF;
+        int minHPMelee=0xFFFF;
+        int minHPTurret=0xFFFF;
+        int minHPBuilding=0xFFFF;
+        int minHPWall=0xFFFF;
+
+        MyEntity range = null;
+        MyEntity buildUnit = null;
+        MyEntity melee = null;
+        MyEntity turret =null;
+        MyEntity building  = null;
+        MyEntity wall = null;
+
+        for (int i=0; i<arrayList.size();  i++)
+        {
+            MyEntity entity1 = arrayList.get(i);
+
+            if (entity1.getSimulationHP()<=0) continue;
+
+            switch (entity1.getEntityType()){
+
+                case WALL:
+                    if (minHPWall>entity1.getSimulationHP())
+                    {
+                        wall = entity1;
+                        minHPWall = entity1.getSimulationHP();
+                    }
+                    break;
+                case HOUSE:
+                case BUILDER_BASE:
+                case MELEE_BASE:
+                case RANGED_BASE:
+                    if (minHPBuilding>entity1.getSimulationHP())
+                    {
+                        building = entity1;
+                        minHPBuilding = entity1.getSimulationHP();
+                    }
+                    break;
+                case MELEE_UNIT:
+                    if (minHPMelee>entity1.getSimulationHP())
+                    {
+                        melee = entity1;
+                        minHPMelee = entity1.getSimulationHP();
+                    }
+                    break;
+                case RANGED_UNIT:
+                    if (minHPRange>entity1.getSimulationHP())
+                    {
+                        range = entity1;
+                        minHPRange = entity1.getSimulationHP();
+                    }
+                    break;
+                case BUILDER_UNIT:
+                    if (minHPBuild>entity1.getSimulationHP())
+                    {
+                        buildUnit = entity1;
+                        minHPBuild = entity1.getSimulationHP();
+                    }
+                    break;
+                case TURRET:
+                    if (minHPTurret>entity1.getSimulationHP())
+                    {
+                        turret = entity1;
+                        minHPTurret = entity1.getSimulationHP();
+                    }
+                    break;
+            }
+        }
+
+        if (range!=null)
+        {
+            range.attackHP(entityProperties.getAttack().getDamage());
+            return new DataAttack(range.getId());
+        }
+
+        if (melee!=null)
+        {
+            melee.attackHP(entityProperties.getAttack().getDamage());
+            return new DataAttack(melee.getId());
+        }
+
+        if (buildUnit!=null)
+        {
+            buildUnit.attackHP(entityProperties.getAttack().getDamage());
+            return new DataAttack(buildUnit.getId());
+        }
+
+        if (turret!=null)
+        {
+
+            // добавить проверку на рабочих рядом
+
+            MyEntity entity1 = globalManager.getGlobalMap().getBuilderUnitNearTurret(turret);
+
+            if (entity1!=null)
+            {
+                DataAttack dataAttack = new DataAttack(turret.getId());
+                dataAttack.setMyEntity(entity1);
+                return dataAttack;
+            }
+
+            turret.attackHP(entityProperties.getAttack().getDamage());
+
+            return new DataAttack(turret.getId());
+        }
+
+        if (building!=null)
+        {
+            building.attackHP(entityProperties.getAttack().getDamage());
+            return new DataAttack( building.getId());
+        }
+
+        if (wall!=null)
+        {
+            wall.attackHP(entityProperties.getAttack().getDamage());
+            return new DataAttack( wall.getId());
+        }
+
+        return null;
     };
 }

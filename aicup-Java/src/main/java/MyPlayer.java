@@ -17,11 +17,13 @@ public class MyPlayer extends Player {
     int countAllMelee =0;
     int countAllRange =0;
     int countAllBiuld =0;
+    int countAllHouse =0;
 
     int countDeadMelee =0;
     int countDeadRange =0;
     int countDeadBiuld =0;
     int countDeadHouse =0;
+    int countDeadOtherBuilders =0;
 
     int historyAll;
 
@@ -134,6 +136,11 @@ public class MyPlayer extends Player {
                     case HOUSE:
                         countDeadHouse++;
                         break;
+                    case BUILDER_BASE:
+                    case RANGED_BASE:
+                    case MELEE_BASE:
+                        countDeadOtherBuilders++;
+                        break;
                 }
                 mBuildingArrayList.remove(i);
                 return entityType;
@@ -220,8 +227,12 @@ public class MyPlayer extends Player {
       // mEntityArrayList.add(entity);
         switch (entity.getEntityType())
         {
+            case HOUSE: {
+                countAllHouse++;
+                mBuildingArrayList.add(entity);
+                break;
+            }
             case WALL:
-            case HOUSE:
             case BUILDER_BASE:
             case MELEE_BASE:
             case TURRET:
@@ -289,10 +300,13 @@ public class MyPlayer extends Player {
         ArrayList<MyEntity> buildArrayList = getEntityArrayList(EntityType.BUILDER_UNIT);
         ArrayList<MyEntity> meleeArrayList = getEntityArrayList(EntityType.MELEE_UNIT);
         ArrayList<MyEntity> rangeArrayList = getEntityArrayList(EntityType.RANGED_UNIT);
+        ArrayList<MyEntity> houseArrayList = getEntityArrayList(EntityType.HOUSE);
         return "ID: " + getId() + " B: " + buildArrayList.size() +"/"+countDeadBiuld +"/"+countAllBiuld +
                 " M: "+ meleeArrayList.size() + "/"+countDeadMelee +"/"+countAllMelee +
                 " R: "+ rangeArrayList.size() + "/"+countDeadRange +"/"+countAllRange +
-                "Popul: " + populationCurrent + "/" + populationMax;
+                " H: "+ houseArrayList.size() + "/"+countDeadHouse +"/"+countAllHouse +
+                " O: " + countDeadOtherBuilders +
+                " P: " + populationCurrent + "/" + populationMax;
     }
 
     public int getPopulationCurrent() {

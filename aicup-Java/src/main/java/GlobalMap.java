@@ -137,50 +137,66 @@ public class GlobalMap {
 
         for (int x=size-1; x>=0; x--)
         {
+            Vec2Int vec2Int1 = vec2Int.add(x, size);
+
+            if (!checkCoord(vec2Int1)) continue;
+
             if (checkEmpty) {
-                if (checkEmpty(vec2Int.add(x, size))) {
-                    arrayList.add(vec2Int.add(x, size));
+                if (checkEmpty(vec2Int1)) {
+                    arrayList.add(vec2Int1);
                 }
             }
             else {
-                arrayList.add(vec2Int.add(x, size));
+                arrayList.add(vec2Int1);
             }
         }
 
 
         for (int y=size-1; y>=0; y--)
         {
+            Vec2Int vec2Int1 = vec2Int.add(size, y);
+
+            if (!checkCoord(vec2Int1)) continue;
+
             if (checkEmpty) {
-                if (checkEmpty(vec2Int.add(size,y))) {
-                    arrayList.add(vec2Int.add(size,y));
+                if (checkEmpty(vec2Int1)) {
+                    arrayList.add(vec2Int1);
                 }
             }
             else {
-                arrayList.add(vec2Int.add(size,y));
+                arrayList.add(vec2Int1);
             }
         }
 
         for (int x=size-1; x>=0; x--)
         {
+            Vec2Int vec2Int1 = vec2Int.add(x, -1);
+
+            if (!checkCoord(vec2Int1)) continue;
+
             if (checkEmpty) {
-                if (checkEmpty(vec2Int.add(x,-1))) {
-                    arrayList.add(vec2Int.add(x,-1));
+                if (checkEmpty(vec2Int1)) {
+                    arrayList.add(vec2Int1);
                 }
             }
             else {
-                arrayList.add(vec2Int.add(x,-1));
+                arrayList.add(vec2Int1);
             }
         }
 
         for (int y=size-1; y>=0; y--)
         {
+            Vec2Int vec2Int1 = vec2Int.add(-1, y);
+
+            if (!checkCoord(vec2Int1)) continue;
+
             if (checkEmpty) {
-                if (checkEmpty(vec2Int.add(-1,y))) {
-                    arrayList.add(vec2Int.add(-1,y));
+                if (checkEmpty(vec2Int1)) {
+                    arrayList.add(vec2Int1);
                 }
             }
             else {
-                arrayList.add(vec2Int.add(-1,y));
+                arrayList.add(vec2Int1);
             }
         }
 
@@ -584,7 +600,7 @@ public class GlobalMap {
 
     //проверка для отхода крестьян от опасности
     public Vec2Int checkDangerBuildUnit(Vec2Int position, int playerID){
-        ArrayList<Entity> arrayList = getEntityMap(position,6,playerID,true);
+        ArrayList<MyEntity> arrayList = getEntityMap(position,6,playerID,true,true);
 
         if (arrayList.size()==0) return null;
 
@@ -602,7 +618,7 @@ public class GlobalMap {
 
             if (!checkCoord(newPosition)) continue;
 
-            ArrayList<Entity> arrayList1 = getEntityMap(newPosition,6,playerID,true);
+            ArrayList<MyEntity> arrayList1 = getEntityMap(newPosition,6,playerID,true,true);
             if (arrayList1.size()<sizeMax)
             {
                 sizeMax = arrayList1.size();
@@ -618,26 +634,34 @@ public class GlobalMap {
 
     public boolean checkDangerBuilding(Vec2Int position, EntityType entityType){
         EntityProperties entityProperties = FinalConstant.getEntityProperties(entityType);
-        
+
 
 
         return true;
     }
 
     // список юнитов в квардрате с центром position
-    public ArrayList<Entity> getEntityMap(Vec2Int position, int size, int playerID, boolean onelyEnemy){
-        ArrayList<Entity> arrayList = new ArrayList<>();
+    public ArrayList<MyEntity> getEntityMap(Vec2Int position, int size, int playerID, boolean onelyEnemy, boolean onlyUnit){
+        ArrayList<MyEntity> arrayList = new ArrayList<>();
 
-        for (int x=-size; x<size; x++ )
+        for (int x=-size; x<=size; x++ )
         {
             if (x+position.getX()<0 || x+position.getX()>= FinalConstant.getMapSize()) continue;
-            for (int y=-size; y<size; y++)
+
+            int sizeY = size-Math.abs(x);
+
+            for (int y=-sizeY; y<=sizeY; y++)
             {
                 if (y+position.getY()<0 || y+position.getY()>= FinalConstant.getMapSize()) continue;
 
-                Entity entity = map[x+position.getX()][y+position.getY()];
-                if (entity.getEntityType() == EntityType.RANGED_UNIT || entity.getEntityType() == EntityType.MELEE_UNIT)
+                MyEntity entity = map[x+position.getX()][y+position.getY()];
+                if (((entity.getEntityType() == EntityType.RANGED_UNIT || entity.getEntityType() == EntityType.MELEE_UNIT) || !onlyUnit) &&
+
+                        (entity.getEntityType() != EntityType.Empty && entity.getEntityType() != EntityType.RESOURCE)
+                )
                 {
+                    if (entity.getPlayerId()==null) continue;
+
                     if (entity.getPlayerId() != playerID || onelyEnemy==false)
                     {
                         arrayList.add(entity);
@@ -647,6 +671,25 @@ public class GlobalMap {
         }
 
         return arrayList;
+    }
+
+    //проверяем рабочих возле турели!
+    public MyEntity getBuilderUnitNearTurret(MyEntity entity){
+        if (entity.getEntityType()!=EntityType.TURRET) return null;
+
+        EntityProperties entityProperties = FinalConstant.getEntityProperties(entity);
+        ArrayList<Vec2Int> arrayList = getCoordAround(entity.getPosition(),entityProperties.getSize(),false);
+
+        for (int i=0; i<arrayList.size(); i++)
+        {
+            Vec2Int vec2Int1 = arrayList.get(i);
+
+            MyEntity myEntity = map[vec2Int1.getX()][vec2Int1.getY()];
+
+            if (myEntity.getPlayerId() == entity.getPlayerId() && myEntity.getEntityType()==EntityType.BUILDER_UNIT) return myEntity;
+        }
+
+        return null;
     }
 
     public Entity[][] getMap() {

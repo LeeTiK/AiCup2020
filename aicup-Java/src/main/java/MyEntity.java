@@ -8,6 +8,8 @@ public class MyEntity extends Entity {
 
     EUnitState mEUnitState;
 
+    int simulationHP;
+
 
 
 
@@ -29,6 +31,7 @@ public class MyEntity extends Entity {
 
     void  init(){
         mEUnitState = EUnitState.CREATE;
+        simulationHP = getHealth();
     }
 
     public void setUpdate(boolean update) {
@@ -43,6 +46,15 @@ public class MyEntity extends Entity {
         setPosition(entity.getPosition());
         setHealth(entity.getHealth());
         setActive(entity.isActive());
+        simulationHP = getHealth();
         setUpdate(true);
+    }
+
+    public int getSimulationHP() {
+        return simulationHP;
+    }
+
+    public void attackHP(int attack) {
+        this.simulationHP -= attack;
     }
 }
