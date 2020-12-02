@@ -8,11 +8,15 @@ public class MyPlayer extends Player {
 
    // ArrayList<MyEntity> mEntityArrayList;
 
-    ArrayList<MyUnit> mUnitArrayList;
+    ArrayList<MyEntity> mUnitArrayList;
     ArrayList<MyEntity> mBuildingArrayList;
 
     int populationCurrent =0;
     int populationMax =0;
+
+    int countAllMelee =0;
+    int countAllRange =0;
+    int countAllBiuld =0;
 
     int countDeadMelee =0;
     int countDeadRange =0;
@@ -67,7 +71,7 @@ public class MyPlayer extends Player {
         }
     }
 
-    public EStatus updateEntity(Entity entity) {
+    public EStatus updateEntity(MyEntity entity) {
         boolean check =true;
         // добавление и обновление информации о игроках
 
@@ -205,14 +209,14 @@ public class MyPlayer extends Player {
                 mBuildingArrayList.add(entity);
             }
             case BUILDER_UNIT, RANGED_UNIT, MELEE_UNIT -> {
-                mUnitArrayList.add(new MyUnit(entity));
+                mUnitArrayList.add(new MyEntity(entity));
             }
             case RESOURCE -> {
             }
         }
     }*/
 
-    private void addNewEntity(Entity entity){
+    private void addNewEntity(MyEntity entity){
       // mEntityArrayList.add(entity);
         switch (entity.getEntityType())
         {
@@ -222,13 +226,21 @@ public class MyPlayer extends Player {
             case MELEE_BASE:
             case TURRET:
             case RANGED_BASE:{
-                mBuildingArrayList.add(new MyEntity(entity));
+                mBuildingArrayList.add(entity);
                 break;
             }
             case BUILDER_UNIT:
+                countAllBiuld++;
+                mUnitArrayList.add(entity);
+                break;
             case MELEE_UNIT:
+                countAllMelee++;
+                mUnitArrayList.add(entity);
+                break;
             case RANGED_UNIT:{
-                mUnitArrayList.add(new MyUnit(entity));
+                countAllRange++;
+                mUnitArrayList.add(entity);
+                break;
             }
         }
     }
@@ -237,7 +249,7 @@ public class MyPlayer extends Player {
         return mBuildingArrayList;
     }
 
-    public ArrayList<MyUnit> getUnitArrayList() {
+    public ArrayList<MyEntity> getUnitArrayList() {
         return mUnitArrayList;
     }
 
@@ -274,7 +286,13 @@ public class MyPlayer extends Player {
     @Override
     public String toString(){
      //   return
-        return "";
+        ArrayList<MyEntity> buildArrayList = getEntityArrayList(EntityType.BUILDER_UNIT);
+        ArrayList<MyEntity> meleeArrayList = getEntityArrayList(EntityType.MELEE_UNIT);
+        ArrayList<MyEntity> rangeArrayList = getEntityArrayList(EntityType.RANGED_UNIT);
+        return "ID: " + getId() + " B: " + buildArrayList.size() +"/"+countDeadBiuld +"/"+countAllBiuld +
+                " M: "+ meleeArrayList.size() + "/"+countDeadMelee +"/"+countAllMelee +
+                " R: "+ rangeArrayList.size() + "/"+countDeadRange +"/"+countAllRange +
+                "Popul: " + populationCurrent + "/" + populationMax;
     }
 
     public int getPopulationCurrent() {

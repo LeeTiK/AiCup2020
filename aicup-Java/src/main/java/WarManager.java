@@ -25,9 +25,9 @@ public class WarManager {
 
         //if (globalStatistic.getCurrentTik()<30) return actionHashMap;
 
-        if (globalStatistic.getCurrentTik()<300)
+        if (FinalConstant.getCurrentTik()<300)
         {
-            actionHashMap = attack(playerView,globalManager,30);
+            actionHashMap = attack(playerView,globalManager,20);
         }
         else {
             actionHashMap = attack(playerView,globalManager,1000);
@@ -51,6 +51,8 @@ public class WarManager {
         ArrayList<MyPlayer> arrayList = globalStatistic.getPlayers();
         MyPlayer targetPlayerAttack;
 
+        ArrayList<MyEntity> turretArrayList = myPlayer.getEntityArrayList(EntityType.TURRET);
+
 
         for (int i=0; i<rangeArrayList.size(); i++) {
             Vec2Int vec2Int = globalManager.getGlobalMap().getNearestPlayer(rangeArrayList.get(i).getPosition(),playerView.getMyId());
@@ -63,13 +65,19 @@ public class WarManager {
                  if (vec2Int.distance(rangeArrayList.get(i).getPosition())<dis) {
                      m = new MoveAction(vec2Int, true, true);
                  }
+                 else {
+                     if (turretArrayList.size()>0)
+                     {
+                         m = new MoveAction(turretArrayList.get(0).getPosition(), true, false);
+                     }
+                 }
             }
 
             AttackAction a = new AttackAction(
                     //Arrays.stream(playerView.getEntities()).filter(e -> myId.equals(e.getEntityType()) & e.getEntityType() == EntityType.MELEE_BASE).findAny().get().getId(),
                     null,
                     new AutoAttack(
-                            globalStatistic.getEntityPropertiesRANGED_UNIT().getSightRange(),
+                            FinalConstant.getEntityPropertiesRANGED_UNIT().getSightRange(),
                             new EntityType[]{}
                     )
             );
@@ -97,7 +105,7 @@ public class WarManager {
                     //Arrays.stream(playerView.getEntities()).filter(e -> myId.equals(e.getEntityType()) & e.getEntityType() == EntityType.MELEE_BASE).findAny().get().getId(),
                     null,
                     new AutoAttack(
-                            globalStatistic.getEntityPropertiesRANGED_UNIT().getSightRange(),
+                            FinalConstant.getEntityPropertiesRANGED_UNIT().getSightRange(),
                             new EntityType[]{}
                     )
             );
@@ -144,7 +152,7 @@ public class WarManager {
                     //Arrays.stream(playerView.getEntities()).filter(e -> myId.equals(e.getEntityType()) & e.getEntityType() == EntityType.MELEE_BASE).findAny().get().getId(),
                     null,
                     new AutoAttack(
-                            globalStatistic.getEntityPropertiesRANGED_UNIT().getSightRange(),
+                            FinalConstant.getEntityPropertiesRANGED_UNIT().getSightRange(),
                             new EntityType[]{}
                     )
             );
@@ -176,7 +184,7 @@ public class WarManager {
                     //Arrays.stream(playerView.getEntities()).filter(e -> myId.equals(e.getEntityType()) & e.getEntityType() == EntityType.MELEE_BASE).findAny().get().getId(),
                     null,
                     new AutoAttack(
-                            globalStatistic.getEntityPropertiesRANGED_UNIT().getSightRange(),
+                            FinalConstant.getEntityPropertiesMELEE_UNIT().getSightRange(),
                             new EntityType[]{}
                     )
             );
@@ -187,4 +195,10 @@ public class WarManager {
         return actionHashMap;
     }
 
+
+    int getTargetAttack(MyEntity entity, GlobalManager globalManager)
+    {
+
+        return 0;
+    };
 }

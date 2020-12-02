@@ -4,9 +4,9 @@ import java.util.ArrayList;
 
 public class GlobalMap {
     // класс карты
-    Entity[][] map = null;
+    MyEntity[][] map = null;
 
-    Entity[] allEntity;
+    ArrayList<MyEntity> allEntity;
 
     AreaPlayer mAreaPlayer;
 
@@ -14,15 +14,16 @@ public class GlobalMap {
 
     }
 
-    public void update(PlayerView playerView, GlobalStatistic globalStatistic){
+    public void update(GlobalStatistic globalStatistic){
         if (map == null)
         {
-            map = new Entity[playerView.getMapSize()][playerView.getMapSize()];
+            map = new MyEntity[FinalConstant.getMapSize()][FinalConstant.getMapSize()];
+
         }
 
-        updateMap(playerView,globalStatistic);
+        updateMap(globalStatistic);
 
-        mAreaPlayer= getPlayerArea(globalStatistic.getMyID());
+        mAreaPlayer= getPlayerArea(FinalConstant.getMyID());
     }
 
     public AreaPlayer getPlayerArea(int playerID) {
@@ -82,16 +83,15 @@ public class GlobalMap {
 
     }
 
-    private void updateMap(PlayerView playerView, GlobalStatistic globalStatistic) {
+    private void updateMap(GlobalStatistic globalStatistic) {
         clearMap();
 
-        allEntity = playerView.getEntities();
+        allEntity = globalStatistic.getMyEntityArrayList();
 
-        for (int i=0; i<playerView.getEntities().length; i++)
+        for (int i=0; i<allEntity.size(); i++)
         {
-            Entity entity = playerView.getEntities()[i];
-            if (entity.getPosition().getX()>=0 && entity.getPosition().getX() <80 &&
-                    entity.getPosition().getY()>=0 && entity.getPosition().getY() <80
+            MyEntity entity = allEntity.get(i);
+            if (checkCoord(entity.getPosition())
             ) {
                 map[entity.getPosition().getX()][entity.getPosition().getY()] = entity;
 
@@ -103,7 +103,7 @@ public class GlobalMap {
                     case MELEE_BASE:
                     case RANGED_BASE:
                     case TURRET:
-                        EntityProperties entityProperties = globalStatistic.getEntityProperties(entity.getEntityType());
+                        EntityProperties entityProperties = FinalConstant.getEntityProperties(entity.getEntityType());
                         for (int j=0; j<entityProperties.getSize(); j++)
                         {
                             for (int k=0; k<entityProperties.getSize(); k++)
@@ -124,7 +124,7 @@ public class GlobalMap {
         {
             for (int j=0; j<map[i].length; j++)
             {
-                map[i][j] = new Entity(-1,-1,EntityType.Empty,null,0,false);
+                map[i][j] = new MyEntity(-1,-1,EntityType.Empty,null,0,false);
             }
         }
     }
@@ -192,13 +192,13 @@ public class GlobalMap {
     {
         double minDis = 0xFFFF;
         Vec2Int current = new Vec2Int(0,0);
-        for (int i=0; i<allEntity.length; i++)
+        for (int i=0; i<allEntity.size(); i++)
         {
-            if (allEntity[i].getEntityType()!=entityType) continue;
-            double dis = position.distance(allEntity[i].getPosition());
+            if (allEntity.get(i).getEntityType()!=entityType) continue;
+            double dis = position.distance(allEntity.get(i).getPosition());
             if (dis<minDis)
             {
-                current = allEntity[i].getPosition();
+                current = allEntity.get(i).getPosition();
                 minDis = dis;
             }
         }
@@ -221,9 +221,9 @@ public class GlobalMap {
         return current;
     }
 
-    public Vec2Int getPositionBuildUnitPriorite(GlobalStatistic globalStatistic, Entity building)
+    public Vec2Int getPositionBuildUnitPriorite(Entity building)
     {
-        EntityProperties entityProperties = globalStatistic.getEntityProperties(building);
+        EntityProperties entityProperties = FinalConstant.getEntityProperties(building);
 
         Vec2Int vec2Int = building.getPosition().copy();
         Vec2Int vec2IntCurrent = null;
@@ -296,9 +296,9 @@ public class GlobalMap {
 
     }
 
-    public Vec2Int getPositionBuildUnit(GlobalStatistic globalStatistic, Entity building)
+    public Vec2Int getPositionBuildUnit(Entity building)
     {
-        EntityProperties entityProperties = globalStatistic.getEntityProperties(building);
+        EntityProperties entityProperties = FinalConstant.getEntityProperties(building);
 
         Vec2Int vec2Int = building.getPosition().copy();
 
@@ -582,13 +582,80 @@ public class GlobalMap {
         FinalGraphic.sendSquare(debugInterface,new Vec2Int(0,0),getAreaPlayer().width, FinalGraphic.COLOR_WHITE);
     }
 
+    //проверка для отхода крестьян от опасности
+    public Vec2Int checkDangerBuildUnit(Vec2Int position, int playerID){
+        ArrayList<Entity> arrayList = getEntityMap(position,6,playerID,true);
+
+        if (arrayList.size()==0) return null;
+
+        int sizeMax = arrayList.size();
+
+        byte[][] bytes= new byte[][]{
+                {1,0},{0,1},{-1,0},{0,-1},
+        };
+
+        Vec2Int current = null;
+
+        for (int i=0; i<4; i++)
+        {
+            Vec2Int newPosition = position.add(bytes[i][0],bytes[i][1]);
+
+            if (!checkCoord(newPosition)) continue;
+
+            ArrayList<Entity> arrayList1 = getEntityMap(newPosition,6,playerID,true);
+            if (arrayList1.size()<sizeMax)
+            {
+                sizeMax = arrayList1.size();
+                current = newPosition;
+            }
+
+        }
+
+        if (sizeMax!=arrayList.size()) return current;
+
+        return null;
+    }
+
+    public boolean checkDangerBuilding(Vec2Int position, EntityType entityType){
+        EntityProperties entityProperties = FinalConstant.getEntityProperties(entityType);
+        
+
+
+        return true;
+    }
+
+    // список юнитов в квардрате с центром position
+    public ArrayList<Entity> getEntityMap(Vec2Int position, int size, int playerID, boolean onelyEnemy){
+        ArrayList<Entity> arrayList = new ArrayList<>();
+
+        for (int x=-size; x<size; x++ )
+        {
+            if (x+position.getX()<0 || x+position.getX()>= FinalConstant.getMapSize()) continue;
+            for (int y=-size; y<size; y++)
+            {
+                if (y+position.getY()<0 || y+position.getY()>= FinalConstant.getMapSize()) continue;
+
+                Entity entity = map[x+position.getX()][y+position.getY()];
+                if (entity.getEntityType() == EntityType.RANGED_UNIT || entity.getEntityType() == EntityType.MELEE_UNIT)
+                {
+                    if (entity.getPlayerId() != playerID || onelyEnemy==false)
+                    {
+                        arrayList.add(entity);
+                    }
+                }
+            }
+        }
+
+        return arrayList;
+    }
+
     public Entity[][] getMap() {
         return map;
     }
 
     public Entity getMap(Vec2Int vec2Int)
     {
-        if (vec2Int.getX()<0 || vec2Int.getX()>=80 || vec2Int.getY()<0 || vec2Int.getY()>=80) return null;
+        if (!checkCoord(vec2Int)) return null;
 
         return map[vec2Int.getX()][vec2Int.getY()];
     }
@@ -596,4 +663,27 @@ public class GlobalMap {
     public AreaPlayer getAreaPlayer() {
         return mAreaPlayer;
     }
+
+
+    public boolean checkCoord(int x, int y, int sizeObject)
+    {
+        if (x<0+sizeObject || x>= FinalConstant.getMapSize()-sizeObject || y<0+sizeObject || y>= FinalConstant.getMapSize()+sizeObject) return false;
+        return true;
+    }
+
+    public boolean checkCoord(int x, int y)
+    {
+       return checkCoord(x,y,0);
+    }
+
+    public boolean checkCoord(Vec2Int vec2Int, int size)
+    {
+        return checkCoord(vec2Int.getX(),vec2Int.getY(),size);
+    }
+
+    public boolean checkCoord(Vec2Int vec2Int)
+    {
+        return checkCoord(vec2Int.getX(),vec2Int.getY(),0);
+    }
+
 }

@@ -1,13 +1,11 @@
-import model.Entity;
-
 import java.util.ArrayList;
 
-public class MyGroupUnit extends MyUnit {
+public class MyGroupUnit extends MyEntity {
 
-    ArrayList<MyUnit> mMyUnitArrayList;
+    ArrayList<MyEntity> mMyEntityArrayList;
 
     public MyGroupUnit() {
         super();
-        mMyUnitArrayList = new ArrayList<>();
+        mMyEntityArrayList = new ArrayList<>();
     }
 }

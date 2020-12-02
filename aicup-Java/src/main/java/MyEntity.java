@@ -6,15 +6,29 @@ public class MyEntity extends Entity {
 
     boolean update = true;
 
+    EUnitState mEUnitState;
+
+
+
+
     public MyEntity(Entity entity) {
         super(entity.getId(), entity.getPlayerId(), entity.getEntityType(), entity.getPosition(), entity.getHealth(), entity.isActive());
+
+        init();
     }
 
     public MyEntity(int id, Integer playerId, EntityType entityType, Vec2Int position, int health, boolean active) {
         super(id, playerId, entityType, position, health, active);
+
+        init();
     }
 
     public MyEntity() {
+        init();
+    }
+
+    void  init(){
+        mEUnitState = EUnitState.CREATE;
     }
 
     public void setUpdate(boolean update) {
