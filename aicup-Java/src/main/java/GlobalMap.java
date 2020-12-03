@@ -10,6 +10,8 @@ public class GlobalMap {
 
     AreaPlayer mAreaPlayer;
 
+    long resourceMap;
+
     public GlobalMap(){
 
     }
@@ -91,6 +93,12 @@ public class GlobalMap {
         for (int i=0; i<allEntity.size(); i++)
         {
             MyEntity entity = allEntity.get(i);
+
+            if (entity.getEntityType()==EntityType.RESOURCE)
+            {
+                resourceMap += entity.getHealth();
+            }
+
             if (checkCoord(entity.getPosition())
             ) {
                 map[entity.getPosition().getX()][entity.getPosition().getY()] = entity;
@@ -120,6 +128,9 @@ public class GlobalMap {
     }
 
     private void clearMap(){
+        // очищаем ресурсы
+        resourceMap= 0;
+
         for (int i=0; i<map.length; i++)
         {
             for (int j=0; j<map[i].length; j++)
@@ -729,4 +740,7 @@ public class GlobalMap {
         return checkCoord(vec2Int.getX(),vec2Int.getY(),0);
     }
 
+    public long getResourceMap() {
+        return resourceMap;
+    }
 }

@@ -19,7 +19,7 @@ public class GlobalStatistic {
     }
 
 
-    public void updateInfo(PlayerView playerView, DebugInterface debugInterface){
+    public void updateInfo(PlayerView playerView, GlobalManager globalManager){
         if (playerView.getCurrentTick()==0)
         {
             initConstant(playerView);
@@ -27,7 +27,7 @@ public class GlobalStatistic {
 
         FinalConstant.currentTik = playerView.getCurrentTick();
 
-        updatePlayerInfo(playerView);
+        updatePlayerInfo(playerView, globalManager);
     }
 
     void initConstant(PlayerView playerView){
@@ -47,14 +47,14 @@ public class GlobalStatistic {
         FinalConstant.mEntityPropertiesTURRET = playerView.getEntityProperties().get(EntityType.TURRET);
     }
 
-    private void updatePlayerInfo(PlayerView playerView){
+    private void updatePlayerInfo(PlayerView playerView, GlobalManager globalManager){
 
-        Final.DEBUG(TAG,"CurrentTik: " + FinalConstant.getCurrentTik());
+        Final.DEBUG(GlobalStatistic.TAG,"CurrentTik: " + FinalConstant.getCurrentTik() + " resource: " + globalManager.getGlobalMap().getResourceMap());
 
         if (Final.debugRelease)
         {
             if (FinalConstant.getCurrentTik()%50==0) {
-                Final.DEBUGRelease(TAG,"CurrentTik: " + FinalConstant.getCurrentTik());
+                Final.DEBUGRelease(TAG,"CurrentTik: " + FinalConstant.getCurrentTik() + " resource: " + globalManager.getGlobalMap().getResourceMap());
                 logInfo();
             }
         }

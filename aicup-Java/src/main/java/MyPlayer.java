@@ -49,8 +49,6 @@ public class MyPlayer extends Player {
      //   mEntityArrayList = new ArrayList<>();
         mUnitArrayList = new ArrayList<>();
         mBuildingArrayList = new ArrayList<>();
-
-
     }
 
 
@@ -211,10 +209,10 @@ public class MyPlayer extends Player {
         }
 
 
-        mRangerArrayList = getEntityArrayList(EntityType.RANGED_UNIT);
-        mMeleeArrayList =  getEntityArrayList(EntityType.MELEE_UNIT);
-        mBuilderArrayList =  getEntityArrayList(EntityType.BUILDER_UNIT);
-        mHouseArrayList =  getEntityArrayList(EntityType.HOUSE);
+        mRangerArrayList = getEntityArrayListSlow(EntityType.RANGED_UNIT);
+        mMeleeArrayList =  getEntityArrayListSlow(EntityType.MELEE_UNIT);
+        mBuilderArrayList =  getEntityArrayListSlow(EntityType.BUILDER_UNIT);
+        mHouseArrayList =  getEntityArrayListSlow(EntityType.HOUSE);
     }
 
 /*
@@ -277,21 +275,8 @@ public class MyPlayer extends Player {
     }
 
 
-    public ArrayList<MyEntity> getEntityArrayList(EntityType entityType) {
-
-        switch (entityType)
-        {
-            case HOUSE:
-                return mHouseArrayList;
-            case BUILDER_UNIT:
-                return mBuilderArrayList;
-            case MELEE_UNIT:
-                return mMeleeArrayList;
-            case RANGED_UNIT:{
-                return mRangerArrayList;
-            }
-        }
-
+    public ArrayList<MyEntity> getEntityArrayListSlow(EntityType entityType)
+    {
         ArrayList<MyEntity> arrayList = new ArrayList<>();
         switch (entityType)
         {
@@ -318,6 +303,24 @@ public class MyPlayer extends Player {
             }
         }
         return arrayList;
+    }
+
+    public ArrayList<MyEntity> getEntityArrayList(EntityType entityType) {
+
+        switch (entityType)
+        {
+            case HOUSE:
+                return mHouseArrayList;
+            case BUILDER_UNIT:
+                return mBuilderArrayList;
+            case MELEE_UNIT:
+                return mMeleeArrayList;
+            case RANGED_UNIT:{
+                return mRangerArrayList;
+            }
+        }
+
+       return getEntityArrayListSlow(entityType);
     }
 
     @Override

@@ -102,7 +102,7 @@ public class WarManager {
                 {
                     a = null;
 
-                            m = new MoveAction(dataAttack.getMyEntity().getPosition(), true, false);
+                            m = new MoveAction(dataAttack.getMyEntity().getPosition(), true, true);
                 }
                 else {
                     a = new AttackAction(
@@ -114,6 +114,15 @@ public class WarManager {
                     );
                     m = null;
                 }
+            }
+            else {
+                a = new AttackAction(
+                        null,
+                        new AutoAttack(
+                                FinalConstant.getEntityPropertiesRANGED_UNIT().getSightRange(),
+                                new EntityType[]{}
+                        )
+                );
             }
 
             actionHashMap.put(meleeArrayList.get(i).getId(), new EntityAction(m, null, a, null));
