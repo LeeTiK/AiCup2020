@@ -607,7 +607,7 @@ public class GlobalMap {
         int sizeMax = arrayList.size();
 
         byte[][] bytes= new byte[][]{
-                {1,0},{0,1},{-1,0},{0,-1},
+                {-1,0},{0,-1},{0,1},{1,0},
         };
 
         Vec2Int current = null;

@@ -27,6 +27,12 @@ public class MyPlayer extends Player {
 
     int historyAll;
 
+    /// оптимизация массивов
+    ArrayList<MyEntity> mRangerArrayList;
+    ArrayList<MyEntity> mMeleeArrayList;
+    ArrayList<MyEntity> mBuilderArrayList;
+    ArrayList<MyEntity> mHouseArrayList;
+
     /*WALL(0),
     HOUSE(1),
     BUILDER_BASE(2),
@@ -203,6 +209,12 @@ public class MyPlayer extends Player {
                     break;
             }
         }
+
+
+        mRangerArrayList = getEntityArrayList(EntityType.RANGED_UNIT);
+        mMeleeArrayList =  getEntityArrayList(EntityType.MELEE_UNIT);
+        mBuilderArrayList =  getEntityArrayList(EntityType.BUILDER_UNIT);
+        mHouseArrayList =  getEntityArrayList(EntityType.HOUSE);
     }
 
 /*
@@ -266,6 +278,20 @@ public class MyPlayer extends Player {
 
 
     public ArrayList<MyEntity> getEntityArrayList(EntityType entityType) {
+
+        switch (entityType)
+        {
+            case HOUSE:
+                return mHouseArrayList;
+            case BUILDER_UNIT:
+                return mBuilderArrayList;
+            case MELEE_UNIT:
+                return mMeleeArrayList;
+            case RANGED_UNIT:{
+                return mRangerArrayList;
+            }
+        }
+
         ArrayList<MyEntity> arrayList = new ArrayList<>();
         switch (entityType)
         {
@@ -331,5 +357,35 @@ public class MyPlayer extends Player {
 
     public int getCountDeadHouse() {
         return countDeadHouse;
+    }
+
+    public int getCost(EntityType entityType)
+    {
+        switch (entityType)
+        {
+            case WALL:
+                return FinalConstant.getEntityProperties(entityType).getCost();
+            case HOUSE:
+                return FinalConstant.getEntityProperties(entityType).getCost();
+            case BUILDER_BASE:
+                return FinalConstant.getEntityProperties(entityType).getCost();
+            case BUILDER_UNIT:
+                return FinalConstant.getEntityProperties(entityType).getCost() + getEntityArrayList(EntityType.BUILDER_UNIT).size();
+            case MELEE_BASE:
+                return FinalConstant.getEntityProperties(entityType).getCost();
+            case MELEE_UNIT:
+                return FinalConstant.getEntityProperties(entityType).getCost()+ getEntityArrayList(EntityType.MELEE_UNIT).size();
+            case RANGED_BASE:
+                return FinalConstant.getEntityProperties(entityType).getCost();
+            case RANGED_UNIT:
+                return FinalConstant.getEntityProperties(entityType).getCost()+ getEntityArrayList(EntityType.RANGED_UNIT).size();
+            case RESOURCE:
+                return FinalConstant.getEntityProperties(entityType).getCost();
+            case TURRET:
+                return FinalConstant.getEntityProperties(entityType).getCost();
+            case Empty:
+                return FinalConstant.getEntityProperties(entityType).getCost();
+        }
+        return 0;
     }
 }

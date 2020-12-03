@@ -57,4 +57,8 @@ public class MyEntity extends Entity {
     public void attackHP(int attack) {
         this.simulationHP -= attack;
     }
+
+    public void setEUnitState(EUnitState EUnitState) {
+        mEUnitState = EUnitState;
+    }
 }

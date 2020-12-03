@@ -11,6 +11,8 @@ public class DataAttack {
     public DataAttack(int idEntity)
     {
         this.idEntity = idEntity;
+        mMyEntity = null;
+        position = null;
     }
 
     public int getIdEntity() {

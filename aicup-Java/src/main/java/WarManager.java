@@ -25,9 +25,9 @@ public class WarManager {
 
         //if (globalStatistic.getCurrentTik()<30) return actionHashMap;
 
-        if (FinalConstant.getCurrentTik()<210)
+        if (FinalConstant.getCurrentTik()<220)
         {
-            actionHashMap = attack(playerView,globalManager,20);
+            actionHashMap = attack(playerView,globalManager,22);
         }
         else {
             actionHashMap = attack(playerView,globalManager,1000);

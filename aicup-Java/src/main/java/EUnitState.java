@@ -3,6 +3,8 @@ public enum  EUnitState {
     ATTACK(0x01),
     DEFENSE(0x02),
     RESURCE(0x03),
+    REPAIR(0x04),
+    BUILD(0x05),
 
     ERROR(0xFF);
     ;

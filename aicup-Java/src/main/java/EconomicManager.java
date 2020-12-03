@@ -25,46 +25,15 @@ public class EconomicManager {
          updateInfo(globalStatistic);
          MyPlayer myPlayer = globalManager.getGlobalStatistic().getMyPlayer();
 
+         //управляем строителями
          actionHashMap.putAll(builder(myPlayer,playerView,globalManager));
 
-        BuildAction b = null;
+        //всё что связанно с починкой
+        actionHashMap.putAll(repairBuilder(myPlayer,playerView,globalManager));
 
-        ArrayList<MyEntity> rangeBaseArrayList = myPlayer.getEntityArrayList(EntityType.RANGED_BASE);
-        Final.DEBUG(TAG, "arrayList RANGED_BASE BASE: " + rangeBaseArrayList.size() + " resource: " + myPlayer.getResource());
-        if (myPlayer.getResource()>30) {
-            for (int i = 0; i < rangeBaseArrayList.size(); i++) {
-                b = new BuildAction(
-                        EntityType.RANGED_UNIT, globalManager.getGlobalMap().getPositionBuildUnit(rangeBaseArrayList.get(i))
-                );
+         /// создаём юниты
+         actionHashMap.putAll(createUnit(myPlayer,playerView,globalManager));
 
-                actionHashMap.put(rangeBaseArrayList.get(i).getId(), new EntityAction(null, b, null, null));
-            }
-        }
-        else {
-            for (int i = 0; i < rangeBaseArrayList.size(); i++) {
-                actionHashMap.put(rangeBaseArrayList.get(i).getId(), new EntityAction(null, null, null, null));
-            }
-        }
-
-        ArrayList<MyEntity> meleeBaseArrayList = myPlayer.getEntityArrayList(EntityType.MELEE_BASE);
-        ArrayList<MyEntity> meleeUnitArrayList = myPlayer.getEntityArrayList(EntityType.MELEE_UNIT);
-        ArrayList<MyEntity> rangedUnitArrayList = myPlayer.getEntityArrayList(EntityType.RANGED_UNIT);
-
-        if (myPlayer.getResource()>20 && 4*meleeUnitArrayList.size()<rangedUnitArrayList.size()) {
-            for (int i = 0; i < meleeBaseArrayList.size(); i++) {
-                b = new BuildAction(
-                        EntityType.MELEE_UNIT, globalManager.getGlobalMap().getPositionBuildUnit(meleeBaseArrayList.get(i))
-                );
-               // b = null;
-
-                actionHashMap.put(meleeBaseArrayList.get(i).getId(), new EntityAction(null, b, null, null));
-            }
-        }
-        else {
-            for (int i = 0; i < meleeBaseArrayList.size(); i++) {
-                actionHashMap.put(meleeBaseArrayList.get(i).getId(), new EntityAction(null, null, null, null));
-            }
-        }
          Final.DEBUG(TAG, "hashMap: " + actionHashMap.size());
 
          return actionHashMap;
@@ -85,6 +54,8 @@ public class EconomicManager {
 
         for (int i=0; i<builderUnitArrayList.size(); i++)
         {
+            MyEntity entity = builderUnitArrayList.get(i);
+
             MoveAction m = null;
             BuildAction b = null;
             AttackAction a = null;
@@ -102,51 +73,61 @@ public class EconomicManager {
             );
 
 
-            Vec2Int vec2Int = globalManager.getGlobalMap().checkDangerBuildUnit(builderUnitArrayList.get(i).getPosition(),FinalConstant.getMyID());
+            Vec2Int vec2Int = globalManager.getGlobalMap().checkDangerBuildUnit(entity.getPosition(),FinalConstant.getMyID());
 
             if (vec2Int!=null)
             {
                 a = null;
                 m = new MoveAction(vec2Int, true, false);
             }
+            else {
 
-           /* if (myPlayer.getResource()>200 && myPlayer.getPopulationCurrent()*1.2>=myPlayer.getPopulationMax() )
-            {
-                if (!checkCreate) {
-                   // Vec2Int vec2Int2 = new Vec2Int(0, 0);
-                   // Vec2Int vec2Int = new Vec2Int(2, 2);
-                  //  m = new MoveAction(vec2Int, true, false);
-                    b = new BuildAction(
-                            EntityType.HOUSE, new Vec2Int(
-                            builderUnitArrayList.get(i).getPosition().getX()+1,
-                            builderUnitArrayList.get(i).getPosition().getY()
-                    )
-                    );
-                    checkCreate = true;
-                    a = null;
+                ArrayList<MyEntity> arrayList = globalManager.getGlobalMap().getEntityMap(entity.getPosition(), 7, FinalConstant.getMyID(), true, true);
+
+                if (arrayList.size() != 0) {
+                    boolean range = false;
+                    for (int j = 0; j < arrayList.size(); j++) {
+                        if (arrayList.get(j).getEntityType() == EntityType.RANGED_UNIT) {
+                            range = true;
+                        }
+                    }
+
+                    if (range == false) {
+                        // милишники
+                        arrayList = globalManager.getGlobalMap().getEntityMap(entity.getPosition(), 2, FinalConstant.getMyID(), true, true);
+                        if (arrayList.size() != 0) {
+                            m = null;
+                            a = null;
+                        }
+
+                    } else {
+                        m = null;
+                        a = null;
+                    }
+
                 }
-            }*/
+            }
 
-            if (myPlayer.getResource()>FinalConstant.getEntityProperties(EntityType.RANGED_BASE).getCost()+300 && myPlayer.getEntityArrayList(EntityType.RANGED_BASE).size()<2 )
+            if (myPlayer.getResource()>FinalConstant.getEntityProperties(EntityType.RANGED_BASE).getCost()*3.0 && myPlayer.getEntityArrayList(EntityType.RANGED_BASE).size()<2 )
             {
-                if (builderUnitArrayList.get(i).getPosition().getX()<70 && builderUnitArrayList.get(i).getPosition().getY()<75) {
+                if (entity.getPosition().getX()<70 && entity.getPosition().getY()<75) {
                     b = new BuildAction(
                             EntityType.RANGED_BASE, new Vec2Int(
-                            builderUnitArrayList.get(i).getPosition().getX() + 1,
-                            builderUnitArrayList.get(i).getPosition().getY()
+                            entity.getPosition().getX() + 1,
+                            entity.getPosition().getY()
                     )
                     );
                 }
             }
 
-            if (myPlayer.getResource()>FinalConstant.getEntityProperties(EntityType.MELEE_BASE).getCost()+400 && myPlayer.getEntityArrayList(EntityType.BUILDER_BASE).size()<1 &&  myPlayer.getEntityArrayList(EntityType.RANGED_BASE).size()>0)
+            if (myPlayer.getResource()>FinalConstant.getEntityProperties(EntityType.MELEE_BASE).getCost()*3 && myPlayer.getEntityArrayList(EntityType.BUILDER_BASE).size()<1 &&  myPlayer.getEntityArrayList(EntityType.RANGED_BASE).size()>0)
             {
                 if (b==null) {
                     if (builderUnitArrayList.get(i).getPosition().getX()<70 && builderUnitArrayList.get(i).getPosition().getY()<75) {
                         b = new BuildAction(
                                 EntityType.RANGED_BASE, new Vec2Int(
-                                builderUnitArrayList.get(i).getPosition().getX() + 1,
-                                builderUnitArrayList.get(i).getPosition().getY()
+                                entity.getPosition().getX() + 1,
+                                entity.getPosition().getY()
                         )
                         );
                     }
@@ -166,7 +147,7 @@ public class EconomicManager {
 
         boolean checkCreate = false;
 
-        if (myPlayer.getResource()>FinalConstant.getEntityProperties(EntityType.HOUSE).getCost()-10 && (myPlayer.getPopulationCurrent()*1.2>=myPlayer.getPopulationMax() || myPlayer.getPopulationMax()<70)
+        if (myPlayer.getResource()>myPlayer.getCost(EntityType.HOUSE)-10 && (myPlayer.getPopulationCurrent()*1.2>=myPlayer.getPopulationMax() || myPlayer.getPopulationMax()<70)
         && (myPlayer.getPopulationMax()<150 || myPlayer.getEntityArrayList(EntityType.RANGED_BASE).size()>1))
 
         {
@@ -177,26 +158,24 @@ public class EconomicManager {
             {
                // positionBuildHouse = new Vec2Int();
                 for (int i = 0; i < builderUnitArrayList.size(); i++) {
-                    if (builderUnitArrayList.get(i).getPosition().getX()-1<0 || builderUnitArrayList.get(i).getPosition().getX()-1>80-3) continue;
-                    if (builderUnitArrayList.get(i).getPosition().getY()<0 || builderUnitArrayList.get(i).getPosition().getY()>80-3) continue;
+                    MyEntity entity = builderUnitArrayList.get(i);
+
+                    if (entity.getPosition().getX()-1<0 ||entity.getPosition().getX()-1>80-3) continue;
+                    if (entity.getPosition().getY()<0 || entity.getPosition().getY()>80-3) continue;
                     BuildAction b = new BuildAction(
                             EntityType.HOUSE, new Vec2Int(
-                            builderUnitArrayList.get(i).getPosition().getX() - 1,
-                            builderUnitArrayList.get(i).getPosition().getY()
+                            entity.getPosition().getX() - 1,
+                            entity.getPosition().getY()
                     )
                     );
 
                     MoveAction m = new MoveAction(new Vec2Int(playerView.getMapSize() - 1, playerView.getMapSize() - 1), true, false);
-                    AttackAction a = new AttackAction(
-                            //Arrays.stream(playerView.getEntities()).filter(e -> myId.equals(e.getEntityType()) & e.getEntityType() == EntityType.MELEE_BASE).findAny().get().getId(),
-                            null,
-                            new AutoAttack(
-                                    FinalConstant.getEntityPropertiesBUILDER_UNIT().getSightRange(),
-                                    new EntityType[]{EntityType.RESOURCE}
-                            )
-                    );
 
-                    actionHashMap.put(builderUnitArrayList.get(i).getId(), new EntityAction(m, b, a, null));
+                    AttackAction a = null;
+
+                    entity.setEUnitState(EUnitState.BUILD);
+
+                    actionHashMap.put(entity.getId(), new EntityAction(m, b, a, null));
                 }
 
             }
@@ -208,6 +187,7 @@ public class EconomicManager {
 
 
                 for (int i = 0; i < builderUnitArrayList.size(); i++) {
+
                     double dis = builderUnitArrayList.get(i).getPosition().distance(positionBuildHouse);
                     if (dis < minDis) {
                         current = builderUnitArrayList.get(i);
@@ -234,33 +214,42 @@ public class EconomicManager {
             }
         }
 
-        //чиним здания
-        // чиним здания
+
+        return actionHashMap;
+    }
+
+    // чиним здания
+    private HashMap repairBuilder(MyPlayer myPlayer,PlayerView playerView, GlobalManager globalManager ) {
+        HashMap<Integer, EntityAction> actionHashMap = new HashMap<>();
+        ArrayList<MyEntity> buildingArrayList = myPlayer.getBuildingArrayList();
+        ArrayList<MyEntity> builderUnitArrayList = myPlayer.getEntityArrayList(EntityType.BUILDER_UNIT);
+
         for (int i=0; i<buildingArrayList.size(); i++)
         {
-            MyEntity myEntityUnit =null;
             MyEntity myEntityBuilding = buildingArrayList.get(i);
             EntityProperties entityProperties = FinalConstant.getEntityProperties(myEntityBuilding.getEntityType());
 
             if (myEntityBuilding.getHealth()>=entityProperties.getMaxHealth()) continue;
 
+            MyEntity builderUnit =null;
             MyEntity currentUnit = null;
+
+
             double minDis = 0xFFFFF;
             for (int j=0; j<builderUnitArrayList.size(); j++)
             {
-                myEntityUnit = builderUnitArrayList.get(j);
-                double dis = myEntityUnit.getPosition().distance(myEntityBuilding.getPosition());
+                builderUnit = builderUnitArrayList.get(j);
+
+                Vec2Int vec2Int1 = globalManager.getGlobalMap().getMinPositionBuilding(builderUnit.getPosition(), myEntityBuilding.getPosition(), FinalConstant.getEntityProperties(myEntityBuilding.getEntityType()));
+
+                double dis = builderUnit.getPosition().distance(myEntityBuilding.getPosition());
                 if (dis <minDis)
                 {
-                    currentUnit = myEntityUnit;
+                    currentUnit = builderUnit;
                     minDis = dis;
                 }
-            }
 
-            if (currentUnit!=null)
-            {
-
-                if (myEntityBuilding.getHealth()<entityProperties.getMaxHealth())
+                if (dis<8)
                 {
                     MoveAction m = null;
                     BuildAction b = null;
@@ -271,17 +260,56 @@ public class EconomicManager {
                             myEntityBuilding.getId()
                     );
                     //a = null;
-                    m = new MoveAction(myEntityBuilding.getPosition(), true, false);
+                    m = new MoveAction(vec2Int1, true, false);
+
+                    currentUnit.setEUnitState(EUnitState.REPAIR);
+
+                    actionHashMap.put(builderUnit.getId(), new EntityAction(m, b, a, r));
+                }
+            }
+
+            if (currentUnit!=null)
+            {
+
+                if (myEntityBuilding.getHealth()<entityProperties.getMaxHealth())
+                {
+                    Vec2Int vec2Int1 = globalManager.getGlobalMap().getMinPositionBuilding(builderUnit.getPosition(), myEntityBuilding.getPosition(), FinalConstant.getEntityProperties(myEntityBuilding.getEntityType()));
+
+
+                    MoveAction m = null;
+                    BuildAction b = null;
+                    AttackAction a = null;
+                    RepairAction r = null;
+
+                    r = new RepairAction(
+                            myEntityBuilding.getId()
+                    );
+                    //a = null;
+                    m = new MoveAction(vec2Int1, true, false);
+
+                    currentUnit.setEUnitState(EUnitState.REPAIR);
 
                     actionHashMap.put(currentUnit.getId(), new EntityAction(m, b, a, r));
                 }
             }
         }
+        return actionHashMap;
+    }
+
+    private HashMap createUnit(MyPlayer myPlayer,PlayerView playerView, GlobalManager globalManager ){
+        HashMap<Integer, EntityAction> actionHashMap = new HashMap<>();
+        BuildAction b = null;
+
+        ArrayList<MyEntity> meleeBaseArrayList = myPlayer.getEntityArrayList(EntityType.MELEE_BASE);
+        ArrayList<MyEntity> meleeUnitArrayList = myPlayer.getEntityArrayList(EntityType.MELEE_UNIT);
+        ArrayList<MyEntity> rangedUnitArrayList = myPlayer.getEntityArrayList(EntityType.RANGED_UNIT);
+        ArrayList<MyEntity> rangeBaseArrayList = myPlayer.getEntityArrayList(EntityType.RANGED_BASE);
+        ArrayList<MyEntity> builderUnitArrayList = myPlayer.getEntityArrayList(EntityType.BUILDER_UNIT);
 
         // создаем новые юниты
         if (builderUnitArrayList.size()<myPlayer.getPopulationMax()*0.75 && builderUnitArrayList.size()<70 ||builderUnitArrayList.size()<22  )
         {
-            BuildAction b = null;
+            b = null;
 
             ArrayList<MyEntity> arrayList1 = myPlayer.getEntityArrayList(EntityType.BUILDER_BASE);
 
@@ -308,8 +336,43 @@ public class EconomicManager {
             }
         }
 
+        Final.DEBUG(TAG, "arrayList RANGED_BASE BASE: " + rangeBaseArrayList.size() + " resource: " + myPlayer.getResource());
+        if (myPlayer.getResource()>30) {
+            for (int i = 0; i < rangeBaseArrayList.size(); i++) {
+                b = new BuildAction(
+                        EntityType.RANGED_UNIT, globalManager.getGlobalMap().getPositionBuildUnit(rangeBaseArrayList.get(i))
+                );
+
+                actionHashMap.put(rangeBaseArrayList.get(i).getId(), new EntityAction(null, b, null, null));
+            }
+        }
+        else {
+            for (int i = 0; i < rangeBaseArrayList.size(); i++) {
+                actionHashMap.put(rangeBaseArrayList.get(i).getId(), new EntityAction(null, null, null, null));
+            }
+        }
+
+
+
+        if (myPlayer.getResource()>20 && 4*meleeUnitArrayList.size()<rangedUnitArrayList.size()) {
+            for (int i = 0; i < meleeBaseArrayList.size(); i++) {
+                b = new BuildAction(
+                        EntityType.MELEE_UNIT, globalManager.getGlobalMap().getPositionBuildUnit(meleeBaseArrayList.get(i))
+                );
+                // b = null;
+
+                actionHashMap.put(meleeBaseArrayList.get(i).getId(), new EntityAction(null, b, null, null));
+            }
+        }
+        else {
+            for (int i = 0; i < meleeBaseArrayList.size(); i++) {
+                actionHashMap.put(meleeBaseArrayList.get(i).getId(), new EntityAction(null, null, null, null));
+            }
+        }
+
         return actionHashMap;
     }
+
 
     private RepairAction getNearbyBuildNeedHeal(Vec2Int position, GlobalManager globalManager) {
         byte[][] bytes= new byte[][]{
