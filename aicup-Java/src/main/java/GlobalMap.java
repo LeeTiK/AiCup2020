@@ -610,8 +610,8 @@ public class GlobalMap {
     }
 
     //проверка для отхода крестьян от опасности
-    public Vec2Int checkDangerBuildUnit(Vec2Int position, int playerID, int radius, EntityType entityType){
-        ArrayList<MyEntity> arrayList = getEntityMap(position,radius,playerID,true,true,entityType);
+    public Vec2Int checkDangerBuildUnit(Vec2Int position, MyPlayer player, int radius, EntityType entityType){
+        ArrayList<MyEntity> arrayList = getEntityMap(position,radius,player.getId(),true,true,entityType);
 
         if (arrayList.size()==0) return null;
 
@@ -623,6 +623,9 @@ public class GlobalMap {
 
         Vec2Int current = null;
 
+        boolean init = false;
+        MyEntity builderBase = player.getBuilderBase();
+
         for (int i=0; i<4; i++)
         {
             Vec2Int newPosition = position.add(bytes[i][0],bytes[i][1]);
@@ -630,11 +633,22 @@ public class GlobalMap {
             if (!checkCoord(newPosition)) continue;
             if (!checkEmpty(newPosition)) continue;
 
-            ArrayList<MyEntity> arrayList1 = getEntityMap(newPosition,radius,playerID,true,true,entityType);
-            if (arrayList1.size()<sizeMax)
+            ArrayList<MyEntity> arrayList1 = getEntityMap(newPosition,radius,player.getId(),true,true,entityType);
+            if (arrayList1.size()<sizeMax || init && arrayList1.size()<sizeMax)
             {
-                sizeMax = arrayList1.size();
-                current = newPosition;
+                if (init && builderBase!=null)
+                {
+                    if (newPosition.distance(builderBase.getPosition()) < current.distance(builderBase.getPosition()))
+                    {
+                        sizeMax = arrayList1.size();
+                        current = newPosition;
+                    }
+                }
+                else {
+                    sizeMax = arrayList1.size();
+                    current = newPosition;
+                    init = true;
+                }
             }
 
         }

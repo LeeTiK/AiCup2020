@@ -436,4 +436,12 @@ public class MyPlayer extends Player {
     public int getResourceAllGame() {
         return resourceAllGame;
     }
+
+    public MyEntity getBuilderBase(){
+        ArrayList<MyEntity> arrayList = getEntityArrayList(EntityType.BUILDER_BASE);
+        if (arrayList.size()>0){
+            return arrayList.get(0);
+        }
+        return null;
+    }
 }

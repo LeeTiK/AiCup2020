@@ -2,21 +2,22 @@ import model.Vec2Int;
 
 public class DataAttack {
 
-    int idEntity;
+    MyEntity targetEntity;
 
     MyEntity mMyEntity;
     Vec2Int position;
 
 
-    public DataAttack(int idEntity)
+    public DataAttack(MyEntity targetEntity)
     {
-        this.idEntity = idEntity;
+        this.targetEntity = targetEntity;
         mMyEntity = null;
         position = null;
     }
 
     public int getIdEntity() {
-        return idEntity;
+        if (mMyEntity!=null) return mMyEntity.getId();
+        return targetEntity.getId();
     }
 
     public MyEntity getMyEntity() {
@@ -27,8 +28,12 @@ public class DataAttack {
         return position;
     }
 
-    public void setIdEntity(int idEntity) {
-        this.idEntity = idEntity;
+    public void setTargetEntity(MyEntity targetEntity) {
+        this.targetEntity = targetEntity;
+    }
+
+    public MyEntity getTargetEntity() {
+        return targetEntity;
     }
 
     public void setMyEntity(MyEntity myEntity) {
@@ -37,5 +42,18 @@ public class DataAttack {
 
     public void setPosition(Vec2Int position) {
         this.position = position;
+    }
+
+    public void reset(int attack) {
+        if (mMyEntity!=null)
+        {
+            mMyEntity.attackResetHP(attack);
+        }
+        else {
+            if (targetEntity!=null)
+            {
+                targetEntity.attackResetHP(attack);
+            }
+        }
     }
 }

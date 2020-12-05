@@ -7,7 +7,7 @@ public class WarManager {
 
     public static final String TAG = "WarManager";
 
-    public static final boolean HEAL_RANGER = false;
+    public static final boolean HEAL_RANGER = true;
 
     //отвечаем за атаку и защиту
 
@@ -197,9 +197,15 @@ public class WarManager {
 
             // увороты от милишников
 
-            Vec2Int vec2IntDodge = globalManager.getGlobalMap().checkDangerBuildUnit(range.getPosition(), FinalConstant.getMyID(),2,EntityType.MELEE_UNIT);
+            Vec2Int vec2IntDodge = globalManager.getGlobalMap().checkDangerBuildUnit(range.getPosition(),myPlayer,2,EntityType.MELEE_UNIT);
 
             if (vec2IntDodge != null) {
+
+                if (dataAttack!=null)
+                {
+                    dataAttack.reset(FinalConstant.getEntityProperties(EntityType.RANGED_UNIT).getAttack().getDamage());
+                }
+
                 a = null;
                 m = new MoveAction(vec2IntDodge, true, false);
             }
@@ -385,19 +391,19 @@ public class WarManager {
         if (range!=null)
         {
             range.attackHP(entityProperties.getAttack().getDamage());
-            return new DataAttack(range.getId());
+            return new DataAttack(range);
         }
 
         if (melee!=null)
         {
             melee.attackHP(entityProperties.getAttack().getDamage());
-            return new DataAttack(melee.getId());
+            return new DataAttack(melee);
         }
 
         if (buildUnit!=null)
         {
             buildUnit.attackHP(entityProperties.getAttack().getDamage());
-            return new DataAttack(buildUnit.getId());
+            return new DataAttack(buildUnit);
         }
 
         if (turret!=null)
@@ -409,26 +415,26 @@ public class WarManager {
 
             if (entity1!=null)
             {
-                DataAttack dataAttack = new DataAttack(turret.getId());
+                DataAttack dataAttack = new DataAttack(entity1);
                 dataAttack.setMyEntity(entity1);
                 return dataAttack;
             }
 
             turret.attackHP(entityProperties.getAttack().getDamage());
 
-            return new DataAttack(turret.getId());
+            return new DataAttack(turret);
         }
 
         if (building!=null)
         {
             building.attackHP(entityProperties.getAttack().getDamage());
-            return new DataAttack( building.getId());
+            return new DataAttack( building);
         }
 
         if (wall!=null)
         {
             wall.attackHP(entityProperties.getAttack().getDamage());
-            return new DataAttack( wall.getId());
+            return new DataAttack( wall);
         }
 
         return null;

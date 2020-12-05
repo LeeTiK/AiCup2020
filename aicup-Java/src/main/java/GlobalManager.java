@@ -41,7 +41,7 @@ public class GlobalManager {
 
         if (Final.debugRelease)
         {
-            if (FinalConstant.getCurrentTik()%1==0) {
+            if (FinalConstant.getCurrentTik()%50==0) {
                 Final.DEBUGRelease("","Tik: " + FinalConstant.getCurrentTik() + " resource: " + getGlobalMap().getResourceMap());
                 logInfo();
             }
@@ -50,12 +50,13 @@ public class GlobalManager {
         ////////////////////////
 
 
-        if (getGlobalStatistic().getMyPlayer().getBuildingArrayList().size()>5){
-            HashMap<Integer, model.EntityAction> hashMap1 = new HashMap<>();
+        if (Final.TEST) {
+            if (getGlobalStatistic().getMyPlayer().getBuildingArrayList().size() > 5) {
+                HashMap<Integer, model.EntityAction> hashMap1 = new HashMap<>();
 
 
-
-            return new Action(hashMap1);
+                return new Action(hashMap1);
+            }
         }
 
 

@@ -55,6 +55,10 @@ public class MyEntity extends Entity {
         this.simulationHP -= attack;
     }
 
+    public void attackResetHP(int attack) {
+        this.simulationHP += attack;
+    }
+
     public DataTaskUnit getDataTaskUnit() {
         return mDataTaskUnit;
     }

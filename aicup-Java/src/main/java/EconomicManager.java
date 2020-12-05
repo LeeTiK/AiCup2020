@@ -120,7 +120,7 @@ public class EconomicManager {
             AttackAction a = null;
             RepairAction r = null;
 
-            Vec2Int vec2Int = globalManager.getGlobalMap().checkDangerBuildUnit(entity.getPosition(), FinalConstant.getMyID(),6,EntityType.ALL);
+            Vec2Int vec2Int = globalManager.getGlobalMap().checkDangerBuildUnit(entity.getPosition(),myPlayer,6,EntityType.ALL);
 
             if (vec2Int != null) {
                 a = null;
@@ -267,49 +267,55 @@ public class EconomicManager {
 
         if (myPlayer.getResource()>myPlayer.getCost(EntityType.TURRET) -10 && myPlayer.getPopulationMax()>50 )
         {
-            Vec2Int vec2Int = new Vec2Int(6,25);
+            int[][] positionTurret = {{7,25},{8,25},{12,25},{23,11}};
 
-            if (globalManager.getGlobalMap().checkEmpty(vec2Int,2)) {
+            for (int j=0; j<positionTurret.length; j++)
+            {
+                Vec2Int vec2Int = new Vec2Int(positionTurret[j][0],positionTurret[j][1]);
 
-                double minDis = 0xFFFFF;
-                MyEntity current = null;
+                if (globalManager.getGlobalMap().checkEmpty(vec2Int,2)) {
 
-                for (int i = 0; i < builderUnitArrayList.size(); i++) {
+                    double minDis = 0xFFFFF;
+                    MyEntity current = null;
 
-                    MyEntity builderUnit = builderUnitArrayList.get(i);
+                    for (int i = 0; i < builderUnitArrayList.size(); i++) {
+
+                        MyEntity builderUnit = builderUnitArrayList.get(i);
 
 
 
-                    if (builderUnit.getUnitState() == EUnitState.REPAIR || builderUnit.getUnitState() == EUnitState.BUILD)
-                        continue;
+                        if (builderUnit.getUnitState() == EUnitState.REPAIR || builderUnit.getUnitState() == EUnitState.BUILD)
+                            continue;
 
-                    double dis = builderUnitArrayList.get(i).getPosition().distance(vec2Int);
-                    if (dis < minDis) {
-                        current = builderUnitArrayList.get(i);
-                        minDis = dis;
+                        double dis = builderUnitArrayList.get(i).getPosition().distance(vec2Int);
+                        if (dis < minDis) {
+                            current = builderUnitArrayList.get(i);
+                            minDis = dis;
+                        }
+                    }
+
+                    if (current != null) {
+                        MoveAction m = null;
+                        BuildAction b = null;
+                        AttackAction a = null;
+                        RepairAction r = null;
+                        Vec2Int vec2Int1 = globalManager.getGlobalMap().getMinPositionBuilding(current.getPosition(), vec2Int, FinalConstant.getEntityProperties(EntityType.TURRET));
+                        m = new MoveAction(vec2Int1, true, false);
+
+                        b = new BuildAction(EntityType.TURRET, vec2Int);
+                        checkCreate = true;
+                        a = null;
+
+                        current.setDataTaskUnit(new DataTaskUnit(EUnitState.BUILD));
+                        current.getDataTaskUnit().setEntityType(EntityType.TURRET);
+
+                        Final.DEBUG(TAG, "VECTOR BUILD: " + vec2Int.toString() + " currentP: " + current.getPosition());
+
+                        actionHashMap.put(current.getId(), new EntityAction(m, b, a, r));
                     }
                 }
-
-                if (current != null) {
-                    MoveAction m = null;
-                    BuildAction b = null;
-                    AttackAction a = null;
-                    RepairAction r = null;
-                    Vec2Int vec2Int1 = globalManager.getGlobalMap().getMinPositionBuilding(current.getPosition(), vec2Int, FinalConstant.getEntityProperties(EntityType.TURRET));
-                    m = new MoveAction(vec2Int1, true, false);
-
-                    b = new BuildAction(EntityType.TURRET, vec2Int);
-                    checkCreate = true;
-                    a = null;
-
-                    current.setDataTaskUnit(new DataTaskUnit(EUnitState.BUILD));
-                    current.getDataTaskUnit().setEntityType(EntityType.TURRET);
-
-                    Final.DEBUG(TAG, "VECTOR BUILD: " + vec2Int.toString() + " currentP: " + current.getPosition());
-
-                    actionHashMap.put(current.getId(), new EntityAction(m, b, a, r));
-                }
             }
+
         }
 
 /*
