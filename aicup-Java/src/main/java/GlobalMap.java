@@ -610,8 +610,8 @@ public class GlobalMap {
     }
 
     //проверка для отхода крестьян от опасности
-    public Vec2Int checkDangerBuildUnit(Vec2Int position, int playerID){
-        ArrayList<MyEntity> arrayList = getEntityMap(position,6,playerID,true,true);
+    public Vec2Int checkDangerBuildUnit(Vec2Int position, int playerID, int radius, EntityType entityType){
+        ArrayList<MyEntity> arrayList = getEntityMap(position,radius,playerID,true,true,entityType);
 
         if (arrayList.size()==0) return null;
 
@@ -628,8 +628,9 @@ public class GlobalMap {
             Vec2Int newPosition = position.add(bytes[i][0],bytes[i][1]);
 
             if (!checkCoord(newPosition)) continue;
+            if (!checkEmpty(newPosition)) continue;
 
-            ArrayList<MyEntity> arrayList1 = getEntityMap(newPosition,6,playerID,true,true);
+            ArrayList<MyEntity> arrayList1 = getEntityMap(newPosition,radius,playerID,true,true,entityType);
             if (arrayList1.size()<sizeMax)
             {
                 sizeMax = arrayList1.size();
@@ -652,7 +653,7 @@ public class GlobalMap {
     }
 
     // список юнитов в квардрате с центром position
-    public ArrayList<MyEntity> getEntityMap(Vec2Int position, int size, int playerID, boolean onelyEnemy, boolean onlyUnit){
+    public ArrayList<MyEntity> getEntityMap(Vec2Int position, int size, int playerID, boolean onelyEnemy, boolean onlyUnit, EntityType entityType){
         ArrayList<MyEntity> arrayList = new ArrayList<>();
 
         for (int x=-size; x<=size; x++ )
@@ -671,6 +672,7 @@ public class GlobalMap {
                         (entity.getEntityType() != EntityType.Empty && entity.getEntityType() != EntityType.RESOURCE)
                 )
                 {
+                    if (entityType!=EntityType.ALL && entity.getEntityType()!=entityType) continue;
                     if (entity.getPlayerId()==null) continue;
 
                     if (entity.getPlayerId() != playerID || onelyEnemy==false)
@@ -742,5 +744,31 @@ public class GlobalMap {
 
     public long getResourceMap() {
         return resourceMap;
+    }
+
+    public Entity getMinDisToEntity(Vec2Int position, MyPlayer myPlayer, EntityType entityTypeNeed)
+    {
+        double minDis = 0xFFFFF;
+        MyEntity current = null;
+
+        ArrayList<MyEntity> arrayList = myPlayer.getEntityArrayList(entityTypeNeed);
+
+        for (int i = 0; i < arrayList.size(); i++) {
+
+            MyEntity builderUnit = arrayList.get(i);
+
+            double dis = arrayList.get(i).getPosition().distance(position);
+            if (dis < minDis) {
+                current = arrayList.get(i);
+                minDis = dis;
+            }
+        }
+
+        if (current!=null)
+        {
+            return current;
+        }
+
+        return null;
     }
 }

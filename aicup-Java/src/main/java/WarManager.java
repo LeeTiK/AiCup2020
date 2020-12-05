@@ -7,6 +7,8 @@ public class WarManager {
 
     public static final String TAG = "WarManager";
 
+    public static final boolean HEAL_RANGER = false;
+
     //отвечаем за атаку и защиту
 
     public HashMap<Integer, EntityAction> update(PlayerView playerView, GlobalManager globalManager) {
@@ -47,7 +49,6 @@ public class WarManager {
         MyPlayer myPlayer = globalStatistic.getMyPlayer();
 
         ArrayList<MyEntity> rangeArrayList = myPlayer.getEntityArrayList(EntityType.RANGED_UNIT);
-
         ArrayList<MyEntity> meleeArrayList = myPlayer.getEntityArrayList(EntityType.MELEE_UNIT);
         ArrayList<MyEntity> turretArrayList = myPlayer.getEntityArrayList(EntityType.TURRET);
 
@@ -180,6 +181,37 @@ public class WarManager {
                     m = null;
                 }
             }
+            else {
+                // идём на хил
+                if (HEAL_RANGER) {
+                    if (range.getHealth() == 5) {
+                        Entity entity = globalManager.getGlobalMap().getMinDisToEntity(range.getPosition(), myPlayer, EntityType.BUILDER_UNIT);
+
+                        if (entity != null) {
+                            m = new MoveAction(entity.getPosition(), true, true);
+                        }
+                    }
+                }
+
+            }
+
+            // увороты от милишников
+
+            Vec2Int vec2IntDodge = globalManager.getGlobalMap().checkDangerBuildUnit(range.getPosition(), FinalConstant.getMyID(),2,EntityType.MELEE_UNIT);
+
+            if (vec2IntDodge != null) {
+                a = null;
+                m = new MoveAction(vec2IntDodge, true, false);
+            }
+            /*
+            ArrayList<MyEntity> arrayList = globalManager.getGlobalMap().getEntityMap(range.getPosition(), 2, FinalConstant.getMyID(), true, true,EntityType.MELEE_UNIT);
+            if (arrayList.size()!=0)
+            {
+
+
+                ArrayList<MyEntity> arrayListRange = globalManager.getGlobalMap().getEntityMap(range.getPosition(), 6, FinalConstant.getMyID(), true, true,EntityType.RANGED_UNIT);
+
+            }*/
 
             actionHashMap.put(range.getId(), new EntityAction(m, null, a, null));
         }
@@ -276,7 +308,7 @@ public class WarManager {
 
        // if (entity.getEntityType() == EntityType.RANGED_UNIT) attackRange++;
 
-        ArrayList<MyEntity> arrayList = globalManager.getGlobalMap().getEntityMap(entity.getPosition(),attackRange,FinalConstant.getMyID(),true,false);
+        ArrayList<MyEntity> arrayList = globalManager.getGlobalMap().getEntityMap(entity.getPosition(),attackRange,FinalConstant.getMyID(),true,false,EntityType.ALL);
 
         if (arrayList.size()==0) return null;
 

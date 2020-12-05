@@ -8,4 +8,6 @@ public class MyGroupUnit extends MyEntity {
         super();
         mMyEntityArrayList = new ArrayList<>();
     }
+
+
 }

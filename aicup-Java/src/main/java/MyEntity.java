@@ -6,12 +6,9 @@ public class MyEntity extends Entity {
 
     boolean update = true;
 
-    EUnitState mEUnitState;
+    DataTaskUnit mDataTaskUnit;
 
     int simulationHP;
-
-
-
 
     public MyEntity(Entity entity) {
         super(entity.getId(), entity.getPlayerId(), entity.getEntityType(), entity.getPosition(), entity.getHealth(), entity.isActive());
@@ -30,7 +27,7 @@ public class MyEntity extends Entity {
     }
 
     void  init(){
-        mEUnitState = EUnitState.CREATE;
+        mDataTaskUnit = new DataTaskUnit(EUnitState.EMPTY);
         simulationHP = getHealth();
     }
 
@@ -58,7 +55,15 @@ public class MyEntity extends Entity {
         this.simulationHP -= attack;
     }
 
-    public void setEUnitState(EUnitState EUnitState) {
-        mEUnitState = EUnitState;
+    public DataTaskUnit getDataTaskUnit() {
+        return mDataTaskUnit;
+    }
+
+    public void setDataTaskUnit(DataTaskUnit dataTaskUnit) {
+        mDataTaskUnit = dataTaskUnit;
+    }
+
+    public EUnitState getUnitState(){
+        return getDataTaskUnit().getUnitState();
     }
 }

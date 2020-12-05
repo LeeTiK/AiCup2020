@@ -1,12 +1,12 @@
 public enum  EUnitState {
-    CREATE(0x00),
+    NEW_UNIT(0x00),
     ATTACK(0x01),
     DEFENSE(0x02),
     RESURCE(0x03),
     REPAIR(0x04),
     BUILD(0x05),
 
-    ERROR(0xFF);
+    EMPTY(0xFF);
     ;
 
     byte number;

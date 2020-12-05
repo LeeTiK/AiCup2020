@@ -25,6 +25,10 @@ public class MyPlayer extends Player {
     int countDeadHouse =0;
     int countDeadOtherBuilders =0;
 
+    int resourceOldTik = 0;
+    int resourceCurrentTik = 0;
+    int resourceAllGame = 0;
+
     int historyAll;
 
     /// оптимизация массивов
@@ -46,22 +50,27 @@ public class MyPlayer extends Player {
 
     public MyPlayer (int id, int score, int resource){
         super(id,score,resource);
-     //   mEntityArrayList = new ArrayList<>();
-        mUnitArrayList = new ArrayList<>();
-        mBuildingArrayList = new ArrayList<>();
+        init();
     }
 
 
     public MyPlayer (Player player){
         super(player.getId(),player.getScore(),player.getResource());
-     //   mEntityArrayList = new ArrayList<>();
+        init();
+    }
+
+    private void init(){
         mUnitArrayList = new ArrayList<>();
         mBuildingArrayList = new ArrayList<>();
+        resourceAllGame = 0;
+        resourceOldTik = 0;
     }
 
     public void update(Player player) {
         setResource(player.getResource());
         setScore(player.getScore());
+
+        resourceCurrentTik = player.getResource();
     }
 
 
@@ -213,6 +222,11 @@ public class MyPlayer extends Player {
         mMeleeArrayList =  getEntityArrayListSlow(EntityType.MELEE_UNIT);
         mBuilderArrayList =  getEntityArrayListSlow(EntityType.BUILDER_UNIT);
         mHouseArrayList =  getEntityArrayListSlow(EntityType.HOUSE);
+
+        if (FinalConstant.getCurrentTik()==0) resourceCurrentTik = 0;
+
+        addResource(resourceCurrentTik-resourceOldTik);
+        resourceOldTik = getResource();
     }
 
 /*
@@ -238,6 +252,7 @@ public class MyPlayer extends Player {
         switch (entity.getEntityType())
         {
             case HOUSE: {
+                resourceCurrentTik+=getCost(entity.getEntityType());
                 countAllHouse++;
                 mBuildingArrayList.add(entity);
                 break;
@@ -247,18 +262,22 @@ public class MyPlayer extends Player {
             case MELEE_BASE:
             case TURRET:
             case RANGED_BASE:{
+                resourceCurrentTik+=getCost(entity.getEntityType());
                 mBuildingArrayList.add(entity);
                 break;
             }
             case BUILDER_UNIT:
+                resourceCurrentTik+=getCost(entity.getEntityType());
                 countAllBiuld++;
                 mUnitArrayList.add(entity);
                 break;
             case MELEE_UNIT:
+                resourceCurrentTik+=getCost(entity.getEntityType());
                 countAllMelee++;
                 mUnitArrayList.add(entity);
                 break;
             case RANGED_UNIT:{
+                resourceCurrentTik+=getCost(entity.getEntityType());
                 countAllRange++;
                 mUnitArrayList.add(entity);
                 break;
@@ -335,7 +354,10 @@ public class MyPlayer extends Player {
                 " R: "+ rangeArrayList.size() + "/"+countDeadRange +"/"+countAllRange +
                 " H: "+ houseArrayList.size() + "/"+countDeadHouse +"/"+countAllHouse +
                 " O: " + countDeadOtherBuilders +
-                " P: " + populationCurrent + "/" + populationMax;
+                " P: " + populationCurrent + "/" + populationMax +
+                " Res: " + getResourceAllGame();
+
+      //  cgetResourceAllGame
     }
 
     public int getPopulationCurrent() {
@@ -373,15 +395,15 @@ public class MyPlayer extends Player {
             case BUILDER_BASE:
                 return FinalConstant.getEntityProperties(entityType).getCost();
             case BUILDER_UNIT:
-                return FinalConstant.getEntityProperties(entityType).getCost() + getEntityArrayList(EntityType.BUILDER_UNIT).size();
+                return FinalConstant.getEntityProperties(entityType).getCost() + (getEntityArrayList(EntityType.BUILDER_UNIT)==null?0:getEntityArrayList(EntityType.RANGED_UNIT).size());
             case MELEE_BASE:
                 return FinalConstant.getEntityProperties(entityType).getCost();
             case MELEE_UNIT:
-                return FinalConstant.getEntityProperties(entityType).getCost()+ getEntityArrayList(EntityType.MELEE_UNIT).size();
+                return FinalConstant.getEntityProperties(entityType).getCost()+ (getEntityArrayList(EntityType.MELEE_UNIT)==null?0:getEntityArrayList(EntityType.RANGED_UNIT).size());
             case RANGED_BASE:
                 return FinalConstant.getEntityProperties(entityType).getCost();
             case RANGED_UNIT:
-                return FinalConstant.getEntityProperties(entityType).getCost()+ getEntityArrayList(EntityType.RANGED_UNIT).size();
+                return FinalConstant.getEntityProperties(entityType).getCost()+ (getEntityArrayList(EntityType.RANGED_UNIT)==null?0:getEntityArrayList(EntityType.RANGED_UNIT).size());
             case RESOURCE:
                 return FinalConstant.getEntityProperties(entityType).getCost();
             case TURRET:
@@ -390,5 +412,28 @@ public class MyPlayer extends Player {
                 return FinalConstant.getEntityProperties(entityType).getCost();
         }
         return 0;
+    }
+
+    private void addResource(int resourceCurrentTik)
+    {
+        resourceAllGame +=resourceCurrentTik;
+    }
+
+    public int getCountBuildDontCreate(EntityType entityType)
+    {
+        int count = 0;
+        for (int i=0; i<getBuildingArrayList().size(); i++)
+        {
+            if (getBuildingArrayList().get(i).getEntityType()==entityType)
+            {
+                if (!getBuildingArrayList().get(i).isActive()) count++;
+            }
+        }
+
+        return count;
+    }
+
+    public int getResourceAllGame() {
+        return resourceAllGame;
     }
 }

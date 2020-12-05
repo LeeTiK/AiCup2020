@@ -35,7 +35,29 @@ public class GlobalManager {
         mGlobalStatistic.updateInfo(playerView,this);
         mGlobalMap.update(getGlobalStatistic());
 
-        /////////////////////////////////////////////////////
+        ////////////////////////STATISTIC/////////////////////////////
+
+        Final.DEBUG("","Tik: " + FinalConstant.getCurrentTik() + " resource: " + getGlobalMap().getResourceMap()+ " ID:" + getGlobalStatistic().getMyPlayer().getId());
+
+        if (Final.debugRelease)
+        {
+            if (FinalConstant.getCurrentTik()%1==0) {
+                Final.DEBUGRelease("","Tik: " + FinalConstant.getCurrentTik() + " resource: " + getGlobalMap().getResourceMap());
+                logInfo();
+            }
+        }
+
+        ////////////////////////
+
+
+        if (getGlobalStatistic().getMyPlayer().getBuildingArrayList().size()>5){
+            HashMap<Integer, model.EntityAction> hashMap1 = new HashMap<>();
+
+
+
+            return new Action(hashMap1);
+        }
+
 
         hashMap.putAll(mEconomicManager.update(playerView,this));
 
@@ -63,4 +85,16 @@ public class GlobalManager {
     public void debugUpdate(PlayerView playerView, DebugInterface debugInterface) {
         mGlobalMap.debugUpdate(playerView,debugInterface);
     }
+
+
+    private void logInfo() {
+        for (int i=0; i<getGlobalStatistic().getPlayers().size(); i++)
+        {
+            MyPlayer myPlayer = getGlobalStatistic().getPlayers().get(i);
+            Final.DEBUGRelease("",myPlayer.toString());
+            //   Final.DEBUGRelease(TAG,"Player: " + myPlayer.getId() + " B: " + myPlayer.getEntityArrayList(EntityType.BUILDER_UNIT).size() + " M: " + myPlayer.getEntityArrayList(EntityType.MELEE_UNIT).size() + " R: " + myPlayer.getEntityArrayList(EntityType.RANGED_UNIT).size() + " DeadB: " + myPlayer.getCountDeadBiuld() + " DeadM: " + myPlayer.getCountDeadMelee() + " DeadR: " + myPlayer.getCountDeadRange() + " DeadH " + myPlayer.getCountDeadHouse() );
+
+        }
+    }
+
 }

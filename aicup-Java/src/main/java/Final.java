@@ -3,7 +3,8 @@ import model.PlayerView;
 
 public class Final {
 
-    final static boolean debug =false;
+    final static boolean TEST =true;
+    final static boolean debug =true;
     final static boolean debugRelease =true;
     final static boolean debugGraphic =false;
 

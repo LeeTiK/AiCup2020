@@ -13,6 +13,7 @@ public enum EntityType {
     RANGED_UNIT(7),
     RESOURCE(8),
     TURRET(9),
+    ALL(0xFE),
     Empty(0xFF);
     public int tag;
     EntityType(int tag) {

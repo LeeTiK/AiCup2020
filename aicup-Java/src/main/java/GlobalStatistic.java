@@ -48,18 +48,6 @@ public class GlobalStatistic {
     }
 
     private void updatePlayerInfo(PlayerView playerView, GlobalManager globalManager){
-
-        Final.DEBUG(GlobalStatistic.TAG,"CurrentTik: " + FinalConstant.getCurrentTik() + " resource: " + globalManager.getGlobalMap().getResourceMap());
-
-        if (Final.debugRelease)
-        {
-            if (FinalConstant.getCurrentTik()%50==0) {
-                Final.DEBUGRelease(TAG,"CurrentTik: " + FinalConstant.getCurrentTik() + " resource: " + globalManager.getGlobalMap().getResourceMap());
-                logInfo();
-            }
-        }
-
-
       //  playerView.isFogOfWar()
 
         // добавление и обновление информации о игроках
@@ -166,9 +154,8 @@ public class GlobalStatistic {
 
     private MyEntity addGlobalEntityList(Entity entity) {
 
-        for (int i=0; i<mMyEntityArrayList.size(); i++)
-        {
-            if (mMyEntityArrayList.get(i).getId() == entity.getId()){
+        for (int i = 0; i < mMyEntityArrayList.size(); i++) {
+            if (mMyEntityArrayList.get(i).getId() == entity.getId()) {
                 mMyEntityArrayList.get(i).update(entity);
                 return mMyEntityArrayList.get(i);
             }
@@ -176,19 +163,8 @@ public class GlobalStatistic {
 
         mMyEntityArrayList.add(new MyEntity(entity));
 
-        return mMyEntityArrayList.get(mMyEntityArrayList.size()-1);
+        return mMyEntityArrayList.get(mMyEntityArrayList.size() - 1);
     }
-
-    private void logInfo() {
-        for (int i=0; i<mMyPlayers.size(); i++)
-        {
-            MyPlayer myPlayer = mMyPlayers.get(i);
-            Final.DEBUGRelease(TAG,myPlayer.toString());
-         //   Final.DEBUGRelease(TAG,"Player: " + myPlayer.getId() + " B: " + myPlayer.getEntityArrayList(EntityType.BUILDER_UNIT).size() + " M: " + myPlayer.getEntityArrayList(EntityType.MELEE_UNIT).size() + " R: " + myPlayer.getEntityArrayList(EntityType.RANGED_UNIT).size() + " DeadB: " + myPlayer.getCountDeadBiuld() + " DeadM: " + myPlayer.getCountDeadMelee() + " DeadR: " + myPlayer.getCountDeadRange() + " DeadH " + myPlayer.getCountDeadHouse() );
-
-        }
-    }
-
 
     public MyPlayer getMyPlayer(){
         return getPlayer(FinalConstant.getMyID());

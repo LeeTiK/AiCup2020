@@ -29,6 +29,11 @@ public class FinalConstant {
     }
 
 
+    public static void initConstantMap(){
+
+    }
+
+
     static public EntityProperties getEntityPropertiesBUILDER_BASE() {
         return mEntityPropertiesBUILDER_BASE;
     }
