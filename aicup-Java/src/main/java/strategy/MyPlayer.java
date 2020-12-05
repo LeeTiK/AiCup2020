@@ -1,4 +1,5 @@
-import model.Entity;
+package strategy;
+
 import model.EntityType;
 import model.Player;
 
@@ -6,7 +7,7 @@ import java.util.ArrayList;
 
 public class MyPlayer extends Player {
 
-   // ArrayList<MyEntity> mEntityArrayList;
+   // ArrayList<strategy.MyEntity> mEntityArrayList;
 
     ArrayList<MyEntity> mUnitArrayList;
     ArrayList<MyEntity> mBuildingArrayList;
@@ -240,7 +241,7 @@ public class MyPlayer extends Player {
                 mBuildingArrayList.add(entity);
             }
             case BUILDER_UNIT, RANGED_UNIT, MELEE_UNIT -> {
-                mUnitArrayList.add(new MyEntity(entity));
+                mUnitArrayList.add(new strategy.MyEntity(entity));
             }
             case RESOURCE -> {
             }
@@ -305,7 +306,7 @@ public class MyPlayer extends Player {
             case MELEE_BASE:
             case TURRET:
             case RANGED_BASE:{
-                //mBuildingArrayList.add(new MyEntity(entity));
+                //mBuildingArrayList.add(new strategy.MyEntity(entity));
                 for (int i=0; i<mBuildingArrayList.size();i++)
                 {
                     if (mBuildingArrayList.get(i).getEntityType() == entityType) arrayList.add(mBuildingArrayList.get(i));

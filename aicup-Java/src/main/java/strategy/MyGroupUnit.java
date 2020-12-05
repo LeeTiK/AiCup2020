@@ -1,3 +1,5 @@
+package strategy;
+
 import java.util.ArrayList;
 
 public class MyGroupUnit extends MyEntity {

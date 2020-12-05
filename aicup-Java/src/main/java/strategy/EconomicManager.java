@@ -1,3 +1,5 @@
+package strategy;
+
 import model.*;
 
 import java.util.ArrayList;
@@ -5,7 +7,7 @@ import java.util.HashMap;
 
 public class EconomicManager {
 
-    public static final String TAG = "EconomicManager";
+    public static final String TAG = "strategy.EconomicManager";
 
     // количество рабочих
     int sizeBuildUnit;
@@ -97,7 +99,7 @@ public class EconomicManager {
                     )
             );
 
-            // Final.DEBUG(TAG, "arrayList.get(i).getId() " + builderUnitArrayList.get(i).getId() + " " +builderUnitArrayList.get(i).getPosition().toString());
+            // strategy.Final.DEBUG(TAG, "arrayList.get(i).getId() " + builderUnitArrayList.get(i).getId() + " " +builderUnitArrayList.get(i).getPosition().toString());
 
             actionHashMap.put(entity.getId(), new EntityAction(m, b, a, r));
         }
@@ -129,7 +131,7 @@ public class EconomicManager {
                 actionHashMap.put(entity.getId(), new EntityAction(m, b, a, r));
             } else {
 
-                ArrayList<MyEntity> arrayList = globalManager.getGlobalMap().getEntityMap(entity.getPosition(), 7, FinalConstant.getMyID(), true, true,EntityType.ALL);
+                ArrayList<MyEntity> arrayList = globalManager.getGlobalMap().getEntityMap(entity.getPosition(), 7, FinalConstant.getMyID(), true, false,true,EntityType.ALL,false);
 
                 if (arrayList.size() != 0) {
                     boolean range = false;
@@ -141,12 +143,12 @@ public class EconomicManager {
 
                     if (range == false) {
                         // милишники
-                        arrayList = globalManager.getGlobalMap().getEntityMap(entity.getPosition(), 2, FinalConstant.getMyID(), true, true,EntityType.ALL);
+                        arrayList = globalManager.getGlobalMap().getEntityMap(entity.getPosition(), 2, FinalConstant.getMyID(), true, false,true,EntityType.ALL,false);
                         if (arrayList.size() != 0) {
                             m = null;
-                            a = null;
+                            //a = null;
 
-                            EntityAction action = actionHashMap.get(entity);
+                            EntityAction action = actionHashMap.get(entity.getId());
 
                             if (action== null) action = new EntityAction(null,null,null,null);
                             action.setMoveAction(null);
@@ -157,9 +159,9 @@ public class EconomicManager {
 
                     } else {
                         m = null;
-                        a = null;
+                       // a = null;
 
-                        EntityAction action = actionHashMap.get(entity);
+                        EntityAction action = actionHashMap.get(entity.getId());
 
                         if (action== null) action = new EntityAction(null,null,null,null);
                         action.setMoveAction(null);
@@ -185,7 +187,7 @@ public class EconomicManager {
 
         boolean checkCreate = false;
 
-        if (myPlayer.getResource()>myPlayer.getCost(EntityType.HOUSE)-10 && (myPlayer.getPopulationCurrent()*1.2>=myPlayer.getPopulationMax() || myPlayer.getPopulationMax()<70)
+        if (myPlayer.getResource()>myPlayer.getCost(EntityType.HOUSE)-5 && ((myPlayer.getPopulationCurrent()*1.2>=myPlayer.getPopulationMax() && myPlayer.getResource()>myPlayer.getCost(EntityType.HOUSE)*5) || myPlayer.getPopulationMax()<70)
                 && (myPlayer.getPopulationMax()<165 || myPlayer.getEntityArrayList(EntityType.RANGED_BASE).size()>1)
             && myPlayer.getCountBuildDontCreate(EntityType.HOUSE)<2
         )
@@ -319,7 +321,7 @@ public class EconomicManager {
         }
 
 /*
-        if (myPlayer.getResource()>FinalConstant.getEntityProperties(EntityType.RANGED_BASE).getCost()*5 && myPlayer.getEntityArrayList(EntityType.RANGED_BASE).size()<2 )
+        if (myPlayer.getResource()>strategy.FinalConstant.getEntityProperties(EntityType.RANGED_BASE).getCost()*5 && myPlayer.getEntityArrayList(EntityType.RANGED_BASE).size()<2 )
         {
             if (entity.getPosition().getX()<70 && entity.getPosition().getY()<75) {
                 b = new BuildAction(
@@ -331,7 +333,7 @@ public class EconomicManager {
             }
         }
 
-        if (myPlayer.getResource()>FinalConstant.getEntityProperties(EntityType.MELEE_BASE).getCost()*4 && myPlayer.getEntityArrayList(EntityType.BUILDER_BASE).size()<1 &&  myPlayer.getEntityArrayList(EntityType.RANGED_BASE).size()>0)
+        if (myPlayer.getResource()>strategy.FinalConstant.getEntityProperties(EntityType.MELEE_BASE).getCost()*4 && myPlayer.getEntityArrayList(EntityType.BUILDER_BASE).size()<1 &&  myPlayer.getEntityArrayList(EntityType.RANGED_BASE).size()>0)
         {
             if (b==null) {
                 if (builderUnitArrayList.get(i).getPosition().getX()<70 && builderUnitArrayList.get(i).getPosition().getY()<75) {
@@ -483,7 +485,7 @@ public class EconomicManager {
                 //a = null;
                 m = new MoveAction(vec2Int1, true, false);
 
-              //  currentUnitTwo.setEUnitState(EUnitState.REPAIR);
+              //  currentUnitTwo.setEUnitState(strategy.EUnitState.REPAIR);
                 currentUnitTwo.setDataTaskUnit(new DataTaskUnit(EUnitState.REPAIR));
 
 

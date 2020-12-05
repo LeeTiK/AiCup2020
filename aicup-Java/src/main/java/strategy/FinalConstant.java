@@ -1,3 +1,5 @@
+package strategy;
+
 import model.Entity;
 import model.EntityProperties;
 import model.EntityType;

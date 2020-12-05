@@ -1,3 +1,5 @@
+package strategy;
+
 public enum EStatus {
 
     NEW_Entity(0x00),

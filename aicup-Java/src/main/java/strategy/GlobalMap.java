@@ -1,3 +1,5 @@
+package strategy;
+
 import model.*;
 
 import java.util.ArrayList;
@@ -600,7 +602,7 @@ public class GlobalMap {
                 for (int j=0; j<map[i].length; j++)
                 {
                     if (map[i][j].getEntityType()!=EntityType.Empty){
-                       // FinalGraphic.sendSquare(debugInterface,new Vec2Int(i,j),1, FinalGraphic.COLOR_BLACK);
+                       // strategy.FinalGraphic.sendSquare(debugInterface,new Vec2Int(i,j),1, strategy.FinalGraphic.COLOR_BLACK);
                     }
                 }
             }
@@ -611,7 +613,7 @@ public class GlobalMap {
 
     //проверка для отхода крестьян от опасности
     public Vec2Int checkDangerBuildUnit(Vec2Int position, MyPlayer player, int radius, EntityType entityType){
-        ArrayList<MyEntity> arrayList = getEntityMap(position,radius,player.getId(),true,true,entityType);
+        ArrayList<MyEntity> arrayList = getEntityMap(position,radius,player.getId(),true,false,true, entityType,false);
 
         if (arrayList.size()==0) return null;
 
@@ -633,7 +635,7 @@ public class GlobalMap {
             if (!checkCoord(newPosition)) continue;
             if (!checkEmpty(newPosition)) continue;
 
-            ArrayList<MyEntity> arrayList1 = getEntityMap(newPosition,radius,player.getId(),true,true,entityType);
+            ArrayList<MyEntity> arrayList1 = getEntityMap(newPosition,radius,player.getId(),true,false,true,entityType,false);
             if (arrayList1.size()<sizeMax || init && arrayList1.size()<sizeMax)
             {
                 if (init && builderBase!=null)
@@ -667,7 +669,7 @@ public class GlobalMap {
     }
 
     // список юнитов в квардрате с центром position
-    public ArrayList<MyEntity> getEntityMap(Vec2Int position, int size, int playerID, boolean onelyEnemy, boolean onlyUnit, EntityType entityType){
+    public ArrayList<MyEntity> getEntityMap(Vec2Int position, int size, int playerID, boolean onlyEnemy, boolean onlyPlayer, boolean onlyUnit, EntityType entityType, boolean squareRadius){
         ArrayList<MyEntity> arrayList = new ArrayList<>();
 
         for (int x=-size; x<=size; x++ )
@@ -675,6 +677,11 @@ public class GlobalMap {
             if (x+position.getX()<0 || x+position.getX()>= FinalConstant.getMapSize()) continue;
 
             int sizeY = size-Math.abs(x);
+
+            if (squareRadius)
+            {
+                sizeY = size;
+            }
 
             for (int y=-sizeY; y<=sizeY; y++)
             {
@@ -689,9 +696,17 @@ public class GlobalMap {
                     if (entityType!=EntityType.ALL && entity.getEntityType()!=entityType) continue;
                     if (entity.getPlayerId()==null) continue;
 
-                    if (entity.getPlayerId() != playerID || onelyEnemy==false)
+
+
+                    if (entity.getPlayerId() != playerID || onlyEnemy==false)
                     {
-                        arrayList.add(entity);
+                        if (onlyPlayer && entity.getPlayerId()==playerID )
+                        {
+                            arrayList.add(entity);
+                        }
+                        else {
+                            arrayList.add(entity);
+                        }
                     }
                 }
             }
@@ -760,7 +775,7 @@ public class GlobalMap {
         return resourceMap;
     }
 
-    public Entity getMinDisToEntity(Vec2Int position, MyPlayer myPlayer, EntityType entityTypeNeed)
+    public MyEntity getMinDisToEntity(Vec2Int position, MyPlayer myPlayer, EntityType entityTypeNeed)
     {
         double minDis = 0xFFFFF;
         MyEntity current = null;

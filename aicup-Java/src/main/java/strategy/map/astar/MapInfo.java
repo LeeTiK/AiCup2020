@@ -1,4 +1,4 @@
-package map.dijkstra;
+package strategy.map.astar;
 
 public class MapInfo
 {

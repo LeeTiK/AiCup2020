@@ -1,3 +1,5 @@
+package strategy;
+
 import model.Vec2Int;
 
 public class DataAttack {

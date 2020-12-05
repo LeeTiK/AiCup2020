@@ -1,3 +1,5 @@
+package strategy;
+
 public enum  EUnitState {
     NEW_UNIT(0x00),
     ATTACK(0x01),

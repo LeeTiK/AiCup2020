@@ -1,8 +1,8 @@
+package strategy;
+
 import model.Action;
-import model.Entity;
 import model.PlayerView;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 public class GlobalManager {
@@ -42,7 +42,7 @@ public class GlobalManager {
         if (Final.debugRelease)
         {
             if (FinalConstant.getCurrentTik()%50==0) {
-                Final.DEBUGRelease("","Tik: " + FinalConstant.getCurrentTik() + " resource: " + getGlobalMap().getResourceMap());
+                Final.DEBUGRelease("","Tik: " + FinalConstant.getCurrentTik() + " resource: " + getGlobalMap().getResourceMap() +  " ID:" + getGlobalStatistic().getMyPlayer().getId());
                 logInfo();
             }
         }
@@ -93,7 +93,7 @@ public class GlobalManager {
         {
             MyPlayer myPlayer = getGlobalStatistic().getPlayers().get(i);
             Final.DEBUGRelease("",myPlayer.toString());
-            //   Final.DEBUGRelease(TAG,"Player: " + myPlayer.getId() + " B: " + myPlayer.getEntityArrayList(EntityType.BUILDER_UNIT).size() + " M: " + myPlayer.getEntityArrayList(EntityType.MELEE_UNIT).size() + " R: " + myPlayer.getEntityArrayList(EntityType.RANGED_UNIT).size() + " DeadB: " + myPlayer.getCountDeadBiuld() + " DeadM: " + myPlayer.getCountDeadMelee() + " DeadR: " + myPlayer.getCountDeadRange() + " DeadH " + myPlayer.getCountDeadHouse() );
+            //   strategy.Final.DEBUGRelease(TAG,"Player: " + myPlayer.getId() + " B: " + myPlayer.getEntityArrayList(EntityType.BUILDER_UNIT).size() + " M: " + myPlayer.getEntityArrayList(EntityType.MELEE_UNIT).size() + " R: " + myPlayer.getEntityArrayList(EntityType.RANGED_UNIT).size() + " DeadB: " + myPlayer.getCountDeadBiuld() + " DeadM: " + myPlayer.getCountDeadMelee() + " DeadR: " + myPlayer.getCountDeadRange() + " DeadH " + myPlayer.getCountDeadHouse() );
 
         }
     }

@@ -1,6 +1,7 @@
 import model.*;
-
-import java.util.HashMap;
+import strategy.DebugInterface;
+import strategy.Final;
+import strategy.GlobalManager;
 
 public class MyStrategy {
     GlobalManager mGlobalManager;
@@ -12,6 +13,8 @@ public class MyStrategy {
             mGlobalManager = new GlobalManager();
         }
 
+
+        //debugInterface.getState().
       //  playerView.get
 
        // mGlobalManager.update(playerView,debugInterface);

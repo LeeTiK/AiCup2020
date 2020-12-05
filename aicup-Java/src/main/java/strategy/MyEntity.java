@@ -1,3 +1,5 @@
+package strategy;
+
 import model.Entity;
 import model.EntityType;
 import model.Vec2Int;

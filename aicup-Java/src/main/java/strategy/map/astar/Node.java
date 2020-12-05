@@ -1,4 +1,4 @@
-package map.dijkstra;
+package strategy.map.astar;
 
 import model.Vec2Int;
 

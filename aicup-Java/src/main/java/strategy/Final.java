@@ -1,3 +1,5 @@
+package strategy;
+
 import model.Player;
 import model.PlayerView;
 
@@ -6,7 +8,7 @@ public class Final {
     final static boolean TEST =false;
     final static boolean debug =false;
     final static boolean debugRelease =true;
-    final static boolean debugGraphic =false;
+    public final static boolean debugGraphic =false;
 
     final static boolean OFF_WAR = false;
 

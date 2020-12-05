@@ -1,0 +1,12 @@
+{
+  "seed": 80,
+  "game": {
+    "Create": "Round1"
+  },
+  "players": [
+    "QuickStart",
+    "QuickStart",
+	"QuickStart",
+	"QuickStart"
+  ]
+}

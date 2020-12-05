@@ -1,11 +1,14 @@
+package strategy;
+
 import model.*;
+import strategy.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class WarManager {
 
-    public static final String TAG = "WarManager";
+    public static final String TAG = "strategy.WarManager";
 
     public static final boolean HEAL_RANGER = true;
 
@@ -13,6 +16,7 @@ public class WarManager {
 
     public HashMap<Integer, EntityAction> update(PlayerView playerView, GlobalManager globalManager) {
         HashMap<Integer, EntityAction> actionHashMap = new HashMap<>();
+
 
         GlobalStatistic globalStatistic = globalManager.getGlobalStatistic();
 
@@ -31,10 +35,18 @@ public class WarManager {
         {
             actionHashMap = attack(playerView,globalManager,22);
         }
+       /* else {
+            if (strategy.FinalConstant.getCurrentTik()<500)
+            {
+                actionHashMap = attack(playerView,globalManager,30);
+            }
+            else {
+                actionHashMap = attack(playerView, globalManager, 1000);
+            }
+        }*/
         else {
-            actionHashMap = attack(playerView,globalManager,1000);
+            actionHashMap = attack(playerView, globalManager, 1000);
         }
-
 
 
         return actionHashMap;
@@ -54,7 +66,7 @@ public class WarManager {
 
         for (int i=0; i<turretArrayList.size(); i++)
         {
-          //  DataAttack idAttack = getTargetAttack(turretArrayList.get(i),globalManager);
+          //  strategy.DataAttack idAttack = getTargetAttack(turretArrayList.get(i),globalManager);
 
             AttackAction a = null;
 
@@ -74,6 +86,50 @@ public class WarManager {
 
 
         for (int i=0; i<meleeArrayList.size(); i++) {
+            /*strategy.MyEntity melee = meleeArrayList.get(i);
+            Vec2Int vec2Int = globalManager.getGlobalMap().getNearestPlayer(melee.getPosition(),playerView.getMyId());
+
+            strategy.Final.DEBUG(TAG,"distance: " + vec2Int.distance(melee.getPosition()));
+
+            MoveAction m = null;
+            if (vec2Int!=null)
+            {
+
+                ArrayList<strategy.MyEntity> arrayList = globalManager.getGlobalMap().getEntityMap(melee.getPosition(),6,strategy.FinalConstant.getMyID(),false,true,true,EntityType.ALL,true);
+
+                if (arrayList.size()<9 && vec2Int.distance(melee.getPosition())>6 && strategy.FinalConstant.getCurrentTik()<750)
+                {
+                    strategy.MyEntity entity = globalManager.getGlobalMap().getMinDisToEntity(melee.getPosition(),myPlayer,EntityType.TURRET);
+                    if (entity!=null)
+                    {
+                        m = new MoveAction(entity.getPosition(), true, true);
+                    }
+                    else {
+                        entity = globalManager.getGlobalMap().getMinDisToEntity(melee.getPosition(),myPlayer,EntityType.RANGED_BASE);
+                        if (entity!=null)
+                        {
+                            m = new MoveAction(entity.getPosition(), true, false);
+                        }
+                    }
+                }
+                else {
+                    if (vec2Int.distance(melee.getPosition()) < dis) {
+                        m = new MoveAction(vec2Int, true, true);
+                    } else {
+                        strategy.MyEntity entity = globalManager.getGlobalMap().getMinDisToEntity(melee.getPosition(),myPlayer,EntityType.RANGED_BASE);
+                        if (entity!=null)
+                        {
+                            m = new MoveAction(entity.getPosition(), true, true);
+                        }
+                        else {
+                            if (turretArrayList.size() > 0) {
+                                m = new MoveAction(turretArrayList.get(0).getPosition(), true, false);
+                            }
+                        }
+                    }
+                }
+            }*/
+
             Vec2Int vec2Int = globalManager.getGlobalMap().getNearestPlayer(meleeArrayList.get(i).getPosition(),playerView.getMyId());
 
             Final.DEBUG(TAG,"distance: " + vec2Int.distance(meleeArrayList.get(i).getPosition()));
@@ -139,17 +195,61 @@ public class WarManager {
             Final.DEBUG(TAG,"distance: " + vec2Int.distance(range.getPosition()));
 
             MoveAction m = null;
+           /* if (vec2Int!=null)
+            {
+
+                ArrayList<strategy.MyEntity> arrayList = globalManager.getGlobalMap().getEntityMap(range.getPosition(),6,strategy.FinalConstant.getMyID(),false,true,true,EntityType.ALL,true);
+
+                if (arrayList.size()<9 && vec2Int.distance(range.getPosition())>9 && strategy.FinalConstant.getCurrentTik()<750)
+                {
+                    strategy.MyEntity entity = globalManager.getGlobalMap().getMinDisToEntity(range.getPosition(),myPlayer,EntityType.TURRET);
+                    if (entity!=null)
+                    {
+                        m = new MoveAction(entity.getPosition(), true, false);
+                    }
+                    else {
+                        entity = globalManager.getGlobalMap().getMinDisToEntity(range.getPosition(),myPlayer,EntityType.RANGED_BASE);
+                        if (entity!=null)
+                        {
+                            m = new MoveAction(entity.getPosition(), true, false);
+                        }
+                    }
+                }
+                else {
+                    if (vec2Int.distance(range.getPosition()) < dis) {
+                        m = new MoveAction(vec2Int, true, true);
+                    } else {
+                        strategy.MyEntity entity = globalManager.getGlobalMap().getMinDisToEntity(range.getPosition(),myPlayer,EntityType.MELEE_BASE);
+                        if (entity!=null)
+                        {
+                            m = new MoveAction(entity.getPosition(), true, false);
+                        }
+                        else {
+                            if (turretArrayList.size() > 0) {
+                                m = new MoveAction(turretArrayList.get(0).getPosition(), true, false);
+                            }
+                        }
+                    }
+                }
+            }*/
+
             if (vec2Int!=null)
             {
-                 if (vec2Int.distance(range.getPosition())<dis) {
-                     m = new MoveAction(vec2Int, true, true);
-                 }
-                 else {
-                     if (turretArrayList.size()>0)
-                     {
-                         m = new MoveAction(turretArrayList.get(0).getPosition(), true, true);
-                     }
-                 }
+                if (vec2Int.distance(range.getPosition())<dis) {
+                    m = new MoveAction(vec2Int, true, true);
+                }
+                else {
+                    MyEntity entity = globalManager.getGlobalMap().getMinDisToEntity(range.getPosition(),myPlayer,EntityType.TURRET);
+                    if (entity!=null)
+                    {
+                        m = new MoveAction(entity.getPosition(), true, false);
+                    }
+                    else {
+                        if (turretArrayList.size() > 0) {
+                            m = new MoveAction(turretArrayList.get(0).getPosition(), true, true);
+                        }
+                    }
+                }
             }
 
             if (vec2Int.distance(range.getPosition())<6)
@@ -185,7 +285,7 @@ public class WarManager {
                 // идём на хил
                 if (HEAL_RANGER) {
                     if (range.getHealth() == 5) {
-                        Entity entity = globalManager.getGlobalMap().getMinDisToEntity(range.getPosition(), myPlayer, EntityType.BUILDER_UNIT);
+                        MyEntity entity = globalManager.getGlobalMap().getMinDisToEntity(range.getPosition(), myPlayer, EntityType.BUILDER_UNIT);
 
                         if (entity != null) {
                             m = new MoveAction(entity.getPosition(), true, true);
@@ -207,15 +307,15 @@ public class WarManager {
                 }
 
                 a = null;
-                m = new MoveAction(vec2IntDodge, true, false);
+                m = new MoveAction(vec2IntDodge, true, true);
             }
             /*
-            ArrayList<MyEntity> arrayList = globalManager.getGlobalMap().getEntityMap(range.getPosition(), 2, FinalConstant.getMyID(), true, true,EntityType.MELEE_UNIT);
+            ArrayList<strategy.MyEntity> arrayList = globalManager.getGlobalMap().getEntityMap(range.getPosition(), 2, strategy.FinalConstant.getMyID(), true, true,EntityType.MELEE_UNIT);
             if (arrayList.size()!=0)
             {
 
 
-                ArrayList<MyEntity> arrayListRange = globalManager.getGlobalMap().getEntityMap(range.getPosition(), 6, FinalConstant.getMyID(), true, true,EntityType.RANGED_UNIT);
+                ArrayList<strategy.MyEntity> arrayListRange = globalManager.getGlobalMap().getEntityMap(range.getPosition(), 6, strategy.FinalConstant.getMyID(), true, true,EntityType.RANGED_UNIT);
 
             }*/
 
@@ -314,7 +414,7 @@ public class WarManager {
 
        // if (entity.getEntityType() == EntityType.RANGED_UNIT) attackRange++;
 
-        ArrayList<MyEntity> arrayList = globalManager.getGlobalMap().getEntityMap(entity.getPosition(),attackRange,FinalConstant.getMyID(),true,false,EntityType.ALL);
+        ArrayList<MyEntity> arrayList = globalManager.getGlobalMap().getEntityMap(entity.getPosition(),attackRange,FinalConstant.getMyID(),true,false,false,EntityType.ALL,false);
 
         if (arrayList.size()==0) return null;
 

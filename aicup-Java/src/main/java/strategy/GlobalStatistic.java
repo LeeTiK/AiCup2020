@@ -1,5 +1,6 @@
+package strategy;
+
 import model.Entity;
-import model.EntityProperties;
 import model.EntityType;
 import model.PlayerView;
 
@@ -7,7 +8,7 @@ import java.util.ArrayList;
 
 public class GlobalStatistic {
 
-    final static String TAG = "GlobalStatistic";
+    final static String TAG = "strategy.GlobalStatistic";
 
     ArrayList<MyPlayer> mMyPlayers;
     ArrayList<MyEntity> mMyEntityArrayList;
@@ -88,7 +89,7 @@ public class GlobalStatistic {
         {
 
             MyEntity entity = addGlobalEntityList(playerView.getEntities()[i]);
-        //    mMyEntityArrayList.add(new MyEntity(playerView.getEntities()[i]));
+        //    mMyEntityArrayList.add(new strategy.MyEntity(playerView.getEntities()[i]));
 
             if (entity.getPlayerId() == null) continue;
 
