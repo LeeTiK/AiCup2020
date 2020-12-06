@@ -5,14 +5,19 @@ import model.Vec2Int;
 public class Node implements Comparable<Node>
 {
 
-	public Vec2Int coord; // 坐标
-	public Node parent; // 父结点
-	public int G; // G：是个准确的值，是起点到当前结点的代价
-	public int H; // H：是个估值，当前结点到目的结点的估计代价
+	public Vec2Int coord; //
+	public Node parent; //
+	public int G; // G：
+	public int H; // H：
 
 	public Node(int x, int y)
 	{
 		this.coord = new Vec2Int(x, y);
+	}
+
+	public Node(Vec2Int vec2Int)
+	{
+		this.coord = vec2Int.copy();
 	}
 
 	public Node(Vec2Int coord, Node parent, int g, int h)

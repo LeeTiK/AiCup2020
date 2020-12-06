@@ -72,4 +72,11 @@ public class EntityAction {
             repairAction.writeTo(stream);
         }
     }
+
+    public void clear() {
+        this.moveAction = null;
+        this.buildAction = null;
+        this.attackAction = null;
+        this.repairAction = null;
+    }
 }

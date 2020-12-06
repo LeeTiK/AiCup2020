@@ -17,21 +17,23 @@ public class AStar
 	List<Node> closeList = new ArrayList<Node>();
 	
 
-	public void start(MapInfo mapInfo)
+	public Node start(MapInfo mapInfo)
 	{
-		if(mapInfo==null) return;
+		if(mapInfo==null) return null;
 		// clean
 		openList.clear();
 		closeList.clear();
 		// 开始搜索
 		openList.add(mapInfo.start);
-		moveNodes(mapInfo);
+		return moveNodes(mapInfo);
 	}
+
+
 
 	/**
 	 * 移动当前结点
 	 */
-	private void moveNodes(MapInfo mapInfo)
+	private Node moveNodes(MapInfo mapInfo)
 	{
 		while (!openList.isEmpty())
 		{
@@ -40,10 +42,10 @@ public class AStar
 			addNeighborNodeInOpen(mapInfo,current);
 			if (isCoordInClose(mapInfo.end.coord))
 			{
-				drawPath(mapInfo.maps, mapInfo.end);
-				break;
+				return mapInfo.end;
 			}
 		}
+		return null;
 	}
 	
 	/**
@@ -52,7 +54,7 @@ public class AStar
 	private void drawPath(int[][] maps, Node end)
 	{
 		if(end==null||maps==null) return;
-		System.out.println("总代价：" + end.G);
+		System.out.println("Путь：" + end.G);
 		while (end != null)
 		{
 			Vec2Int c = end.coord;
@@ -87,11 +89,11 @@ public class AStar
 		{
 			Node end=mapInfo.end;
 			Vec2Int coord = new Vec2Int(x, y);
-			int G = current.G + value; // 计算邻结点的G值
+			int G = current.G + value;
 			Node child = findNodeInOpen(coord);
 			if (child == null)
 			{
-				int H=calcH(end.coord,coord); // 计算H值
+				int H=calcH(end.coord,coord);
 				if(isEndNode(end.coord,coord))
 				{
 					child=end;

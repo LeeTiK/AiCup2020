@@ -2,8 +2,13 @@ package strategy;
 
 import model.Action;
 import model.PlayerView;
+import model.Vec2Float;
+import strategy.map.potfield.MapPotField;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+
+import static strategy.Final.INFO_UNIT;
 
 public class GlobalManager {
     // менеджер отвечает за экономическую состовляющую
@@ -11,11 +16,15 @@ public class GlobalManager {
     // менеджер отвечающий за бой / защиту
     WarManager mWarManager;
 
-
     // количество от
     GlobalStatistic mGlobalStatistic;
 
     GlobalMap mGlobalMap;
+    MapPotField mMapPotField;
+
+    long startTime;
+
+    long allTime = 0;
 
 
 
@@ -24,25 +33,37 @@ public class GlobalManager {
         mWarManager = new WarManager();
         mGlobalStatistic = new GlobalStatistic();
         mGlobalMap = new GlobalMap();
+
+        allTime = 0;
+
+        mMapPotField = new MapPotField(80);
     }
 
 
     public Action update(PlayerView playerView, DebugInterface debugInterface){
+        startTime = System.nanoTime();
+
         HashMap<Integer, model.EntityAction> hashMap = new HashMap<>();
         // глобальная статистика и информация о мире
 
 
         mGlobalStatistic.updateInfo(playerView,this);
         mGlobalMap.update(getGlobalStatistic());
+        mMapPotField.update(this);
 
         ////////////////////////STATISTIC/////////////////////////////
 
-        Final.DEBUG("","Tik: " + FinalConstant.getCurrentTik() + " resource: " + getGlobalMap().getResourceMap()+ " ID:" + getGlobalStatistic().getMyPlayer().getId());
+        Final.DEBUG("","Tik: " + FinalConstant.getCurrentTik() + " resource: " + getGlobalMap().getResourceMap()+ " ID:" + getGlobalStatistic().getMyPlayer().getId() +" Alltime: " + allTime/1000000);
 
         if (Final.debugRelease)
         {
+            if (FinalConstant.getCurrentTik()==1) {
+                Final.DEBUGRelease("", "Tik: " + FinalConstant.getCurrentTik() +  " ID:" + getGlobalStatistic().getMyPlayer().getId());
+            }
+
             if (FinalConstant.getCurrentTik()%50==0) {
-                Final.DEBUGRelease("","Tik: " + FinalConstant.getCurrentTik() + " resource: " + getGlobalMap().getResourceMap() +  " ID:" + getGlobalStatistic().getMyPlayer().getId());
+
+                Final.DEBUGRelease("","Tik: " + FinalConstant.getCurrentTik() + " resource: " + getGlobalMap().getResourceMap() +" Alltime: " + allTime/1000000);
                 logInfo();
             }
         }
@@ -58,11 +79,12 @@ public class GlobalManager {
                 return new Action(hashMap1);
             }
         }
-
+        hashMap.putAll(mWarManager.update(playerView,this));
 
         hashMap.putAll(mEconomicManager.update(playerView,this));
 
-        hashMap.putAll(mWarManager.update(playerView,this));
+
+        allTime +=System.nanoTime()-startTime;
 
         return new Action(hashMap);
     }
@@ -85,6 +107,19 @@ public class GlobalManager {
 
     public void debugUpdate(PlayerView playerView, DebugInterface debugInterface) {
         mGlobalMap.debugUpdate(playerView,debugInterface);
+        mMapPotField.debugUpdate(playerView,debugInterface);
+
+        if (INFO_UNIT) {
+            MyPlayer myPlayer = mGlobalStatistic.getMyPlayer();
+
+            ArrayList<MyEntity> myEntities = myPlayer.getUnitArrayList();
+
+            for (int i = 0; i < myEntities.size(); i++) {
+                Vec2Float vec2Float = myEntities.get(i).getPosition().getVec2Float();
+                vec2Float.setY(vec2Float.getY()+0.5f);
+                FinalGraphic.sendText(debugInterface,vec2Float,15,myEntities.get(i).toString());
+            }
+        }
     }
 
 
@@ -98,4 +133,7 @@ public class GlobalManager {
         }
     }
 
+    public MapPotField getMapPotField() {
+        return mMapPotField;
+    }
 }

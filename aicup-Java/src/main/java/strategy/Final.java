@@ -8,9 +8,16 @@ public class Final {
     final static boolean TEST =false;
     final static boolean debug =false;
     final static boolean debugRelease =true;
-    public final static boolean debugGraphic =false;
+    public final static boolean debugGraphic =true;
 
     final static boolean OFF_WAR = false;
+
+
+    //////////DEBUG MAP GRAPHIC//////////////
+
+    public final static boolean COORDINATE =false;
+    public final static boolean INFO_UNIT =false;
+    public final static boolean PLAYER_AREA =true;
 
     static public Player getMyPlayer(PlayerView playerView){
         int myID = playerView.getMyId();

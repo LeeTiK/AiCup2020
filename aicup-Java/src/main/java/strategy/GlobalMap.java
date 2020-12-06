@@ -7,12 +7,15 @@ import java.util.ArrayList;
 public class GlobalMap {
     // класс карты
     MyEntity[][] map = null;
+    MyEntity[][] mapNextTick = null;
 
     ArrayList<MyEntity> allEntity;
 
     AreaPlayer mAreaPlayer;
 
     long resourceMap;
+
+    final static MyEntity empty = new MyEntity(-1,-1,EntityType.Empty,null,0,false);;
 
     public GlobalMap(){
 
@@ -22,8 +25,10 @@ public class GlobalMap {
         if (map == null)
         {
             map = new MyEntity[FinalConstant.getMapSize()][FinalConstant.getMapSize()];
-
+            mapNextTick = new MyEntity[FinalConstant.getMapSize()][FinalConstant.getMapSize()];
         }
+
+
 
         updateMap(globalStatistic);
 
@@ -104,6 +109,7 @@ public class GlobalMap {
             if (checkCoord(entity.getPosition())
             ) {
                 map[entity.getPosition().getX()][entity.getPosition().getY()] = entity;
+                mapNextTick[entity.getPosition().getX()][entity.getPosition().getY()] = entity;
 
                 switch (entity.getEntityType())
                 {
@@ -119,6 +125,7 @@ public class GlobalMap {
                             for (int k=0; k<entityProperties.getSize(); k++)
                             {
                                 map[entity.getPosition().getX()+j][entity.getPosition().getY()+k] = entity;
+                                mapNextTick[entity.getPosition().getX()+j][entity.getPosition().getY()+k] = entity;
                             }
                         }
                         break;
@@ -137,7 +144,8 @@ public class GlobalMap {
         {
             for (int j=0; j<map[i].length; j++)
             {
-                map[i][j] = new MyEntity(-1,-1,EntityType.Empty,null,0,false);
+                map[i][j] = empty;
+                mapNextTick[i][j] = empty;
             }
         }
     }
@@ -568,7 +576,7 @@ public class GlobalMap {
 
     public Vec2Int getNearestPlayer(Vec2Int vec2Int, int myID){
         double minDis = 0xFFFFF;
-        Vec2Int currentPos = vec2Int;
+        Vec2Int currentPos = null;
 
         for (int i=0; i<map.length; i++)
         {
@@ -601,14 +609,15 @@ public class GlobalMap {
             {
                 for (int j=0; j<map[i].length; j++)
                 {
-                    if (map[i][j].getEntityType()!=EntityType.Empty){
-                       // strategy.FinalGraphic.sendSquare(debugInterface,new Vec2Int(i,j),1, strategy.FinalGraphic.COLOR_BLACK);
+                    if (Final.COORDINATE)
+                    {
+                        FinalGraphic.sendText(debugInterface,new Vec2Int(i,j),10,"("+i+","+j+")");
                     }
                 }
             }
         }
 
-        FinalGraphic.sendSquare(debugInterface,new Vec2Int(0,0),getAreaPlayer().width, FinalGraphic.COLOR_WHITE);
+       // FinalGraphic.sendSquare(debugInterface,new Vec2Int(0,0),getAreaPlayer().width, FinalGraphic.COLOR_WHITE);
     }
 
     //проверка для отхода крестьян от опасности
@@ -734,11 +743,11 @@ public class GlobalMap {
         return null;
     }
 
-    public Entity[][] getMap() {
+    public MyEntity[][] getMap() {
         return map;
     }
 
-    public Entity getMap(Vec2Int vec2Int)
+    public MyEntity getMap(Vec2Int vec2Int)
     {
         if (!checkCoord(vec2Int)) return null;
 
@@ -796,6 +805,40 @@ public class GlobalMap {
         if (current!=null)
         {
             return current;
+        }
+
+        return null;
+    }
+
+    public MyEntity[][] getMapNextTick() {
+        return mapNextTick;
+    }
+
+    public MyEntity getMoveMyUnit(Vec2Int position){
+        byte[][] bytes= new byte[][]{
+                {-1,0},{0,-1},{0,1},{1,0},
+        };
+
+        for (int i=0; i<4; i++) {
+            Vec2Int newPosition = position.add(bytes[i][0], bytes[i][1]);
+
+            if (!checkCoord(newPosition)) continue;
+            if (checkEmpty(newPosition)) continue;
+
+            MyEntity entity = map[newPosition.getX()][newPosition.getY()];
+
+            if (entity.getPlayerId()==null) continue;
+
+            switch (entity.getEntityType())
+            {
+                case RANGED_UNIT:
+                case MELEE_UNIT:
+               // case BUILDER_UNIT:
+                    if (entity.isMove() && !entity.isRotation()) return entity;
+                    break;
+                case BUILDER_UNIT:
+                    if (entity.isDodge()) return null;
+            }
         }
 
         return null;

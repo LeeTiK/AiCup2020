@@ -2,8 +2,11 @@ package strategy;
 
 import model.EntityType;
 import model.Player;
+import model.Vec2Int;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class MyPlayer extends Player {
 
@@ -217,6 +220,9 @@ public class MyPlayer extends Player {
                     break;
             }
         }
+
+
+        // сортируем всех юнитов атаки по ближайщему(толкьо для себя)
 
 
         mRangerArrayList = getEntityArrayListSlow(EntityType.RANGED_UNIT);
@@ -444,5 +450,41 @@ public class MyPlayer extends Player {
             return arrayList.get(0);
         }
         return null;
+    }
+
+    // сортируем юнитов по дистанции к врагам
+    public void sortAttackUnit(GlobalMap globalMap) {
+
+        int minDis=0xFFFF,maxDis = 0;
+
+        for (int i=0; i<mUnitArrayList.size(); i++)
+        {
+            MyEntity unit = mUnitArrayList.get(i);
+            Vec2Int vec2Int = globalMap.getNearestPlayer(unit.getPosition(),getId());
+
+            if (vec2Int!=null)
+            {
+                unit.setMinDisToEnemy((float) unit.getPosition().distance(vec2Int));
+            }
+            else {
+                unit.setMinDisToEnemy(0xFFFF);
+            }
+        }
+
+        // сортируем по порядку
+        Collections.sort(mUnitArrayList, new Comparator<MyEntity>(){
+            public int compare(MyEntity a, MyEntity b)
+            {
+                if (a.getMinDisToEnemy()>b.getMinDisToEnemy()) return 1;
+                if (a.getMinDisToEnemy()<b.getMinDisToEnemy()) return -1;
+                return 0;
+            }
+        });
+
+
+
+        mRangerArrayList = getEntityArrayListSlow(EntityType.RANGED_UNIT);
+        mMeleeArrayList =  getEntityArrayListSlow(EntityType.MELEE_UNIT);
+        mBuilderArrayList =  getEntityArrayListSlow(EntityType.BUILDER_UNIT);
     }
 }

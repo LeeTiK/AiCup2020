@@ -1,16 +1,16 @@
 {
-  "view_speed_modifier": 1.6,
+  "view_speed_modifier": 2.0,
   "volume": 0.5,
   "renderer": {
     "mode": "Schematic",
     "camera": {
       "center": {
-        "x": 42.673897,
-        "y": 45.78523
+        "x": 47.947407,
+        "y": 33.35138
       },
       "rotation": 0.0,
       "attack": 1.5707964,
-      "distance": 37.529922,
+      "distance": 47.504406,
       "perspective": true
     }
   }
