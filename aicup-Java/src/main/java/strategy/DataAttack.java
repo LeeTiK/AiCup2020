@@ -10,15 +10,14 @@ public class DataAttack {
     Vec2Int position;
 
 
-    public DataAttack(MyEntity targetEntity)
-    {
+    public DataAttack(MyEntity targetEntity) {
         this.targetEntity = targetEntity;
         mMyEntity = null;
         position = null;
     }
 
     public int getIdEntity() {
-        if (mMyEntity!=null) return mMyEntity.getId();
+        if (mMyEntity != null) return mMyEntity.getId();
         return targetEntity.getId();
     }
 
@@ -47,13 +46,10 @@ public class DataAttack {
     }
 
     public void reset(int attack) {
-        if (mMyEntity!=null)
-        {
+        if (mMyEntity != null) {
             mMyEntity.attackResetHP(attack);
-        }
-        else {
-            if (targetEntity!=null)
-            {
+        } else {
+            if (targetEntity != null) {
                 targetEntity.attackResetHP(attack);
             }
         }

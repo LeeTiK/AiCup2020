@@ -6,8 +6,7 @@ public enum EStatus {
     DELETE_Entity(0x01),
     UPDATE_Entity(0x02),
 
-    ERROR(0xFF)
-    ;
+    ERROR(0xFF);
 
     byte number;
 

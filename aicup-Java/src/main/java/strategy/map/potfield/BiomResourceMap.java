@@ -3,12 +3,11 @@ package strategy.map.potfield;
 import java.util.HashMap;
 
 public class BiomResourceMap {
-    HashMap<Integer,BiomResource> mBiomResourceHashMap;
+    HashMap<Integer, BiomResource> mBiomResourceHashMap;
 
-    int sizeBiom =-1;
+    int sizeBiom = -1;
 
-    public BiomResourceMap()
-    {
+    public BiomResourceMap() {
         mBiomResourceHashMap = new HashMap<>();
         sizeBiom = -1;
     }
@@ -17,13 +16,12 @@ public class BiomResourceMap {
         return mBiomResourceHashMap;
     }
 
-    public void addBiomResource(Field field)
-    {
+    public void addBiomResource(Field field) {
 
     }
 
     public void addSizeBiom() {
-        this.sizeBiom ++;
+        this.sizeBiom++;
     }
 
     public int getSizeBiom() {
@@ -32,6 +30,6 @@ public class BiomResourceMap {
 
     public void clear() {
         mBiomResourceHashMap.clear();
-        sizeBiom=-1;
+        sizeBiom = -1;
     }
 }

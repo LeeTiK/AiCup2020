@@ -11,8 +11,7 @@ public class DataTaskUnit {
     Entity mEntity;
 
 
-    public DataTaskUnit(EUnitState unitState)
-    {
+    public DataTaskUnit(EUnitState unitState) {
         mUnitState = unitState;
     }
 

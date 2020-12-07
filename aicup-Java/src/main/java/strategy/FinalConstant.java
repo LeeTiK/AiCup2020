@@ -17,7 +17,7 @@ public class FinalConstant {
     static EntityProperties mEntityPropertiesRESOURCE;
     static EntityProperties mEntityPropertiesTURRET;
 
-    static public int myID=0;
+    static public int myID = 0;
     static public int currentTik = 0;
 
     static public int mapSize;
@@ -31,7 +31,7 @@ public class FinalConstant {
     }
 
 
-    public static void initConstantMap(){
+    public static void initConstantMap() {
 
     }
 
@@ -76,15 +76,12 @@ public class FinalConstant {
         return mEntityPropertiesWALL;
     }
 
-    static public EntityProperties getEntityProperties(Entity entity)
-    {
+    static public EntityProperties getEntityProperties(Entity entity) {
         return getEntityProperties(entity.getEntityType());
     }
 
-    static public EntityProperties getEntityProperties(EntityType entityType)
-    {
-        switch (entityType)
-        {
+    static public EntityProperties getEntityProperties(EntityType entityType) {
+        switch (entityType) {
 
             case WALL:
                 return getEntityPropertiesWALL();

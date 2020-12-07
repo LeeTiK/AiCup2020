@@ -1,6 +1,6 @@
 package strategy;
 
-public enum  EUnitState {
+public enum EUnitState {
     NEW_UNIT(0x00),
     ATTACK(0x01),
     DEFENSE(0x02),
@@ -8,8 +8,7 @@ public enum  EUnitState {
     REPAIR(0x04),
     BUILD(0x05),
 
-    EMPTY(0xFF);
-    ;
+    EMPTY(0xFF);;
 
     byte number;
 

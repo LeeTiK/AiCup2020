@@ -16,15 +16,14 @@ public class GlobalStatistic {
     MyPlayer left;
     MyPlayer right;
 
-    public GlobalStatistic(){
+    public GlobalStatistic() {
         mMyPlayers = new ArrayList<>();
         mMyEntityArrayList = new ArrayList<>();
     }
 
 
-    public void updateInfo(PlayerView playerView, GlobalManager globalManager){
-        if (playerView.getCurrentTick()==0)
-        {
+    public void updateInfo(PlayerView playerView, GlobalManager globalManager) {
+        if (playerView.getCurrentTick() == 0) {
             initConstant(playerView);
         }
 
@@ -33,7 +32,7 @@ public class GlobalStatistic {
         updatePlayerInfo(playerView, globalManager);
     }
 
-    void initConstant(PlayerView playerView){
+    void initConstant(PlayerView playerView) {
         FinalConstant.mapSize = playerView.getMapSize();
 
         FinalConstant.myID = playerView.getMyId();
@@ -50,48 +49,41 @@ public class GlobalStatistic {
         FinalConstant.mEntityPropertiesTURRET = playerView.getEntityProperties().get(EntityType.TURRET);
     }
 
-    private void updatePlayerInfo(PlayerView playerView, GlobalManager globalManager){
-      //  playerView.isFogOfWar()
+    private void updatePlayerInfo(PlayerView playerView, GlobalManager globalManager) {
+        //  playerView.isFogOfWar()
 
         // добавление и обновление информации о игроках
-        for (int i=0; i<playerView.getPlayers().length; i++)
-        {
-            boolean check =true;
-            for (int j=0; j<mMyPlayers.size(); j++)
-            {
-                if (playerView.getPlayers()[i].getId() == mMyPlayers.get(j).getId())
-                {
+        for (int i = 0; i < playerView.getPlayers().length; i++) {
+            boolean check = true;
+            for (int j = 0; j < mMyPlayers.size(); j++) {
+                if (playerView.getPlayers()[i].getId() == mMyPlayers.get(j).getId()) {
                     mMyPlayers.get(j).update(playerView.getPlayers()[i]);
                     check = false;
                     break;
                 }
             }
 
-            if (check)
-            {
+            if (check) {
                 mMyPlayers.add(new MyPlayer(playerView.getPlayers()[i]));
             }
         }
 
 
         // начала обновлений
-        for (int j=0; j<mMyPlayers.size(); j++)
-        {
+        for (int j = 0; j < mMyPlayers.size(); j++) {
             mMyPlayers.get(j).startUpdate();
         }
 
-        for (int i=0; i<mMyEntityArrayList.size(); i++)
-        {
+        for (int i = 0; i < mMyEntityArrayList.size(); i++) {
             mMyEntityArrayList.get(i).setUpdate(false);
         }
 
 
         // добавление и обновление информации о юнитах
-        for (int i=0; i<playerView.getEntities().length; i++)
-        {
+        for (int i = 0; i < playerView.getEntities().length; i++) {
 
             MyEntity entity = addGlobalEntityList(playerView.getEntities()[i]);
-        //    mMyEntityArrayList.add(new strategy.MyEntity(playerView.getEntities()[i]));
+            //    mMyEntityArrayList.add(new strategy.MyEntity(playerView.getEntities()[i]));
 
             if (entity.getPlayerId() == null) continue;
 
@@ -101,39 +93,35 @@ public class GlobalStatistic {
 
             EStatus eStatus = myPlayer.updateEntity(entity);
 
-            switch (eStatus)
-            {
+            switch (eStatus) {
                 case NEW_Entity:
                 case DELETE_Entity: {
                     Final.DEBUG(TAG, "Player ID: " + myPlayer.getId() + " Event: " + eStatus + " Type: " + playerView.getEntities()[i].getEntityType());
                     break;
                 }
 
-                case UPDATE_Entity:
-                    {
-                        break;
-                    }
-                case ERROR:{
-                    Final.DEBUG(TAG,"Player ID: " +myPlayer.getId() + " Event: " + eStatus);
+                case UPDATE_Entity: {
+                    break;
+                }
+                case ERROR: {
+                    Final.DEBUG(TAG, "Player ID: " + myPlayer.getId() + " Event: " + eStatus);
                     break;
                 }
             }
         }
 
-        for (int j=0; j<mMyPlayers.size(); j++)
-        {
+        for (int j = 0; j < mMyPlayers.size(); j++) {
             EntityType entityType = mMyPlayers.get(j).checkDelete();
 
-            if (entityType!=null){
-                Final.DEBUG(TAG,"Player ID: " +mMyPlayers.get(j).getId() + " Event: " + EStatus.DELETE_Entity + " Type: " + entityType);
+            if (entityType != null) {
+                Final.DEBUG(TAG, "Player ID: " + mMyPlayers.get(j).getId() + " Event: " + EStatus.DELETE_Entity + " Type: " + entityType);
             }
 
-            while (entityType!=null)
-            {
+            while (entityType != null) {
                 entityType = mMyPlayers.get(j).checkDelete();
 
-                if (entityType!=null){
-                    Final.DEBUG(TAG,"Player ID: " +mMyPlayers.get(j).getId() + " Event: " + EStatus.DELETE_Entity + " Type: " + entityType);
+                if (entityType != null) {
+                    Final.DEBUG(TAG, "Player ID: " + mMyPlayers.get(j).getId() + " Event: " + EStatus.DELETE_Entity + " Type: " + entityType);
                 }
             }
 
@@ -143,27 +131,28 @@ public class GlobalStatistic {
         finishGlobalList();
 
 
-        left = getPlayer(4);
-        right = getPlayer(3);
+        if (mMyPlayers.size() > 2) {
+            left = getPlayer(4);
+            right = getPlayer(3);
 
-        if (left.getPopulationCurrent()==0 && left.getBuildingArrayList().size()==0)
-        {
+            if (left.getPopulationCurrent() == 0 && left.getBuildingArrayList().size() == 0) {
+                left = getPlayer(2);
+            }
+
+            if (right.getPopulationCurrent() == 0 && right.getBuildingArrayList().size() == 0) {
+                right = getPlayer(2);
+            }
+        } else {
             left = getPlayer(2);
-        }
-
-        if (right.getPopulationCurrent()==0 && right.getBuildingArrayList().size()==0)
-        {
             right = getPlayer(2);
         }
-
         //playerView.getPlayers()[i].getResource()
 
     }
 
     private void finishGlobalList() {
-        for (int i=0; i<mMyEntityArrayList.size(); i++)
-        {
-            if (!mMyEntityArrayList.get(i).isUpdate()){
+        for (int i = 0; i < mMyEntityArrayList.size(); i++) {
+            if (!mMyEntityArrayList.get(i).isUpdate()) {
                 mMyEntityArrayList.remove(i);
             }
         }
@@ -183,14 +172,12 @@ public class GlobalStatistic {
         return mMyEntityArrayList.get(mMyEntityArrayList.size() - 1);
     }
 
-    public MyPlayer getMyPlayer(){
+    public MyPlayer getMyPlayer() {
         return getPlayer(FinalConstant.getMyID());
     }
 
-    public MyPlayer getPlayer(int id)
-    {
-        for (int i=0; i<mMyPlayers.size(); i++)
-        {
+    public MyPlayer getPlayer(int id) {
+        for (int i = 0; i < mMyPlayers.size(); i++) {
             if (mMyPlayers.get(i).getId() == id) return mMyPlayers.get(i);
         }
 

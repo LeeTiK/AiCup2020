@@ -11,8 +11,7 @@ public class BiomResource {
     int districtResource;
     int resourceSize;
 
-    public BiomResource()
-    {
+    public BiomResource() {
         mFieldArrayList = new ArrayList<>();
     }
 
@@ -28,12 +27,9 @@ public class BiomResource {
         this.districtResource = districtResource;
     }
 
-    public void addField(Field field)
-    {
-        for (int i=0; i<mFieldArrayList.size(); i++)
-        {
-            if (mFieldArrayList.get(i).equals(field))
-            {
+    public void addField(Field field) {
+        for (int i = 0; i < mFieldArrayList.size(); i++) {
+            if (mFieldArrayList.get(i).equals(field)) {
                 Final.DEBUG("BiomResource", "ОШИБКА ПОВТОРА");
             }
         }
@@ -41,9 +37,8 @@ public class BiomResource {
         mFieldArrayList.add(field);
     }
 
-    public void addResource(int resource)
-    {
-        resourceSize+=resource;
+    public void addResource(int resource) {
+        resourceSize += resource;
     }
 
     public int getResourceSize() {

@@ -15,102 +15,173 @@ public class GlobalMap {
 
     long resourceMap;
 
-    final static MyEntity empty = new MyEntity(-1,null,EntityType.Empty,null,0,false);;
+    final static MyEntity empty = new MyEntity(-1, null, EntityType.Empty, null, 0, false);
+    ;
 
-    final public static byte[][] aroundArray= new byte[][]{{-1,0},{0,-1},{0,1},{1,0},};
-    final public static byte[][] rangerArray= new byte[][]{
-            {-5,0},
-            {-4,1},{-4,0},{-4,-1},
-            {-3,2},{-3,1},{-3,0},{-3,-1},{-3,-2},
-            {-2,3},{-2,2},{-2,1},{-2,0},{-2,-1},{-2,-2},{-2,-3},
-            {-1,4},{-1,3},{-1,2},{-1,1},{-1,0},{-1,-1},{-1,-2},{-1,-3},{-1,-4},
-            {0,5},{0,4},{0,3},{0,2},{0,1},{0,0},{0,-1},{0,-2},{0,-3},{0,-4},{0,-5},
-            {1,4},{1,3},{1,2},{1,1},{1,0},{1,-1},{1,-2},{1,-3},{1,-4},
-            {2,3},{2,2},{2,1},{2,0},{2,-1},{2,-2},{2,-3},
-            {3,2},{3,1},{3,0},{3,-1},{3,-2},
-            {4,1},{4,0},{4,-1},
-            {5,0},
-    };
-    final public static byte[][] turretArray= new byte[][]{
-            {-5,1},
-            {-5,0},
-            {-4,2},{-4,1},{-4,0},{-4,-1},
-            {-3,3},{-3,2},{-3,1},{-3,0},{-3,-1},{-3,-2},
-            {-2,4},{-2,3},{-2,2},{-2,1},{-2,0},{-2,-1},{-2,-2},{-2,-3},
-            {-1,5},{-1,4},{-1,3},{-1,2},{-1,1},{-1,0},{-1,-1},{-1,-2},{-1,-3},{-1,-4},
-            {0,6},{0,5},{0,4},{0,3},{0,2},{0,1},{0,0},{0,-1},{0,-2},{0,-3},{0,-4},{0,-5},
-            {1,6},{1,5},{1,4},{1,3},{1,2},{1,1},{1,0},{1,-1},{1,-2},{1,-3},{1,-4},{1,-5},
-            {2,5},{2,4},{2,3},{2,2},{2,1},{2,0},{2,-1},{2,-2},{2,-3},{2,-4},
-            {3,4},{3,3},{3,2},{3,1},{3,0},{3,-1},{3,-2},{3,-3},
-            {4,3},{4,2},{4,1},{4,0},{4,-1},{4,-2},
-            {5,2},{5,1},{5,0},{5,-1},
-            {6,1},
-            {6,0},
+    final public static byte[][] aroundArray = new byte[][]{{-1, 0}, {0, -1}, {0, 1}, {1, 0},};
+
+    final public static byte[][] aroundAndContourArray = new byte[][]{
+            {-2, 0},
+            {-1, -1}, {-1, 0}, {-1, 1},
+            {0, -2}, {0, -1}, {0, 1}, {0, 2},
+            {1, -1}, {1, 0}, {1, 1},
+            {2, 0},
     };
 
-    public GlobalMap(){
+    final public static byte[][] aroundContourArray = new byte[][]{
+            {-2, 0},
+            {-1, -1}, {-1, 1},
+            {0, -2}, {0, 2},
+            {1, -1}, {1, 1},
+            {2, 0},
+    };
+
+    final public static byte[][] rangerArray = new byte[][]{
+            {-5, 0},
+            {-4, 1}, {-4, 0}, {-4, -1},
+            {-3, 2}, {-3, 1}, {-3, 0}, {-3, -1}, {-3, -2},
+            {-2, 3}, {-2, 2}, {-2, 1}, {-2, 0}, {-2, -1}, {-2, -2}, {-2, -3},
+            {-1, 4}, {-1, 3}, {-1, 2}, {-1, 1}, {-1, 0}, {-1, -1}, {-1, -2}, {-1, -3}, {-1, -4},
+            {0, 5}, {0, 4}, {0, 3}, {0, 2}, {0, 1}, {0, 0}, {0, -1}, {0, -2}, {0, -3}, {0, -4}, {0, -5},
+            {1, 4}, {1, 3}, {1, 2}, {1, 1}, {1, 0}, {1, -1}, {1, -2}, {1, -3}, {1, -4},
+            {2, 3}, {2, 2}, {2, 1}, {2, 0}, {2, -1}, {2, -2}, {2, -3},
+            {3, 2}, {3, 1}, {3, 0}, {3, -1}, {3, -2},
+            {4, 1}, {4, 0}, {4, -1},
+            {5, 0},
+    };
+
+    final public static byte[][] rangerAndContourArray = new byte[][]{
+            {-6, 0},
+            {-5, -1}, {-5, 0}, {-5, 1},
+            {-4, 2}, {-4, 1}, {-4, 0}, {-4, -1}, {-4, -2},
+            {-3, 3}, {-3, 2}, {-3, 1}, {-3, 0}, {-3, -1}, {-3, -2}, {-3, -3},
+            {-2, 4}, {-2, 3}, {-2, 2}, {-2, 1}, {-2, 0}, {-2, -1}, {-2, -2}, {-2, -3}, {-2, -4},
+            {-1, 5}, {-1, 4}, {-1, 3}, {-1, 2}, {-1, 1}, {-1, 0}, {-1, -1}, {-1, -2}, {-1, -3}, {-1, -4}, {-1, -5},
+            {0, 6}, {0, 5}, {0, 4}, {0, 3}, {0, 2}, {0, 1}, {0, 0}, {0, -1}, {0, -2}, {0, -3}, {0, -4}, {0, -5}, {0, -6},
+            {1, 5}, {1, 4}, {1, 3}, {1, 2}, {1, 1}, {1, 0}, {1, -1}, {1, -2}, {1, -3}, {1, -4}, {1, -5},
+            {2, 4}, {2, 3}, {2, 2}, {2, 1}, {2, 0}, {2, -1}, {2, -2}, {2, -3}, {2, -4},
+            {3, 1}, {3, 2}, {3, 1}, {3, 0}, {3, -1}, {3, -2}, {3, -3},
+            {4, 0}, {4, 1}, {4, 0}, {4, -1}, {4, -2},
+            {5, -1}, {5, 0}, {5, 1},
+            {6, 0},
+    };
+
+    final public static byte[][] rangerContourArray = new byte[][]{
+            {-6, 0},
+            {-5, -1}, {-5, 1},
+            {-4, 2}, {-4, -2},
+            {-3, 3}, {-3, -3},
+            {-2, 4}, {-2, -4},
+            {-1, 5}, {-1, -5},
+            {0, 6}, {0, -6},
+            {1, 5}, {1, -5},
+            {2, 4}, {2, -4},
+            {3, 1}, {3, -3},
+            {4, 0}, {4, -2},
+            {5, -1}, {5, 1},
+            {6, 0},
+    };
+
+    final public static byte[][] turretArray = new byte[][]{
+            {-5, 1}, {-5, 0},
+            {-4, 2}, {-4, 1}, {-4, 0}, {-4, -1},
+            {-3, 3}, {-3, 2}, {-3, 1}, {-3, 0}, {-3, -1}, {-3, -2},
+            {-2, 4}, {-2, 3}, {-2, 2}, {-2, 1}, {-2, 0}, {-2, -1}, {-2, -2}, {-2, -3},
+            {-1, 5}, {-1, 4}, {-1, 3}, {-1, 2}, {-1, 1}, {-1, 0}, {-1, -1}, {-1, -2}, {-1, -3}, {-1, -4},
+            {0, 6}, {0, 5}, {0, 4}, {0, 3}, {0, 2}, {0, 1}, {0, 0}, {0, -1}, {0, -2}, {0, -3}, {0, -4}, {0, -5},
+            {1, 6}, {1, 5}, {1, 4}, {1, 3}, {1, 2}, {1, 1}, {1, 0}, {1, -1}, {1, -2}, {1, -3}, {1, -4}, {1, -5},
+            {2, 5}, {2, 4}, {2, 3}, {2, 2}, {2, 1}, {2, 0}, {2, -1}, {2, -2}, {2, -3}, {2, -4},
+            {3, 4}, {3, 3}, {3, 2}, {3, 1}, {3, 0}, {3, -1}, {3, -2}, {3, -3},
+            {4, 3}, {4, 2}, {4, 1}, {4, 0}, {4, -1}, {4, -2},
+            {5, 2}, {5, 1}, {5, 0}, {5, -1},
+            {6, 1}, {6, 0},
+    };
+
+    final public static byte[][] turretAndContourArray = new byte[][]{
+            {-6, 1}, {-6, 0},
+            {-5, 2}, {-5, 1}, {-5, 0}, {-5, -1},
+            {-4, 3}, {-4, 2}, {-4, 1}, {-4, 0}, {-4, -1}, {-4, -2},
+            {-3, 3}, {-3, 2}, {-3, 1}, {-3, 0}, {-3, -1}, {-3, -2},
+            {-2, 5}, {-2, 4}, {-2, 3}, {-2, 2}, {-2, 1}, {-2, 0}, {-2, -1}, {-2, -2}, {-2, -3}, {-2, -4},
+            {-1, 6}, {-1, 5}, {-1, 4}, {-1, 3}, {-1, 2}, {-1, 1}, {-1, 0}, {-1, -1}, {-1, -2}, {-1, -3}, {-1, -4}, {-1, -5}, {-1, -6},
+            {0, 7}, {0, 6}, {0, 5}, {0, 4}, {0, 3}, {0, 2}, {0, 1}, {0, 0}, {0, -1}, {0, -2}, {0, -3}, {0, -4}, {0, -5}, {0, -6},
+            {1, 7}, {1, 6}, {1, 5}, {1, 4}, {1, 3}, {1, 2}, {1, 1}, {1, 0}, {1, -1}, {1, -2}, {1, -3}, {1, -4}, {1, -5}, {1, -6},
+            {2, 6}, {2, 5}, {2, 4}, {2, 3}, {2, 2}, {2, 1}, {2, 0}, {2, -1}, {2, -2}, {2, -3}, {2, -4}, {2, -5},
+            {3, 5}, {3, 4}, {3, 3}, {3, 2}, {3, 1}, {3, 0}, {3, -1}, {3, -2}, {3, -3}, {3, -4},
+            {4, 4}, {4, 3}, {4, 2}, {4, 1}, {4, 0}, {4, -1}, {4, -2}, {4, -3},
+            {5, 3}, {5, 2}, {5, 1}, {5, 0}, {5, -1}, {5, -2},
+            {6, 2}, {6, 1}, {6, 0}, {6, -1},
+            {7, 1}, {7, 0},
+    };
+
+    final public static byte[][] turretContourArray = new byte[][]{
+            {-6, 1}, {-6, 0},
+            {-5, 2}, {-5, -1},
+            {-4, 3}, {-4, -2},
+            {-3, 3}, {-3, -2},
+            {-2, 5}, {-2, -4},
+            {-1, 6}, {-1, -6},
+            {0, 7}, {0, -6},
+            {1, 7}, {1, -6},
+            {2, 6}, {2, -5},
+            {3, 5}, {3, -4},
+            {4, 4}, {4, -3},
+            {5, 3}, {5, -2},
+            {6, 2}, {6, -1},
+            {7, 1}, {7, 0},
+    };
+
+    public GlobalMap() {
 
     }
 
-    public void update(GlobalStatistic globalStatistic){
-        if (map == null)
-        {
+    public void update(GlobalStatistic globalStatistic) {
+        if (map == null) {
             map = new MyEntity[FinalConstant.getMapSize()][FinalConstant.getMapSize()];
             mapNextTick = new MyEntity[FinalConstant.getMapSize()][FinalConstant.getMapSize()];
         }
 
 
-
         updateMap(globalStatistic);
 
-        mAreaPlayer= getPlayerArea(FinalConstant.getMyID());
+        mAreaPlayer = getPlayerArea(FinalConstant.getMyID());
     }
 
     public AreaPlayer getPlayerArea(int playerID) {
 
         int xMax = 0;
         int yMax = 0;
-        for (int i=0; i<map.length; i++)
-        {
-            for (int j=0; j<=i; j++)
-            {
+        for (int i = 0; i < map.length; i++) {
+            for (int j = 0; j <= i; j++) {
                 Entity entity = map[i][j];
-                if (entity.getEntityType()!=EntityType.RANGED_UNIT &&
-                        entity.getEntityType()!=EntityType.MELEE_UNIT &&
-                        entity.getEntityType()!=EntityType.RESOURCE &&
-                        entity.getEntityType()!=EntityType.Empty
-                       )
-                {
-                    if (entity.getPlayerId()==playerID)
-                    {
-                        if (xMax<i)
-                        {
+                if (entity.getEntityType() != EntityType.RANGED_UNIT &&
+                        entity.getEntityType() != EntityType.MELEE_UNIT &&
+                        entity.getEntityType() != EntityType.RESOURCE &&
+                        entity.getEntityType() != EntityType.Empty
+                ) {
+                    if (entity.getPlayerId() == playerID) {
+                        if (xMax < i) {
                             xMax = i;
                         }
 
-                        if (yMax<j)
-                        {
+                        if (yMax < j) {
                             yMax = j;
                         }
                     }
                 }
 
                 entity = map[j][i];
-                if (entity.getEntityType()!=EntityType.RANGED_UNIT &&
-                        entity.getEntityType()!=EntityType.MELEE_UNIT &&
-                        entity.getEntityType()!=EntityType.RESOURCE &&
-                        entity.getEntityType()!=EntityType.Empty
-                )
-                {
-                    if (entity.getPlayerId()==playerID)
-                    {
-                        if (xMax<j)
-                        {
+                if (entity.getEntityType() != EntityType.RANGED_UNIT &&
+                        entity.getEntityType() != EntityType.MELEE_UNIT &&
+                        entity.getEntityType() != EntityType.RESOURCE &&
+                        entity.getEntityType() != EntityType.Empty
+                ) {
+                    if (entity.getPlayerId() == playerID) {
+                        if (xMax < j) {
                             xMax = j;
                         }
 
-                        if (yMax<i)
-                        {
+                        if (yMax < i) {
                             yMax = i;
                         }
                     }
@@ -119,7 +190,7 @@ public class GlobalMap {
             }
         }
 
-        return new AreaPlayer(new Vec2Int(0,0),xMax+4,yMax+4);
+        return new AreaPlayer(new Vec2Int(0, 0), xMax + 4, yMax + 4);
 
     }
 
@@ -128,12 +199,10 @@ public class GlobalMap {
 
         allEntity = globalStatistic.getMyEntityArrayList();
 
-        for (int i=0; i<allEntity.size(); i++)
-        {
+        for (int i = 0; i < allEntity.size(); i++) {
             MyEntity entity = allEntity.get(i);
 
-            if (entity.getEntityType()==EntityType.RESOURCE)
-            {
+            if (entity.getEntityType() == EntityType.RESOURCE) {
                 resourceMap += entity.getHealth();
             }
 
@@ -142,8 +211,7 @@ public class GlobalMap {
                 map[entity.getPosition().getX()][entity.getPosition().getY()] = entity;
                 mapNextTick[entity.getPosition().getX()][entity.getPosition().getY()] = entity;
 
-                switch (entity.getEntityType())
-                {
+                switch (entity.getEntityType()) {
 
                     case HOUSE:
                     case BUILDER_BASE:
@@ -151,44 +219,38 @@ public class GlobalMap {
                     case RANGED_BASE:
                     case TURRET:
                         EntityProperties entityProperties = FinalConstant.getEntityProperties(entity.getEntityType());
-                        for (int j=0; j<entityProperties.getSize(); j++)
-                        {
-                            for (int k=0; k<entityProperties.getSize(); k++)
-                            {
-                                map[entity.getPosition().getX()+j][entity.getPosition().getY()+k] = entity;
-                                mapNextTick[entity.getPosition().getX()+j][entity.getPosition().getY()+k] = entity;
+                        for (int j = 0; j < entityProperties.getSize(); j++) {
+                            for (int k = 0; k < entityProperties.getSize(); k++) {
+                                map[entity.getPosition().getX() + j][entity.getPosition().getY() + k] = entity;
+                                mapNextTick[entity.getPosition().getX() + j][entity.getPosition().getY() + k] = entity;
                             }
                         }
                         break;
                 }
 
             }
-          //  playerView.getEntityProperties().get()
+            //  playerView.getEntityProperties().get()
         }
     }
 
-    private void clearMap(){
+    private void clearMap() {
         // очищаем ресурсы
-        resourceMap= 0;
+        resourceMap = 0;
 
-        for (int i=0; i<map.length; i++)
-        {
-            for (int j=0; j<map[i].length; j++)
-            {
+        for (int i = 0; i < map.length; i++) {
+            for (int j = 0; j < map[i].length; j++) {
                 map[i][j] = empty;
                 mapNextTick[i][j] = empty;
             }
         }
     }
 
-    public ArrayList<Vec2Int> getCoordAround(Vec2Int start, int size, boolean checkEmpty)
-    {
+    public ArrayList<Vec2Int> getCoordAround(Vec2Int start, int size, boolean checkEmpty) {
         ArrayList<Vec2Int> arrayList = new ArrayList<>();
 
         Vec2Int vec2Int = start;
 
-        for (int x=size-1; x>=0; x--)
-        {
+        for (int x = size - 1; x >= 0; x--) {
             Vec2Int vec2Int1 = vec2Int.add(x, size);
 
             if (!checkCoord(vec2Int1)) continue;
@@ -197,15 +259,13 @@ public class GlobalMap {
                 if (checkEmpty(vec2Int1)) {
                     arrayList.add(vec2Int1);
                 }
-            }
-            else {
+            } else {
                 arrayList.add(vec2Int1);
             }
         }
 
 
-        for (int y=size-1; y>=0; y--)
-        {
+        for (int y = size - 1; y >= 0; y--) {
             Vec2Int vec2Int1 = vec2Int.add(size, y);
 
             if (!checkCoord(vec2Int1)) continue;
@@ -214,14 +274,12 @@ public class GlobalMap {
                 if (checkEmpty(vec2Int1)) {
                     arrayList.add(vec2Int1);
                 }
-            }
-            else {
+            } else {
                 arrayList.add(vec2Int1);
             }
         }
 
-        for (int x=size-1; x>=0; x--)
-        {
+        for (int x = size - 1; x >= 0; x--) {
             Vec2Int vec2Int1 = vec2Int.add(x, -1);
 
             if (!checkCoord(vec2Int1)) continue;
@@ -230,14 +288,12 @@ public class GlobalMap {
                 if (checkEmpty(vec2Int1)) {
                     arrayList.add(vec2Int1);
                 }
-            }
-            else {
+            } else {
                 arrayList.add(vec2Int1);
             }
         }
 
-        for (int y=size-1; y>=0; y--)
-        {
+        for (int y = size - 1; y >= 0; y--) {
             Vec2Int vec2Int1 = vec2Int.add(-1, y);
 
             if (!checkCoord(vec2Int1)) continue;
@@ -246,8 +302,7 @@ public class GlobalMap {
                 if (checkEmpty(vec2Int1)) {
                     arrayList.add(vec2Int1);
                 }
-            }
-            else {
+            } else {
                 arrayList.add(vec2Int1);
             }
         }
@@ -256,16 +311,13 @@ public class GlobalMap {
     }
 
 
-    public Vec2Int getNearest(Vec2Int position, EntityType entityType)
-    {
+    public Vec2Int getNearest(Vec2Int position, EntityType entityType) {
         double minDis = 0xFFFF;
-        Vec2Int current = new Vec2Int(0,0);
-        for (int i=0; i<allEntity.size(); i++)
-        {
-            if (allEntity.get(i).getEntityType()!=entityType) continue;
+        Vec2Int current = new Vec2Int(0, 0);
+        for (int i = 0; i < allEntity.size(); i++) {
+            if (allEntity.get(i).getEntityType() != entityType) continue;
             double dis = position.distance(allEntity.get(i).getPosition());
-            if (dis<minDis)
-            {
+            if (dis < minDis) {
                 current = allEntity.get(i).getPosition();
                 minDis = dis;
             }
@@ -273,15 +325,12 @@ public class GlobalMap {
         return current;
     }
 
-    public Vec2Int getNearestCoord(Vec2Int position, ArrayList<Vec2Int> arrayList)
-    {
+    public Vec2Int getNearestCoord(Vec2Int position, ArrayList<Vec2Int> arrayList) {
         double minDis = 0xFFFF;
         Vec2Int current = null;
-        for (int i=0; i<arrayList.size(); i++)
-        {
+        for (int i = 0; i < arrayList.size(); i++) {
             double dis = position.distance(arrayList.get(i));
-            if (dis<minDis)
-            {
+            if (dis < minDis) {
                 current = arrayList.get(i);
                 minDis = dis;
             }
@@ -289,23 +338,19 @@ public class GlobalMap {
         return current;
     }
 
-    public Vec2Int getPositionBuildUnitPriorite(Entity building)
-    {
+    public Vec2Int getPositionBuildUnitPriorite(Entity building) {
         EntityProperties entityProperties = FinalConstant.getEntityProperties(building);
 
         Vec2Int vec2Int = building.getPosition().copy();
         Vec2Int vec2IntCurrent = null;
         double minDis = 0xFFFF;
 
-        for (int x=entityProperties.getSize()-1; x>=0; x--)
-        {
-            if (checkEmpty(vec2Int.add(x,entityProperties.getSize())))
-            {
-               Vec2Int vec2Int1 = vec2Int.add(x,entityProperties.getSize());
-               Vec2Int vecReseurse = getNearest(vec2Int1,EntityType.RESOURCE);
+        for (int x = entityProperties.getSize() - 1; x >= 0; x--) {
+            if (checkEmpty(vec2Int.add(x, entityProperties.getSize()))) {
+                Vec2Int vec2Int1 = vec2Int.add(x, entityProperties.getSize());
+                Vec2Int vecReseurse = getNearest(vec2Int1, EntityType.RESOURCE);
                 double dis = vecReseurse.distance(vec2Int1);
-                if (dis<minDis)
-                {
+                if (dis < minDis) {
                     vec2IntCurrent = vec2Int1;
                     minDis = dis;
                 }
@@ -313,93 +358,75 @@ public class GlobalMap {
         }
 
 
-        for (int y=entityProperties.getSize()-1; y>=0; y--)
-        {
-            if (checkEmpty(vec2Int.add(entityProperties.getSize(), y)))
-            {
-                Vec2Int vec2Int1 =  vec2Int.add(entityProperties.getSize(),y);
-                Vec2Int vecReseurse = getNearest(vec2Int1,EntityType.RESOURCE);
+        for (int y = entityProperties.getSize() - 1; y >= 0; y--) {
+            if (checkEmpty(vec2Int.add(entityProperties.getSize(), y))) {
+                Vec2Int vec2Int1 = vec2Int.add(entityProperties.getSize(), y);
+                Vec2Int vecReseurse = getNearest(vec2Int1, EntityType.RESOURCE);
                 double dis = vecReseurse.distance(vec2Int1);
-                if (dis<minDis)
-                {
+                if (dis < minDis) {
                     vec2IntCurrent = vec2Int1;
                     minDis = dis;
                 }
             }
         }
 
-        for (int x=entityProperties.getSize()-1; x>=0; x--)
-        {
-            if (checkEmpty(vec2Int.add(x,-1)))
-            {
-                Vec2Int vec2Int1 = vec2Int.add(x,-1);
-                Vec2Int vecReseurse = getNearest(vec2Int1,EntityType.RESOURCE);
+        for (int x = entityProperties.getSize() - 1; x >= 0; x--) {
+            if (checkEmpty(vec2Int.add(x, -1))) {
+                Vec2Int vec2Int1 = vec2Int.add(x, -1);
+                Vec2Int vecReseurse = getNearest(vec2Int1, EntityType.RESOURCE);
                 double dis = vecReseurse.distance(vec2Int1);
-                if (dis<minDis)
-                {
+                if (dis < minDis) {
                     vec2IntCurrent = vec2Int1;
                     minDis = dis;
                 }
             }
         }
 
-        for (int y=entityProperties.getSize()-1; y>=0; y--)
-        {
-            if (checkEmpty(vec2Int.add(-1, y)))
-            {
-                Vec2Int vec2Int1 = vec2Int.add(-1,y);
-                Vec2Int vecReseurse = getNearest(vec2Int1,EntityType.RESOURCE);
+        for (int y = entityProperties.getSize() - 1; y >= 0; y--) {
+            if (checkEmpty(vec2Int.add(-1, y))) {
+                Vec2Int vec2Int1 = vec2Int.add(-1, y);
+                Vec2Int vecReseurse = getNearest(vec2Int1, EntityType.RESOURCE);
                 double dis = vecReseurse.distance(vec2Int1);
-                if (dis<minDis)
-                {
+                if (dis < minDis) {
                     vec2IntCurrent = vec2Int1;
                     minDis = dis;
                 }
             }
         }
 
-        if (vec2IntCurrent==null) return new Vec2Int(0,0);
+        if (vec2IntCurrent == null) return new Vec2Int(0, 0);
 
         return vec2IntCurrent;
 
     }
 
-    public Vec2Int getPositionBuildUnit(Entity building)
-    {
+    public Vec2Int getPositionBuildUnit(Entity building) {
         EntityProperties entityProperties = FinalConstant.getEntityProperties(building);
 
         Vec2Int vec2Int = building.getPosition().copy();
 
-        for (int x=entityProperties.getSize()-1; x>=0; x--)
-        {
-            if (checkEmpty(vec2Int.add(x,entityProperties.getSize())))
-            {
-               return vec2Int.add(x,entityProperties.getSize());
+        for (int x = entityProperties.getSize() - 1; x >= 0; x--) {
+            if (checkEmpty(vec2Int.add(x, entityProperties.getSize()))) {
+                return vec2Int.add(x, entityProperties.getSize());
             }
         }
 
 
-        for (int y=entityProperties.getSize()-1; y>=0; y--)
-        {
-            if (checkEmpty(vec2Int.add(entityProperties.getSize(), y)))
-            {
-               return vec2Int.add(entityProperties.getSize(),y);
+        for (int y = entityProperties.getSize() - 1; y >= 0; y--) {
+            if (checkEmpty(vec2Int.add(entityProperties.getSize(), y))) {
+                return vec2Int.add(entityProperties.getSize(), y);
             }
         }
 
-        for (int x=entityProperties.getSize()-1; x>=0; x--)
-        {
-            if (checkEmpty(vec2Int.add(x,-1)))
-            {
-                return vec2Int.add(x,-1);
+        for (int x = entityProperties.getSize() - 1; x >= 0; x--) {
+            if (checkEmpty(vec2Int.add(x, -1))) {
+                return vec2Int.add(x, -1);
             }
         }
 
-        for (int y=entityProperties.getSize()-1; y>=0; y--)
-        {
-            if (checkEmpty(vec2Int.add(-1, y)))
-            {
-                   return vec2Int.add(-1,y);
+        for (int y = entityProperties.getSize() - 1; y >= 0; y--) {
+            if (checkEmpty(vec2Int.add(-1, y))) {
+                return vec2Int.add(-1, y);
             }
         }
 
@@ -408,103 +435,96 @@ public class GlobalMap {
     }
 
     // функция показывает точку для создания здания
-    public Vec2Int getPositionBuildHouse(EntityProperties entityProperties)
-    {
+    public Vec2Int getPositionBuildHouse(EntityProperties entityProperties) {
         int size = entityProperties.getSize();
 
-        Vec2Int vec2IntRight = new Vec2Int(0,0);
-        Vec2Int vec2IntLeft = new Vec2Int(4,0);
+        Vec2Int vec2IntRight = new Vec2Int(0, 0);
+        Vec2Int vec2IntLeft = new Vec2Int(4, 0);
         int iter = 6;
-        while (!checkEmptyAndAround(vec2IntLeft,entityProperties) && !checkEmptyAndAround(vec2IntRight,entityProperties))
-        {
-            vec2IntRight = vec2IntRight.add(0,size);
-            vec2IntLeft = vec2IntLeft.add(size,0);
+        while (!checkEmptyAndAround(vec2IntLeft, entityProperties) && !checkEmptyAndAround(vec2IntRight, entityProperties)) {
+            vec2IntRight = vec2IntRight.add(0, size);
+            vec2IntLeft = vec2IntLeft.add(size, 0);
             iter--;
-            if (iter<0) break;
+            if (iter < 0) break;
         }
 
-        if (checkEmptyAndAround(vec2IntLeft,entityProperties)) return vec2IntLeft;
-        if (checkEmptyAndAround(vec2IntRight,entityProperties)) return vec2IntRight;
+        if (checkEmptyAndAround(vec2IntLeft, entityProperties)) return vec2IntLeft;
+        if (checkEmptyAndAround(vec2IntRight, entityProperties)) return vec2IntRight;
 
-        vec2IntRight = new Vec2Int(11,4);
-        vec2IntLeft = new Vec2Int(4,11);
+        vec2IntRight = new Vec2Int(11, 4);
+        vec2IntLeft = new Vec2Int(4, 11);
 
 
         iter = 1;
-        while (!checkEmptyAndAround(vec2IntLeft,entityProperties) && !checkEmptyAndAround(vec2IntRight,entityProperties))
-        {
-            vec2IntRight = vec2IntRight.add(0,size);
-            vec2IntLeft = vec2IntLeft.add(size,0);
+        while (!checkEmptyAndAround(vec2IntLeft, entityProperties) && !checkEmptyAndAround(vec2IntRight, entityProperties)) {
+            vec2IntRight = vec2IntRight.add(0, size);
+            vec2IntLeft = vec2IntLeft.add(size, 0);
             iter--;
-            if (iter<0) break;
+            if (iter < 0) break;
         }
 
-        if (checkEmptyAndAround(vec2IntLeft,entityProperties)) return vec2IntLeft;
-        if (checkEmptyAndAround(vec2IntRight,entityProperties)) return vec2IntRight;
+        if (checkEmptyAndAround(vec2IntLeft, entityProperties)) return vec2IntLeft;
+        if (checkEmptyAndAround(vec2IntRight, entityProperties)) return vec2IntRight;
 
-        vec2IntRight = new Vec2Int(21,4);
-        vec2IntLeft = new Vec2Int(4,21);
+        vec2IntRight = new Vec2Int(21, 4);
+        vec2IntLeft = new Vec2Int(4, 21);
 
 
         iter = 3;
-        while (!checkEmptyAndAround(vec2IntLeft,entityProperties) && !checkEmptyAndAround(vec2IntRight,entityProperties))
-        {
-            vec2IntRight = vec2IntRight.add(0,size+1);
-            vec2IntLeft = vec2IntLeft.add(size+1,0);
+        while (!checkEmptyAndAround(vec2IntLeft, entityProperties) && !checkEmptyAndAround(vec2IntRight, entityProperties)) {
+            vec2IntRight = vec2IntRight.add(0, size + 1);
+            vec2IntLeft = vec2IntLeft.add(size + 1, 0);
             iter--;
-            if (iter<0) break;
+            if (iter < 0) break;
         }
 
-        if (checkEmptyAndAround(vec2IntLeft,entityProperties)) return vec2IntLeft;
-        if (checkEmptyAndAround(vec2IntRight,entityProperties)) return vec2IntRight;
+        if (checkEmptyAndAround(vec2IntLeft, entityProperties)) return vec2IntLeft;
+        if (checkEmptyAndAround(vec2IntRight, entityProperties)) return vec2IntRight;
 
-        vec2IntRight = new Vec2Int(25,4);
-        vec2IntLeft = new Vec2Int(4,25);
+        vec2IntRight = new Vec2Int(25, 4);
+        vec2IntLeft = new Vec2Int(4, 25);
 
 
         iter = 3;
-        while (!checkEmptyAndAround(vec2IntLeft,entityProperties) && !checkEmptyAndAround(vec2IntRight,entityProperties))
-        {
-            vec2IntRight = vec2IntRight.add(0,size+1);
-            vec2IntLeft = vec2IntLeft.add(size+1,0);
+        while (!checkEmptyAndAround(vec2IntLeft, entityProperties) && !checkEmptyAndAround(vec2IntRight, entityProperties)) {
+            vec2IntRight = vec2IntRight.add(0, size + 1);
+            vec2IntLeft = vec2IntLeft.add(size + 1, 0);
             iter--;
-            if (iter<0) break;
+            if (iter < 0) break;
         }
 
-        if (checkEmptyAndAround(vec2IntLeft,entityProperties)) return vec2IntLeft;
-        if (checkEmptyAndAround(vec2IntRight,entityProperties)) return vec2IntRight;
+        if (checkEmptyAndAround(vec2IntLeft, entityProperties)) return vec2IntLeft;
+        if (checkEmptyAndAround(vec2IntRight, entityProperties)) return vec2IntRight;
 
-        vec2IntRight = new Vec2Int(29,4);
-        vec2IntLeft = new Vec2Int(4,29);
+        vec2IntRight = new Vec2Int(29, 4);
+        vec2IntLeft = new Vec2Int(4, 29);
 
 
         iter = 5;
-        while (!checkEmptyAndAround(vec2IntLeft,entityProperties) && !checkEmptyAndAround(vec2IntRight,entityProperties))
-        {
-            vec2IntRight = vec2IntRight.add(0,size+1);
-            vec2IntLeft = vec2IntLeft.add(size+1,0);
+        while (!checkEmptyAndAround(vec2IntLeft, entityProperties) && !checkEmptyAndAround(vec2IntRight, entityProperties)) {
+            vec2IntRight = vec2IntRight.add(0, size + 1);
+            vec2IntLeft = vec2IntLeft.add(size + 1, 0);
             iter--;
-            if (iter<0) break;
+            if (iter < 0) break;
         }
 
-        if (checkEmptyAndAround(vec2IntLeft,entityProperties)) return vec2IntLeft;
-        if (checkEmptyAndAround(vec2IntRight,entityProperties)) return vec2IntRight;
+        if (checkEmptyAndAround(vec2IntLeft, entityProperties)) return vec2IntLeft;
+        if (checkEmptyAndAround(vec2IntRight, entityProperties)) return vec2IntRight;
 
-        vec2IntRight = new Vec2Int(33,4);
-        vec2IntLeft = new Vec2Int(4,33);
+        vec2IntRight = new Vec2Int(33, 4);
+        vec2IntLeft = new Vec2Int(4, 33);
 
 
         iter = 6;
-        while (!checkEmptyAndAround(vec2IntLeft,entityProperties) && !checkEmptyAndAround(vec2IntRight,entityProperties))
-        {
-            vec2IntRight = vec2IntRight.add(0,size+1);
-            vec2IntLeft = vec2IntLeft.add(size+1,0);
+        while (!checkEmptyAndAround(vec2IntLeft, entityProperties) && !checkEmptyAndAround(vec2IntRight, entityProperties)) {
+            vec2IntRight = vec2IntRight.add(0, size + 1);
+            vec2IntLeft = vec2IntLeft.add(size + 1, 0);
             iter--;
-            if (iter<0) break;
+            if (iter < 0) break;
         }
 
-        if (checkEmptyAndAround(vec2IntLeft,entityProperties)) return vec2IntLeft;
-        if (checkEmptyAndAround(vec2IntRight,entityProperties)) return vec2IntRight;
+        if (checkEmptyAndAround(vec2IntLeft, entityProperties)) return vec2IntLeft;
+        if (checkEmptyAndAround(vec2IntRight, entityProperties)) return vec2IntRight;
 
         return null;
       /*  EntityProperties entityProperties = globalStatistic.getEntityProperties(building);
@@ -532,71 +552,61 @@ public class GlobalMap {
     }
 
     // функция показывает наилушую точку для создания здания юнитом
-    public Vec2Int getMinPositionBuilding(Vec2Int positionUnit, Vec2Int positionBuild,EntityProperties entityProperties)
-    {
-        ArrayList arrayList = getCoordAround(positionBuild,entityProperties.getSize(),true);
+    public Vec2Int getMinPositionBuilding(Vec2Int positionUnit, Vec2Int positionBuild, EntityProperties entityProperties) {
+        ArrayList arrayList = getCoordAround(positionBuild, entityProperties.getSize(), true);
 
-        Vec2Int vec2Int = getNearestCoord(positionUnit,arrayList);
+        Vec2Int vec2Int = getNearestCoord(positionUnit, arrayList);
 
         return vec2Int;
     }
 
-    public boolean checkEmptyAndAround(Vec2Int vec2Int, EntityProperties entityProperties)
-    {
-        if (!checkEmpty(vec2Int,entityProperties.getSize())) return false;
+    public boolean checkEmptyAndAround(Vec2Int vec2Int, EntityProperties entityProperties) {
+        if (!checkEmpty(vec2Int, entityProperties.getSize())) return false;
 
-        ArrayList arrayList = getCoordAround(vec2Int,entityProperties.getSize(),true);
-        if (arrayList.size()==0) return false;
+        ArrayList arrayList = getCoordAround(vec2Int, entityProperties.getSize(), true);
+        if (arrayList.size() == 0) return false;
         else return true;
     }
 
-    public boolean checkEmpty(Vec2Int vec2Int)
-    {
-       return checkEmpty(vec2Int,1,1);
+    public boolean checkEmpty(Vec2Int vec2Int) {
+        return checkEmpty(vec2Int, 1, 1);
     }
 
-    public boolean checkEmpty(Vec2Int vec2Int,int size)
-    {
-        return checkEmpty(vec2Int,size,size);
+    public boolean checkEmpty(Vec2Int vec2Int, int size) {
+        return checkEmpty(vec2Int, size, size);
     }
 
-    public boolean checkEmpty(Vec2Int vec2Int,int width, int height)
-    {
-        if (vec2Int.getX()<0 || vec2Int.getX()>=80 || vec2Int.getY()<0 || vec2Int.getY()>=80) return false;
-        for (int x=0; x<width; x++)
-        {
-            for (int y=0; y<height; y++)
-            {
-                if (map[vec2Int.getX() + x][vec2Int.getY() + y].getEntityType()!=EntityType.Empty) return false;
+    public boolean checkEmpty(Vec2Int vec2Int, int width, int height) {
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                if (!checkCoord(vec2Int.getX() + x, vec2Int.getY() + y)) return false;
+                if (map[vec2Int.getX() + x][vec2Int.getY() + y].getEntityType() != EntityType.Empty) return false;
             }
         }
 
         return true;
     }
 
-    public Vec2Int getNearestPlayer(ArrayList<MyPlayer> arrayList){
-        return new Vec2Int(0,0);
+    public Vec2Int getNearestPlayer(ArrayList<MyPlayer> arrayList) {
+        return new Vec2Int(0, 0);
     }
 
-    public Vec2Int getNearestPlayer(int myID){
-        Vec2Int vec2Int = new Vec2Int(0,0);
+    public Vec2Int getNearestPlayer(int myID) {
+        Vec2Int vec2Int = new Vec2Int(0, 0);
         double minDis = 0xFFFFF;
         Vec2Int currentPos = vec2Int;
 
-        for (int i=0; i<map.length; i++)
-        {
-            for (int j=0; j<map[i].length; j++)
-            {
+        for (int i = 0; i < map.length; i++) {
+            for (int j = 0; j < map[i].length; j++) {
                 if (map[i][j].getEntityType() == EntityType.Empty) continue;
 
                 if (map[i][j].getPlayerId() == null) continue;
 
-                if (map[i][j].getPlayerId()==myID) continue;
+                if (map[i][j].getPlayerId() == myID) continue;
 
                 double dis = map[i][j].getPosition().distance(vec2Int);
 
-                if (dis<minDis)
-                {
+                if (dis < minDis) {
                     minDis = dis;
                     currentPos = map[i][j].getPosition();
                 }
@@ -605,26 +615,23 @@ public class GlobalMap {
         return currentPos;
     }
 
-    public Vec2Int getNearestPlayer(Vec2Int vec2Int, int myID, int enemyID){
+    public Vec2Int getNearestPlayer(Vec2Int vec2Int, int myID, int enemyID) {
         double minDis = 0xFFFFF;
         Vec2Int currentPos = null;
 
-        for (int i=0; i<map.length; i++)
-        {
-            for (int j=0; j<map[i].length; j++)
-            {
+        for (int i = 0; i < map.length; i++) {
+            for (int j = 0; j < map[i].length; j++) {
                 if (map[i][j].getEntityType() == EntityType.Empty) continue;
 
                 if (map[i][j].getPlayerId() == null) continue;
 
-                if (map[i][j].getPlayerId()==myID) continue;
+                if (map[i][j].getPlayerId() == myID) continue;
 
-                if (enemyID!=-1 && map[i][j].getPlayerId()!=enemyID) continue;
+                if (enemyID != -1 && map[i][j].getPlayerId() != enemyID) continue;
 
                 double dis = map[i][j].getPosition().distance(vec2Int);
 
-                if (dis<minDis)
-                {
+                if (dis < minDis) {
                     minDis = dis;
                     currentPos = map[i][j].getPosition();
                 }
@@ -635,34 +642,30 @@ public class GlobalMap {
 
 
     public void debugUpdate(PlayerView playerView, DebugInterface debugInterface) {
-      //  debugInterface.
-        if (map!=null)
-        {
-            for (int i=0; i<map.length; i++)
-            {
-                for (int j=0; j<map[i].length; j++)
-                {
-                    if (Final.COORDINATE)
-                    {
-                        FinalGraphic.sendText(debugInterface,new Vec2Int(i,j),10,"("+i+","+j+")");
+        //  debugInterface.
+        if (map != null) {
+            for (int i = 0; i < map.length; i++) {
+                for (int j = 0; j < map[i].length; j++) {
+                    if (Final.COORDINATE) {
+                        FinalGraphic.sendText(debugInterface, new Vec2Int(i, j), 10, "(" + i + "," + j + ")");
                     }
                 }
             }
         }
 
-       // FinalGraphic.sendSquare(debugInterface,new Vec2Int(0,0),getAreaPlayer().width, FinalGraphic.COLOR_WHITE);
+        // FinalGraphic.sendSquare(debugInterface,new Vec2Int(0,0),getAreaPlayer().width, FinalGraphic.COLOR_WHITE);
     }
 
     //проверка для отхода крестьян от опасности
-    public Vec2Int checkDangerBuildUnit(Vec2Int position, MyPlayer player, int radius, EntityType entityType){
-        ArrayList<MyEntity> arrayList = getEntityMap(position,radius,player.getId(),true,false,true, entityType,false,false);
+    public Vec2Int checkDangerBuildUnit(Vec2Int position, MyPlayer player, int radius, EntityType entityType) {
+        ArrayList<MyEntity> arrayList = getEntityMap(position, radius, player.getId(), true, false, true, entityType, false, false);
 
-        if (arrayList.size()==0) return null;
+        if (arrayList.size() == 0) return null;
 
         int sizeMax = arrayList.size();
 
-        byte[][] bytes= new byte[][]{
-                {-1,0},{0,-1},{0,1},{1,0},
+        byte[][] bytes = new byte[][]{
+                {-1, 0}, {0, -1}, {0, 1}, {1, 0},
         };
 
         Vec2Int current = null;
@@ -670,25 +673,20 @@ public class GlobalMap {
         boolean init = false;
         MyEntity builderBase = player.getBuilderBase();
 
-        for (int i=0; i<4; i++)
-        {
-            Vec2Int newPosition = position.add(bytes[i][0],bytes[i][1]);
+        for (int i = 0; i < 4; i++) {
+            Vec2Int newPosition = position.add(bytes[i][0], bytes[i][1]);
 
             if (!checkCoord(newPosition)) continue;
             if (!checkEmpty(newPosition)) continue;
 
-            ArrayList<MyEntity> arrayList1 = getEntityMap(newPosition,radius,player.getId(),true,false,true,entityType,false,false);
-            if (arrayList1.size()<sizeMax || init && arrayList1.size()<sizeMax)
-            {
-                if (init && builderBase!=null)
-                {
-                    if (newPosition.distance(builderBase.getPosition()) < current.distance(builderBase.getPosition()))
-                    {
+            ArrayList<MyEntity> arrayList1 = getEntityMap(newPosition, radius, player.getId(), true, false, true, entityType, false, false);
+            if (arrayList1.size() < sizeMax || init && arrayList1.size() < sizeMax) {
+                if (init && builderBase != null) {
+                    if (newPosition.distance(builderBase.getPosition()) < current.distance(builderBase.getPosition())) {
                         sizeMax = arrayList1.size();
                         current = newPosition;
                     }
-                }
-                else {
+                } else {
                     sizeMax = arrayList1.size();
                     current = newPosition;
                     init = true;
@@ -697,56 +695,47 @@ public class GlobalMap {
 
         }
 
-        if (sizeMax!=arrayList.size()) return current;
+        if (sizeMax != arrayList.size()) return current;
 
         return null;
     }
 
-    public boolean checkDangerBuilding(Vec2Int position, EntityType entityType){
+    public boolean checkDangerBuilding(Vec2Int position, EntityType entityType) {
         EntityProperties entityProperties = FinalConstant.getEntityProperties(entityType);
-
 
 
         return true;
     }
 
     // список юнитов в квардрате с центром position
-    public ArrayList<MyEntity> getEntityMap(Vec2Int position, int size, int playerID, boolean onlyEnemy, boolean onlyPlayer, boolean onlyUnit, EntityType entityType, boolean squareRadius, boolean turret){
+    public ArrayList<MyEntity> getEntityMap(Vec2Int position, int size, int playerID, boolean onlyEnemy, boolean onlyPlayer, boolean onlyUnit, EntityType entityType, boolean squareRadius, boolean turret) {
         ArrayList<MyEntity> arrayList = new ArrayList<>();
 
-        for (int x=-size; x<=size; x++ )
-        {
-            if (x+position.getX()<0 || x+position.getX()>= FinalConstant.getMapSize()) continue;
+        for (int x = -size; x <= size; x++) {
+            if (x + position.getX() < 0 || x + position.getX() >= FinalConstant.getMapSize()) continue;
 
-            int sizeY = size-Math.abs(x);
+            int sizeY = size - Math.abs(x);
 
-            if (squareRadius)
-            {
+            if (squareRadius) {
                 sizeY = size;
             }
 
-            for (int y=-sizeY; y<=sizeY; y++)
-            {
-                if (y+position.getY()<0 || y+position.getY()>= FinalConstant.getMapSize()) continue;
+            for (int y = -sizeY; y <= sizeY; y++) {
+                if (y + position.getY() < 0 || y + position.getY() >= FinalConstant.getMapSize()) continue;
 
-                MyEntity entity = map[x+position.getX()][y+position.getY()];
+                MyEntity entity = map[x + position.getX()][y + position.getY()];
                 if (((entity.getEntityType() == EntityType.RANGED_UNIT || entity.getEntityType() == EntityType.MELEE_UNIT) || !onlyUnit) &&
 
                         (entity.getEntityType() != EntityType.Empty && entity.getEntityType() != EntityType.RESOURCE)
-                )
-                {
-                    if (entityType!=EntityType.ALL && entity.getEntityType()!=entityType) continue;
-                    if (entity.getPlayerId()==null) continue;
+                ) {
+                    if (entityType != EntityType.ALL && entity.getEntityType() != entityType) continue;
+                    if (entity.getPlayerId() == null) continue;
 
 
-
-                    if (entity.getPlayerId() != playerID || onlyEnemy==false)
-                    {
-                        if (onlyPlayer && entity.getPlayerId()==playerID )
-                        {
+                    if (entity.getPlayerId() != playerID || onlyEnemy == false) {
+                        if (onlyPlayer && entity.getPlayerId() == playerID) {
                             arrayList.add(entity);
-                        }
-                        else {
+                        } else {
                             arrayList.add(entity);
                         }
                     }
@@ -758,19 +747,19 @@ public class GlobalMap {
     }
 
     //проверяем рабочих возле турели!
-    public MyEntity getBuilderUnitNearTurret(MyEntity entity){
-        if (entity.getEntityType()!=EntityType.TURRET) return null;
+    public MyEntity getBuilderUnitNearTurret(MyEntity entity) {
+        if (entity.getEntityType() != EntityType.TURRET) return null;
 
         EntityProperties entityProperties = FinalConstant.getEntityProperties(entity);
-        ArrayList<Vec2Int> arrayList = getCoordAround(entity.getPosition(),entityProperties.getSize(),false);
+        ArrayList<Vec2Int> arrayList = getCoordAround(entity.getPosition(), entityProperties.getSize(), false);
 
-        for (int i=0; i<arrayList.size(); i++)
-        {
+        for (int i = 0; i < arrayList.size(); i++) {
             Vec2Int vec2Int1 = arrayList.get(i);
 
             MyEntity myEntity = map[vec2Int1.getX()][vec2Int1.getY()];
 
-            if (myEntity.getPlayerId() == entity.getPlayerId() && myEntity.getEntityType()==EntityType.BUILDER_UNIT) return myEntity;
+            if (myEntity.getPlayerId() == entity.getPlayerId() && myEntity.getEntityType() == EntityType.BUILDER_UNIT)
+                return myEntity;
         }
 
         return null;
@@ -780,8 +769,7 @@ public class GlobalMap {
         return map;
     }
 
-    public MyEntity getMap(Vec2Int vec2Int)
-    {
+    public MyEntity getMap(Vec2Int vec2Int) {
         if (!checkCoord(vec2Int)) return null;
 
         return map[vec2Int.getX()][vec2Int.getY()];
@@ -792,33 +780,29 @@ public class GlobalMap {
     }
 
 
-    public static boolean checkCoord(int x, int y, int sizeObject)
-    {
-        if (x<0+sizeObject || x>= FinalConstant.getMapSize()-sizeObject || y<0+sizeObject || y>= FinalConstant.getMapSize()+sizeObject) return false;
+    public static boolean checkCoord(int x, int y, int sizeObject) {
+        if (x < 0 + sizeObject || x >= FinalConstant.getMapSize() - sizeObject || y < 0 + sizeObject || y >= FinalConstant.getMapSize() + sizeObject)
+            return false;
         return true;
     }
 
-    public static boolean checkCoord(int x, int y)
-    {
-       return checkCoord(x,y,0);
+    public static boolean checkCoord(int x, int y) {
+        return checkCoord(x, y, 0);
     }
 
-    public static boolean checkCoord(Vec2Int vec2Int, int size)
-    {
-        return checkCoord(vec2Int.getX(),vec2Int.getY(),size);
+    public static boolean checkCoord(Vec2Int vec2Int, int size) {
+        return checkCoord(vec2Int.getX(), vec2Int.getY(), size);
     }
 
-    public static  boolean checkCoord(Vec2Int vec2Int)
-    {
-        return checkCoord(vec2Int.getX(),vec2Int.getY(),0);
+    public static boolean checkCoord(Vec2Int vec2Int) {
+        return checkCoord(vec2Int.getX(), vec2Int.getY(), 0);
     }
 
     public long getResourceMap() {
         return resourceMap;
     }
 
-    public MyEntity getMinDisToEntity(Vec2Int position, MyPlayer myPlayer, EntityType entityTypeNeed)
-    {
+    public MyEntity getMinDisToEntity(Vec2Int position, MyPlayer myPlayer, EntityType entityTypeNeed) {
         double minDis = 0xFFFFF;
         MyEntity current = null;
 
@@ -835,8 +819,7 @@ public class GlobalMap {
             }
         }
 
-        if (current!=null)
-        {
+        if (current != null) {
             return current;
         }
 
@@ -847,12 +830,12 @@ public class GlobalMap {
         return mapNextTick;
     }
 
-    public MyEntity getMoveMyUnit(Vec2Int position){
-        byte[][] bytes= new byte[][]{
-                {-1,0},{0,-1},{0,1},{1,0},
+    public MyEntity getMoveMyUnit(Vec2Int position) {
+        byte[][] bytes = new byte[][]{
+                {-1, 0}, {0, -1}, {0, 1}, {1, 0},
         };
 
-        for (int i=0; i<4; i++) {
+        for (int i = 0; i < 4; i++) {
             Vec2Int newPosition = position.add(bytes[i][0], bytes[i][1]);
 
             if (!checkCoord(newPosition)) continue;
@@ -860,13 +843,12 @@ public class GlobalMap {
 
             MyEntity entity = map[newPosition.getX()][newPosition.getY()];
 
-            if (entity.getPlayerId()==null) continue;
+            if (entity.getPlayerId() == null) continue;
 
-            switch (entity.getEntityType())
-            {
+            switch (entity.getEntityType()) {
                 case RANGED_UNIT:
                 case MELEE_UNIT:
-               // case BUILDER_UNIT:
+                    // case BUILDER_UNIT:
                     if (entity.isMove() && !entity.isRotation()) return entity;
                     break;
                 case BUILDER_UNIT:
@@ -877,10 +859,8 @@ public class GlobalMap {
         return null;
     }
 
-    public static byte[][] getRadiusUnit(EntityType entityType)
-    {
-        switch (entityType)
-        {
+    public static byte[][] getRadiusUnit(EntityType entityType) {
+        switch (entityType) {
             case RANGED_UNIT:
                 return rangerArray;
             case MELEE_UNIT:
@@ -892,5 +872,57 @@ public class GlobalMap {
         }
 
         return null;
+    }
+
+    public static byte[][] getRadiusContourUnit(EntityType entityType) {
+        switch (entityType) {
+            case RANGED_UNIT:
+                return rangerContourArray;
+            case MELEE_UNIT:
+                return aroundArray;
+            case TURRET:
+                return turretArray;
+            case BUILDER_UNIT:
+                return aroundArray;
+        }
+
+        return null;
+    }
+
+
+    //TODO исправить подсчет турелей
+    public int checkMyTurret(Vec2Int vec2Int, int size) {
+        float count = 0;
+        for (int x = -size; x <= size; x++) {
+            for (int y = -size; y <= size; y++) {
+                if (!checkCoord(x + vec2Int.getX(), y + vec2Int.getY())) continue;
+
+                if (map[x + vec2Int.getX()][y + vec2Int.getY()].getPlayerId() == null) continue;
+                ;
+
+                if (map[x + vec2Int.getX()][y + vec2Int.getY()].getEntityType() == EntityType.TURRET && map[x + vec2Int.getX()][y + vec2Int.getY()].getPlayerId() == FinalConstant.getMyID()) {
+
+                    count++;
+                }
+
+            }
+        }
+
+        return (int) Math.ceil(count / 4);
+    }
+
+    public Vec2Int getPositionTurret(Vec2Int positionArea, int depth) {
+
+
+        return null;
+    }
+
+
+    public boolean checkCreateTurret(Vec2Int vec2Int) {
+        if (!checkEmpty(vec2Int, 2)) return false;
+
+        if (checkMyTurret(vec2Int, 4) < 2) return true;
+
+        return false;
     }
 }

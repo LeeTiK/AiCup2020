@@ -12,6 +12,10 @@ public class Field {
     int dangerMelee;
     int dangerTurret;
 
+    int dangerContourRanger;
+    int dangerContourMelee;
+    int dangerContourTurret;
+
     int safetyRanger;
     int safetyMelee;
     int safetyTurret;
@@ -24,7 +28,7 @@ public class Field {
     int districtResource;
     boolean block;
 
-    public Field(Vec2Int vec2Int){
+    public Field(Vec2Int vec2Int) {
         this.mPosition = vec2Int;
 
         clear();
@@ -38,18 +42,24 @@ public class Field {
         return mPosition.getY();
     }
 
-    public void clear(){
+    public void clear() {
         sum = 0;
         dangerRanger = 0;
         dangerMelee = 0;
         dangerTurret = 0;
+
+        dangerContourRanger = 0;
+        dangerContourMelee = 0;
+        dangerContourTurret = 0;
+
+
         safetyRanger = 0;
         safetyMelee = 0;
         safetyTurret = 0;
         playerArea = 0;
         playerAreaTwo = 0;
 
-        cost =0;
+        cost = 0;
         district = -1;
         districtResource = -1;
         block = false;
@@ -119,8 +129,8 @@ public class Field {
 
 
     @Override
-    public boolean equals(Object obj){
-        if (obj.getClass()!=Field.class) return false;
+    public boolean equals(Object obj) {
+        if (obj.getClass() != Field.class) return false;
         Field field = (Field) obj;
 
         if (this.getPosition().equals(field.getPosition())) return true;
@@ -157,28 +167,59 @@ public class Field {
     }
 
     public void addDangerTurret() {
-        this.dangerTurret+=2;
+        this.dangerTurret++;
     }
 
-    public boolean checkDanger(){
-        return dangerRanger+dangerTurret+dangerMelee==0;
+    public boolean checkDanger() {
+        return dangerRanger + dangerTurret + dangerMelee == 0;
     }
 
-    public int getSumDanger(){
-        return dangerRanger+dangerTurret+dangerMelee;
+    public int getSumDanger() {
+        return dangerRanger + dangerTurret + dangerMelee;
     }
 
-    public int getSumDangerRanger(){
-        return dangerRanger+dangerTurret+dangerMelee;
+    public int getDangerContourMelee() {
+        return dangerContourMelee;
     }
 
-    public int getSumDangerMelee(){
-        return dangerRanger+dangerMelee;
+    public int getDangerContourRanger() {
+        return dangerContourRanger;
+    }
+
+    public int getDangerContourTurret() {
+        return dangerContourTurret;
+    }
+
+    public void addDangerContourMelee() {
+        this.dangerContourMelee++;
+    }
+
+    public void addDangerContourRanger() {
+        this.dangerContourRanger++;
+    }
+
+    public void addDangerContourTurret() {
+        this.dangerContourTurret++;
+    }
+
+    public boolean checkDangerContour() {
+        return dangerContourRanger + dangerContourTurret + dangerContourMelee == 0;
+    }
+
+    public int getSumDangerContour() {
+        return dangerContourRanger + dangerContourTurret + dangerContourMelee;
+    }
+
+    public int getSumDangerRanger() {
+        return dangerRanger + dangerTurret + dangerMelee;
+    }
+
+    public int getSumDangerMelee() {
+        return dangerRanger + dangerMelee;
     }
 
     public int getSumDanger(EntityType entityType) {
-        switch (entityType)
-        {
+        switch (entityType) {
             case MELEE_UNIT:
                 return getSumDangerMelee();
             case RANGED_UNIT:
@@ -212,17 +253,16 @@ public class Field {
         return safetyTurret;
     }
 
-    public int getSumSafaty(){
-        return safetyRanger+safetyTurret+safetyMelee;
+    public int getSumSafaty() {
+        return safetyRanger + safetyTurret + safetyMelee;
     }
 
-    public int getSumSafatyRanger(){
-        return safetyRanger+safetyTurret*2+safetyMelee;
+    public int getSumSafatyRanger() {
+        return safetyRanger + safetyTurret + safetyMelee;
     }
 
     public int getSumSafaty(EntityType entityType) {
-        switch (entityType)
-        {
+        switch (entityType) {
             case MELEE_UNIT:
                 return getSumSafatyRanger();
             case RANGED_UNIT:

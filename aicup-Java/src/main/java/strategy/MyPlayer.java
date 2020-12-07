@@ -10,24 +10,24 @@ import java.util.Comparator;
 
 public class MyPlayer extends Player {
 
-   // ArrayList<strategy.MyEntity> mEntityArrayList;
+    // ArrayList<strategy.MyEntity> mEntityArrayList;
 
     ArrayList<MyEntity> mUnitArrayList;
     ArrayList<MyEntity> mBuildingArrayList;
 
-    int populationCurrent =0;
-    int populationMax =0;
+    int populationCurrent = 0;
+    int populationMax = 0;
 
-    int countAllMelee =0;
-    int countAllRange =0;
-    int countAllBiuld =0;
-    int countAllHouse =0;
+    int countAllMelee = 0;
+    int countAllRange = 0;
+    int countAllBiuld = 0;
+    int countAllHouse = 0;
 
-    int countDeadMelee =0;
-    int countDeadRange =0;
-    int countDeadBiuld =0;
-    int countDeadHouse =0;
-    int countDeadOtherBuilders =0;
+    int countDeadMelee = 0;
+    int countDeadRange = 0;
+    int countDeadBiuld = 0;
+    int countDeadHouse = 0;
+    int countDeadOtherBuilders = 0;
 
     int resourceOldTik = 0;
     int resourceCurrentTik = 0;
@@ -52,18 +52,18 @@ public class MyPlayer extends Player {
     RESOURCE(8),
     TURRET(9);*/
 
-    public MyPlayer (int id, int score, int resource){
-        super(id,score,resource);
+    public MyPlayer(int id, int score, int resource) {
+        super(id, score, resource);
         init();
     }
 
 
-    public MyPlayer (Player player){
-        super(player.getId(),player.getScore(),player.getResource());
+    public MyPlayer(Player player) {
+        super(player.getId(), player.getScore(), player.getResource());
         init();
     }
 
-    private void init(){
+    private void init() {
         mUnitArrayList = new ArrayList<>();
         mBuildingArrayList = new ArrayList<>();
         resourceAllGame = 0;
@@ -78,42 +78,37 @@ public class MyPlayer extends Player {
     }
 
 
-    public void startUpdate(){
-        for (int i=0; i<mBuildingArrayList.size(); i++)
-        {
+    public void startUpdate() {
+        for (int i = 0; i < mBuildingArrayList.size(); i++) {
             mBuildingArrayList.get(i).setUpdate(false);
         }
 
-        for (int i=0; i<mUnitArrayList.size(); i++)
-        {
+        for (int i = 0; i < mUnitArrayList.size(); i++) {
             mUnitArrayList.get(i).setUpdate(false);
         }
     }
 
     public EStatus updateEntity(MyEntity entity) {
-        boolean check =true;
+        boolean check = true;
         // добавление и обновление информации о игроках
 
-        switch (entity.getEntityType())
-        {
+        switch (entity.getEntityType()) {
             case WALL:
             case HOUSE:
             case BUILDER_BASE:
             case MELEE_BASE:
             case TURRET:
-            case RANGED_BASE:{
+            case RANGED_BASE: {
 
-                for (int j=0; j<mBuildingArrayList.size(); j++)
-                {
-                    if (mBuildingArrayList.get(j).getId() == entity.getId()){
+                for (int j = 0; j < mBuildingArrayList.size(); j++) {
+                    if (mBuildingArrayList.get(j).getId() == entity.getId()) {
                         mBuildingArrayList.get(j).update(entity);
                         check = false;
                         return EStatus.UPDATE_Entity;
                     }
                 }
 
-                if (check)
-                {
+                if (check) {
                     addNewEntity(entity);
                     return EStatus.NEW_Entity;
                 }
@@ -121,18 +116,16 @@ public class MyPlayer extends Player {
             }
             case BUILDER_UNIT:
             case MELEE_UNIT:
-            case RANGED_UNIT:{
-                for (int j=0; j<mUnitArrayList.size(); j++)
-                {
-                    if (mUnitArrayList.get(j).getId() == entity.getId()){
+            case RANGED_UNIT: {
+                for (int j = 0; j < mUnitArrayList.size(); j++) {
+                    if (mUnitArrayList.get(j).getId() == entity.getId()) {
                         mUnitArrayList.get(j).update(entity);
                         check = false;
                         return EStatus.UPDATE_Entity;
                     }
                 }
 
-                if (check)
-                {
+                if (check) {
                     addNewEntity(entity);
                     return EStatus.NEW_Entity;
                 }
@@ -142,11 +135,10 @@ public class MyPlayer extends Player {
         return EStatus.ERROR;
     }
 
-    public EntityType checkDelete(){
+    public EntityType checkDelete() {
         //проверяем и удаляем старые юниты
-        for (int i=0; i<mBuildingArrayList.size(); i++)
-        {
-            if (!mBuildingArrayList.get(i).isUpdate()){
+        for (int i = 0; i < mBuildingArrayList.size(); i++) {
+            if (!mBuildingArrayList.get(i).isUpdate()) {
                 EntityType entityType = mBuildingArrayList.get(i).getEntityType();
                 switch (entityType) {
 
@@ -164,12 +156,10 @@ public class MyPlayer extends Player {
             }
         }
 
-        for (int i=0; i<mUnitArrayList.size(); i++)
-        {
-            if (!mUnitArrayList.get(i).isUpdate()){
+        for (int i = 0; i < mUnitArrayList.size(); i++) {
+            if (!mUnitArrayList.get(i).isUpdate()) {
                 EntityType entityType = mUnitArrayList.get(i).getEntityType();
-                switch (entityType)
-                {
+                switch (entityType) {
 
                     case BUILDER_UNIT:
                         countDeadBiuld++;
@@ -189,13 +179,11 @@ public class MyPlayer extends Player {
         return null;
     }
 
-    public void finishUpdate(){
+    public void finishUpdate() {
         populationMax = 0;
         populationCurrent = 0;
-        for (int i=0; i<mBuildingArrayList.size(); i++)
-        {
-            switch (mBuildingArrayList.get(i).getEntityType())
-            {
+        for (int i = 0; i < mBuildingArrayList.size(); i++) {
+            switch (mBuildingArrayList.get(i).getEntityType()) {
 
                 case HOUSE:
                 case BUILDER_BASE:
@@ -208,15 +196,13 @@ public class MyPlayer extends Player {
             }
         }
 
-        for (int i=0; i<mUnitArrayList.size(); i++)
-        {
-            switch (mUnitArrayList.get(i).getEntityType())
-            {
+        for (int i = 0; i < mUnitArrayList.size(); i++) {
+            switch (mUnitArrayList.get(i).getEntityType()) {
 
                 case MELEE_UNIT:
                 case RANGED_UNIT:
                 case BUILDER_UNIT:
-                    populationCurrent+=1;
+                    populationCurrent += 1;
                     break;
             }
         }
@@ -226,13 +212,13 @@ public class MyPlayer extends Player {
 
 
         mRangerArrayList = getEntityArrayListSlow(EntityType.RANGED_UNIT);
-        mMeleeArrayList =  getEntityArrayListSlow(EntityType.MELEE_UNIT);
-        mBuilderArrayList =  getEntityArrayListSlow(EntityType.BUILDER_UNIT);
-        mHouseArrayList =  getEntityArrayListSlow(EntityType.HOUSE);
+        mMeleeArrayList = getEntityArrayListSlow(EntityType.MELEE_UNIT);
+        mBuilderArrayList = getEntityArrayListSlow(EntityType.BUILDER_UNIT);
+        mHouseArrayList = getEntityArrayListSlow(EntityType.HOUSE);
 
-        if (FinalConstant.getCurrentTik()==0) resourceCurrentTik = 0;
+        if (FinalConstant.getCurrentTik() == 0) resourceCurrentTik = 0;
 
-        addResource(resourceCurrentTik-resourceOldTik);
+        addResource(resourceCurrentTik - resourceOldTik);
         resourceOldTik = getResource();
     }
 
@@ -254,12 +240,11 @@ public class MyPlayer extends Player {
         }
     }*/
 
-    private void addNewEntity(MyEntity entity){
-      // mEntityArrayList.add(entity);
-        switch (entity.getEntityType())
-        {
+    private void addNewEntity(MyEntity entity) {
+        // mEntityArrayList.add(entity);
+        switch (entity.getEntityType()) {
             case HOUSE: {
-                resourceCurrentTik+=getCost(entity.getEntityType());
+                resourceCurrentTik += getCost(entity.getEntityType());
                 countAllHouse++;
                 mBuildingArrayList.add(entity);
                 break;
@@ -268,23 +253,23 @@ public class MyPlayer extends Player {
             case BUILDER_BASE:
             case MELEE_BASE:
             case TURRET:
-            case RANGED_BASE:{
-                resourceCurrentTik+=getCost(entity.getEntityType());
+            case RANGED_BASE: {
+                resourceCurrentTik += getCost(entity.getEntityType());
                 mBuildingArrayList.add(entity);
                 break;
             }
             case BUILDER_UNIT:
-                resourceCurrentTik+=getCost(entity.getEntityType());
+                resourceCurrentTik += getCost(entity.getEntityType());
                 countAllBiuld++;
                 mUnitArrayList.add(entity);
                 break;
             case MELEE_UNIT:
-                resourceCurrentTik+=getCost(entity.getEntityType());
+                resourceCurrentTik += getCost(entity.getEntityType());
                 countAllMelee++;
                 mUnitArrayList.add(entity);
                 break;
-            case RANGED_UNIT:{
-                resourceCurrentTik+=getCost(entity.getEntityType());
+            case RANGED_UNIT: {
+                resourceCurrentTik += getCost(entity.getEntityType());
                 countAllRange++;
                 mUnitArrayList.add(entity);
                 break;
@@ -301,29 +286,26 @@ public class MyPlayer extends Player {
     }
 
 
-    public ArrayList<MyEntity> getEntityArrayListSlow(EntityType entityType)
-    {
+    public ArrayList<MyEntity> getEntityArrayListSlow(EntityType entityType) {
         ArrayList<MyEntity> arrayList = new ArrayList<>();
-        switch (entityType)
-        {
+        switch (entityType) {
             case WALL:
             case HOUSE:
             case BUILDER_BASE:
             case MELEE_BASE:
             case TURRET:
-            case RANGED_BASE:{
+            case RANGED_BASE: {
                 //mBuildingArrayList.add(new strategy.MyEntity(entity));
-                for (int i=0; i<mBuildingArrayList.size();i++)
-                {
-                    if (mBuildingArrayList.get(i).getEntityType() == entityType) arrayList.add(mBuildingArrayList.get(i));
+                for (int i = 0; i < mBuildingArrayList.size(); i++) {
+                    if (mBuildingArrayList.get(i).getEntityType() == entityType)
+                        arrayList.add(mBuildingArrayList.get(i));
                 }
                 break;
             }
             case BUILDER_UNIT:
             case MELEE_UNIT:
-            case RANGED_UNIT:{
-                for (int i=0; i<mUnitArrayList.size();i++)
-                {
+            case RANGED_UNIT: {
+                for (int i = 0; i < mUnitArrayList.size(); i++) {
                     if (mUnitArrayList.get(i).getEntityType() == entityType) arrayList.add(mUnitArrayList.get(i));
                 }
             }
@@ -333,38 +315,37 @@ public class MyPlayer extends Player {
 
     public ArrayList<MyEntity> getEntityArrayList(EntityType entityType) {
 
-        switch (entityType)
-        {
+        switch (entityType) {
             case HOUSE:
                 return mHouseArrayList;
             case BUILDER_UNIT:
                 return mBuilderArrayList;
             case MELEE_UNIT:
                 return mMeleeArrayList;
-            case RANGED_UNIT:{
+            case RANGED_UNIT: {
                 return mRangerArrayList;
             }
         }
 
-       return getEntityArrayListSlow(entityType);
+        return getEntityArrayListSlow(entityType);
     }
 
     @Override
-    public String toString(){
-     //   return
+    public String toString() {
+        //   return
         ArrayList<MyEntity> buildArrayList = getEntityArrayList(EntityType.BUILDER_UNIT);
         ArrayList<MyEntity> meleeArrayList = getEntityArrayList(EntityType.MELEE_UNIT);
         ArrayList<MyEntity> rangeArrayList = getEntityArrayList(EntityType.RANGED_UNIT);
         ArrayList<MyEntity> houseArrayList = getEntityArrayList(EntityType.HOUSE);
-        return "ID: " + getId() + " B: " + buildArrayList.size() +"/"+countDeadBiuld +"/"+countAllBiuld +
-                " M: "+ meleeArrayList.size() + "/"+countDeadMelee +"/"+countAllMelee +
-                " R: "+ rangeArrayList.size() + "/"+countDeadRange +"/"+countAllRange +
-                " H: "+ houseArrayList.size() + "/"+countDeadHouse +"/"+countAllHouse +
+        return "ID: " + getId() + " B: " + buildArrayList.size() + "/" + countDeadBiuld + "/" + countAllBiuld +
+                " M: " + meleeArrayList.size() + "/" + countDeadMelee + "/" + countAllMelee +
+                " R: " + rangeArrayList.size() + "/" + countDeadRange + "/" + countAllRange +
+                " H: " + houseArrayList.size() + "/" + countDeadHouse + "/" + countAllHouse +
                 " O: " + countDeadOtherBuilders +
                 " P: " + populationCurrent + "/" + populationMax +
                 " Res: " + getResourceAllGame();
 
-      //  cgetResourceAllGame
+        //  cgetResourceAllGame
     }
 
     public int getPopulationCurrent() {
@@ -391,10 +372,8 @@ public class MyPlayer extends Player {
         return countDeadHouse;
     }
 
-    public int getCost(EntityType entityType)
-    {
-        switch (entityType)
-        {
+    public int getCost(EntityType entityType) {
+        switch (entityType) {
             case WALL:
                 return FinalConstant.getEntityProperties(entityType).getCost();
             case HOUSE:
@@ -402,15 +381,15 @@ public class MyPlayer extends Player {
             case BUILDER_BASE:
                 return FinalConstant.getEntityProperties(entityType).getCost();
             case BUILDER_UNIT:
-                return FinalConstant.getEntityProperties(entityType).getCost() + (getEntityArrayList(EntityType.BUILDER_UNIT)==null?0:getEntityArrayList(EntityType.RANGED_UNIT).size());
+                return FinalConstant.getEntityProperties(entityType).getCost() + (getEntityArrayList(EntityType.BUILDER_UNIT) == null ? 0 : getEntityArrayList(EntityType.RANGED_UNIT).size());
             case MELEE_BASE:
                 return FinalConstant.getEntityProperties(entityType).getCost();
             case MELEE_UNIT:
-                return FinalConstant.getEntityProperties(entityType).getCost()+ (getEntityArrayList(EntityType.MELEE_UNIT)==null?0:getEntityArrayList(EntityType.RANGED_UNIT).size());
+                return FinalConstant.getEntityProperties(entityType).getCost() + (getEntityArrayList(EntityType.MELEE_UNIT) == null ? 0 : getEntityArrayList(EntityType.RANGED_UNIT).size());
             case RANGED_BASE:
                 return FinalConstant.getEntityProperties(entityType).getCost();
             case RANGED_UNIT:
-                return FinalConstant.getEntityProperties(entityType).getCost()+ (getEntityArrayList(EntityType.RANGED_UNIT)==null?0:getEntityArrayList(EntityType.RANGED_UNIT).size());
+                return FinalConstant.getEntityProperties(entityType).getCost() + (getEntityArrayList(EntityType.RANGED_UNIT) == null ? 0 : getEntityArrayList(EntityType.RANGED_UNIT).size());
             case RESOURCE:
                 return FinalConstant.getEntityProperties(entityType).getCost();
             case TURRET:
@@ -421,18 +400,14 @@ public class MyPlayer extends Player {
         return 0;
     }
 
-    private void addResource(int resourceCurrentTik)
-    {
-        resourceAllGame +=resourceCurrentTik;
+    private void addResource(int resourceCurrentTik) {
+        resourceAllGame += resourceCurrentTik;
     }
 
-    public int getCountBuildDontCreate(EntityType entityType)
-    {
+    public int getCountBuildDontCreate(EntityType entityType) {
         int count = 0;
-        for (int i=0; i<getBuildingArrayList().size(); i++)
-        {
-            if (getBuildingArrayList().get(i).getEntityType()==entityType)
-            {
+        for (int i = 0; i < getBuildingArrayList().size(); i++) {
+            if (getBuildingArrayList().get(i).getEntityType() == entityType) {
                 if (!getBuildingArrayList().get(i).isActive()) count++;
             }
         }
@@ -444,9 +419,9 @@ public class MyPlayer extends Player {
         return resourceAllGame;
     }
 
-    public MyEntity getBuilderBase(){
+    public MyEntity getBuilderBase() {
         ArrayList<MyEntity> arrayList = getEntityArrayList(EntityType.BUILDER_BASE);
-        if (arrayList.size()>0){
+        if (arrayList.size() > 0) {
             return arrayList.get(0);
         }
         return null;
@@ -455,36 +430,31 @@ public class MyPlayer extends Player {
     // сортируем юнитов по дистанции к врагам
     public void sortAttackUnit(GlobalMap globalMap) {
 
-        int minDis=0xFFFF,maxDis = 0;
+        int minDis = 0xFFFF, maxDis = 0;
 
-        for (int i=0; i<mUnitArrayList.size(); i++)
-        {
+        for (int i = 0; i < mUnitArrayList.size(); i++) {
             MyEntity unit = mUnitArrayList.get(i);
-            Vec2Int vec2Int = globalMap.getNearestPlayer(unit.getPosition(),getId(),-1);
+            Vec2Int vec2Int = globalMap.getNearestPlayer(unit.getPosition(), getId(), -1);
 
-            if (vec2Int!=null)
-            {
+            if (vec2Int != null) {
                 unit.setMinDisToEnemy((float) unit.getPosition().distance(vec2Int));
-            }
-            else {
+            } else {
                 unit.setMinDisToEnemy(0xFFFF);
             }
         }
 
         // сортируем по порядку
-        Collections.sort(mUnitArrayList, new Comparator<MyEntity>(){
-            public int compare(MyEntity a, MyEntity b)
-            {
-                if (a.getMinDisToEnemy()>b.getMinDisToEnemy()) return 1;
-                if (a.getMinDisToEnemy()<b.getMinDisToEnemy()) return -1;
+        Collections.sort(mUnitArrayList, new Comparator<MyEntity>() {
+            public int compare(MyEntity a, MyEntity b) {
+                if (a.getMinDisToEnemy() > b.getMinDisToEnemy()) return 1;
+                if (a.getMinDisToEnemy() < b.getMinDisToEnemy()) return -1;
                 return 0;
             }
         });
 
 
-
         mRangerArrayList = getEntityArrayListSlow(EntityType.RANGED_UNIT);
-        mMeleeArrayList =  getEntityArrayListSlow(EntityType.MELEE_UNIT);
-        mBuilderArrayList =  getEntityArrayListSlow(EntityType.BUILDER_UNIT);
+        mMeleeArrayList = getEntityArrayListSlow(EntityType.MELEE_UNIT);
+        mBuilderArrayList = getEntityArrayListSlow(EntityType.BUILDER_UNIT);
     }
 }

@@ -1,6 +1,9 @@
 package strategy;
 
-import model.*;
+import model.Entity;
+import model.EntityAction;
+import model.EntityType;
+import model.Vec2Int;
 
 public class MyEntity extends Entity {
 
@@ -40,17 +43,16 @@ public class MyEntity extends Entity {
         init();
     }
 
-    void  init(){
+    void init() {
         mDataTaskUnit = new DataTaskUnit(EUnitState.EMPTY);
         simulationHP = getHealth();
-        mEntityAction = new EntityAction(null,null,null,null);
+        mEntityAction = new EntityAction(null, null, null, null);
         oldTikPosition = null;
-        oldTwoTikPosition=null;
+        oldTwoTikPosition = null;
         clear();
     }
 
-    public void setUpdate(boolean update)
-    {
+    public void setUpdate(boolean update) {
         this.update = update;
     }
 
@@ -58,7 +60,7 @@ public class MyEntity extends Entity {
         return update;
     }
 
-    public void clear(){
+    public void clear() {
         mEntityAction.clear();
         dodge = false;
         minDisToEnemy = 0xFFFF;
@@ -71,25 +73,21 @@ public class MyEntity extends Entity {
         {
             System.out.println("ВОТ ТУТ НЕ РАВНО!!!!");
         }*/
-        if (oldTwoTikPosition==null)
-        {
+        if (oldTwoTikPosition == null) {
             oldTwoTikPosition = getPosition().copy();
-        }else {
-            if (oldTikPosition==null)
-            {
+        } else {
+            if (oldTikPosition == null) {
                 oldTikPosition = getPosition().copy();
-            }
-            else {
+            } else {
                 oldTwoTikPosition = oldTikPosition;
                 oldTikPosition = getPosition().copy();
             }
         }
 
         setPosition(entity.getPosition());
-      //  if (oldTwoTikPosition!=null)System.out.println("ID: " + getId() + " oldPos: " + oldTwoTikPosition.toString() + " newPos:  " + entity.getPosition());
-        if (!getPosition().equals(oldTwoTikPosition))
-        {
-          //  System.out.println("ВОТ ТУТ НЕ РАВНО!!!!");
+        //  if (oldTwoTikPosition!=null)System.out.println("ID: " + getId() + " oldPos: " + oldTwoTikPosition.toString() + " newPos:  " + entity.getPosition());
+        if (!getPosition().equals(oldTwoTikPosition)) {
+            //  System.out.println("ВОТ ТУТ НЕ РАВНО!!!!");
         }
 
         setHealth(entity.getHealth());
@@ -120,12 +118,11 @@ public class MyEntity extends Entity {
         mDataTaskUnit = dataTaskUnit;
     }
 
-    public EUnitState getUnitState(){
+    public EUnitState getUnitState() {
         return getDataTaskUnit().getUnitState();
     }
 
-    public void move(Vec2Int vec2Int)
-    {
+    public void move(Vec2Int vec2Int) {
         //MoveAction action = new MoveAction()
     }
 
@@ -153,8 +150,8 @@ public class MyEntity extends Entity {
         return mEntityAction;
     }
 
-    public boolean isMove(){
-        if (getEntityAction().getMoveAction()!=null && oldTikPosition!=null && !oldTikPosition.equals(getPosition())) {
+    public boolean isMove() {
+        if (getEntityAction().getMoveAction() != null && oldTikPosition != null && !oldTikPosition.equals(getPosition())) {
             return true;
         }
         return false;
@@ -185,20 +182,18 @@ public class MyEntity extends Entity {
     }
 
     @Override
-    public String toString(){
-        String str="" + getId()+ " ";
-        str+=getPosition().toString();
-        if (oldTwoTikPosition!=null) str+=oldTwoTikPosition.toString();
-        if (getEntityAction().getMoveAction()!=null)
-        {
-            str+=" M: " + getEntityAction().getMoveAction().getTarget().toString();
+    public String toString() {
+        String str = "" + getId() + " ";
+        str += getPosition().toString();
+        if (oldTwoTikPosition != null) str += oldTwoTikPosition.toString();
+        if (getEntityAction().getMoveAction() != null) {
+            str += " M: " + getEntityAction().getMoveAction().getTarget().toString();
         }
-        if (getEntityAction().getAttackAction()!=null)
-        {
-            str+=" A: T";
+        if (getEntityAction().getAttackAction() != null) {
+            str += " A: T";
         }
-        str+=" " + isMove();
-        str+=" " + isRotation();
+        str += " " + isMove();
+        str += " " + isRotation();
         return str;
     }
 
