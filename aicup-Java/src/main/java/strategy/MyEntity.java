@@ -154,7 +154,7 @@ public class MyEntity extends Entity {
     }
 
     public boolean isMove(){
-        if (getEntityAction().getMoveAction()!=null && oldTwoTikPosition!=null && !oldTwoTikPosition.equals(getPosition())) {
+        if (getEntityAction().getMoveAction()!=null && oldTikPosition!=null && !oldTikPosition.equals(getPosition())) {
             return true;
         }
         return false;

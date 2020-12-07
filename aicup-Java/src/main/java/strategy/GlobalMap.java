@@ -15,7 +15,38 @@ public class GlobalMap {
 
     long resourceMap;
 
-    final static MyEntity empty = new MyEntity(-1,-1,EntityType.Empty,null,0,false);;
+    final static MyEntity empty = new MyEntity(-1,null,EntityType.Empty,null,0,false);;
+
+    final public static byte[][] aroundArray= new byte[][]{{-1,0},{0,-1},{0,1},{1,0},};
+    final public static byte[][] rangerArray= new byte[][]{
+            {-5,0},
+            {-4,1},{-4,0},{-4,-1},
+            {-3,2},{-3,1},{-3,0},{-3,-1},{-3,-2},
+            {-2,3},{-2,2},{-2,1},{-2,0},{-2,-1},{-2,-2},{-2,-3},
+            {-1,4},{-1,3},{-1,2},{-1,1},{-1,0},{-1,-1},{-1,-2},{-1,-3},{-1,-4},
+            {0,5},{0,4},{0,3},{0,2},{0,1},{0,0},{0,-1},{0,-2},{0,-3},{0,-4},{0,-5},
+            {1,4},{1,3},{1,2},{1,1},{1,0},{1,-1},{1,-2},{1,-3},{1,-4},
+            {2,3},{2,2},{2,1},{2,0},{2,-1},{2,-2},{2,-3},
+            {3,2},{3,1},{3,0},{3,-1},{3,-2},
+            {4,1},{4,0},{4,-1},
+            {5,0},
+    };
+    final public static byte[][] turretArray= new byte[][]{
+            {-5,1},
+            {-5,0},
+            {-4,2},{-4,1},{-4,0},{-4,-1},
+            {-3,3},{-3,2},{-3,1},{-3,0},{-3,-1},{-3,-2},
+            {-2,4},{-2,3},{-2,2},{-2,1},{-2,0},{-2,-1},{-2,-2},{-2,-3},
+            {-1,5},{-1,4},{-1,3},{-1,2},{-1,1},{-1,0},{-1,-1},{-1,-2},{-1,-3},{-1,-4},
+            {0,6},{0,5},{0,4},{0,3},{0,2},{0,1},{0,0},{0,-1},{0,-2},{0,-3},{0,-4},{0,-5},
+            {1,6},{1,5},{1,4},{1,3},{1,2},{1,1},{1,0},{1,-1},{1,-2},{1,-3},{1,-4},{1,-5},
+            {2,5},{2,4},{2,3},{2,2},{2,1},{2,0},{2,-1},{2,-2},{2,-3},{2,-4},
+            {3,4},{3,3},{3,2},{3,1},{3,0},{3,-1},{3,-2},{3,-3},
+            {4,3},{4,2},{4,1},{4,0},{4,-1},{4,-2},
+            {5,2},{5,1},{5,0},{5,-1},
+            {6,1},
+            {6,0},
+    };
 
     public GlobalMap(){
 
@@ -574,7 +605,7 @@ public class GlobalMap {
         return currentPos;
     }
 
-    public Vec2Int getNearestPlayer(Vec2Int vec2Int, int myID){
+    public Vec2Int getNearestPlayer(Vec2Int vec2Int, int myID, int enemyID){
         double minDis = 0xFFFFF;
         Vec2Int currentPos = null;
 
@@ -587,6 +618,8 @@ public class GlobalMap {
                 if (map[i][j].getPlayerId() == null) continue;
 
                 if (map[i][j].getPlayerId()==myID) continue;
+
+                if (enemyID!=-1 && map[i][j].getPlayerId()!=enemyID) continue;
 
                 double dis = map[i][j].getPosition().distance(vec2Int);
 
@@ -622,7 +655,7 @@ public class GlobalMap {
 
     //проверка для отхода крестьян от опасности
     public Vec2Int checkDangerBuildUnit(Vec2Int position, MyPlayer player, int radius, EntityType entityType){
-        ArrayList<MyEntity> arrayList = getEntityMap(position,radius,player.getId(),true,false,true, entityType,false);
+        ArrayList<MyEntity> arrayList = getEntityMap(position,radius,player.getId(),true,false,true, entityType,false,false);
 
         if (arrayList.size()==0) return null;
 
@@ -644,7 +677,7 @@ public class GlobalMap {
             if (!checkCoord(newPosition)) continue;
             if (!checkEmpty(newPosition)) continue;
 
-            ArrayList<MyEntity> arrayList1 = getEntityMap(newPosition,radius,player.getId(),true,false,true,entityType,false);
+            ArrayList<MyEntity> arrayList1 = getEntityMap(newPosition,radius,player.getId(),true,false,true,entityType,false,false);
             if (arrayList1.size()<sizeMax || init && arrayList1.size()<sizeMax)
             {
                 if (init && builderBase!=null)
@@ -678,7 +711,7 @@ public class GlobalMap {
     }
 
     // список юнитов в квардрате с центром position
-    public ArrayList<MyEntity> getEntityMap(Vec2Int position, int size, int playerID, boolean onlyEnemy, boolean onlyPlayer, boolean onlyUnit, EntityType entityType, boolean squareRadius){
+    public ArrayList<MyEntity> getEntityMap(Vec2Int position, int size, int playerID, boolean onlyEnemy, boolean onlyPlayer, boolean onlyUnit, EntityType entityType, boolean squareRadius, boolean turret){
         ArrayList<MyEntity> arrayList = new ArrayList<>();
 
         for (int x=-size; x<=size; x++ )
@@ -759,23 +792,23 @@ public class GlobalMap {
     }
 
 
-    public boolean checkCoord(int x, int y, int sizeObject)
+    public static boolean checkCoord(int x, int y, int sizeObject)
     {
         if (x<0+sizeObject || x>= FinalConstant.getMapSize()-sizeObject || y<0+sizeObject || y>= FinalConstant.getMapSize()+sizeObject) return false;
         return true;
     }
 
-    public boolean checkCoord(int x, int y)
+    public static boolean checkCoord(int x, int y)
     {
        return checkCoord(x,y,0);
     }
 
-    public boolean checkCoord(Vec2Int vec2Int, int size)
+    public static boolean checkCoord(Vec2Int vec2Int, int size)
     {
         return checkCoord(vec2Int.getX(),vec2Int.getY(),size);
     }
 
-    public boolean checkCoord(Vec2Int vec2Int)
+    public static  boolean checkCoord(Vec2Int vec2Int)
     {
         return checkCoord(vec2Int.getX(),vec2Int.getY(),0);
     }
@@ -839,6 +872,23 @@ public class GlobalMap {
                 case BUILDER_UNIT:
                     if (entity.isDodge()) return null;
             }
+        }
+
+        return null;
+    }
+
+    public static byte[][] getRadiusUnit(EntityType entityType)
+    {
+        switch (entityType)
+        {
+            case RANGED_UNIT:
+                return rangerArray;
+            case MELEE_UNIT:
+                return aroundArray;
+            case TURRET:
+                return turretArray;
+            case BUILDER_UNIT:
+                return aroundArray;
         }
 
         return null;

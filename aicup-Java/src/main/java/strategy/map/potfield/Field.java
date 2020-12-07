@@ -1,5 +1,6 @@
 package strategy.map.potfield;
 
+import model.EntityType;
 import model.Vec2Int;
 
 public class Field {
@@ -7,7 +8,14 @@ public class Field {
 
     int sum;
 
-    int danger;
+    int dangerRanger;
+    int dangerMelee;
+    int dangerTurret;
+
+    int safetyRanger;
+    int safetyMelee;
+    int safetyTurret;
+
     int playerArea;
     int playerAreaTwo;
 
@@ -32,7 +40,12 @@ public class Field {
 
     public void clear(){
         sum = 0;
-        danger = 0;
+        dangerRanger = 0;
+        dangerMelee = 0;
+        dangerTurret = 0;
+        safetyRanger = 0;
+        safetyMelee = 0;
+        safetyTurret = 0;
         playerArea = 0;
         playerAreaTwo = 0;
 
@@ -80,14 +93,6 @@ public class Field {
         return playerAreaTwo;
     }
 
-    public void setDanger(int danger) {
-        this.danger = danger;
-    }
-
-    public int getDanger() {
-        return danger;
-    }
-
     public void setCost(int cost) {
         this.cost = cost;
     }
@@ -129,5 +134,101 @@ public class Field {
 
     public void setDistrictResource(int districtResource) {
         this.districtResource = districtResource;
+    }
+
+    public int getDangerMelee() {
+        return dangerMelee;
+    }
+
+    public int getDangerRanger() {
+        return dangerRanger;
+    }
+
+    public int getDangerTurret() {
+        return dangerTurret;
+    }
+
+    public void addDangerMelee() {
+        this.dangerMelee++;
+    }
+
+    public void addDangerRanger() {
+        this.dangerRanger++;
+    }
+
+    public void addDangerTurret() {
+        this.dangerTurret+=2;
+    }
+
+    public boolean checkDanger(){
+        return dangerRanger+dangerTurret+dangerMelee==0;
+    }
+
+    public int getSumDanger(){
+        return dangerRanger+dangerTurret+dangerMelee;
+    }
+
+    public int getSumDangerRanger(){
+        return dangerRanger+dangerTurret+dangerMelee;
+    }
+
+    public int getSumDangerMelee(){
+        return dangerRanger+dangerMelee;
+    }
+
+    public int getSumDanger(EntityType entityType) {
+        switch (entityType)
+        {
+            case MELEE_UNIT:
+                return getSumDangerMelee();
+            case RANGED_UNIT:
+                return getSumDangerRanger();
+        }
+
+        return getSumDanger();
+    }
+
+    public void addSafetyMelee() {
+        this.safetyMelee++;
+    }
+
+    public void addSafetyRanger() {
+        this.safetyRanger++;
+    }
+
+    public void addSafetyTurret() {
+        this.safetyTurret++;
+    }
+
+    public int getSafetyMelee() {
+        return safetyMelee;
+    }
+
+    public int getSafetyRanger() {
+        return safetyRanger;
+    }
+
+    public int getSafetyTurret() {
+        return safetyTurret;
+    }
+
+    public int getSumSafaty(){
+        return safetyRanger+safetyTurret+safetyMelee;
+    }
+
+    public int getSumSafatyRanger(){
+        return safetyRanger+safetyTurret*2+safetyMelee;
+    }
+
+    public int getSumSafaty(EntityType entityType) {
+        switch (entityType)
+        {
+            case MELEE_UNIT:
+                return getSumSafatyRanger();
+            case RANGED_UNIT:
+                return getSumSafatyRanger();
+        }
+
+        return getSumSafaty();
     }
 }

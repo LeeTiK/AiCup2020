@@ -460,7 +460,7 @@ public class MyPlayer extends Player {
         for (int i=0; i<mUnitArrayList.size(); i++)
         {
             MyEntity unit = mUnitArrayList.get(i);
-            Vec2Int vec2Int = globalMap.getNearestPlayer(unit.getPosition(),getId());
+            Vec2Int vec2Int = globalMap.getNearestPlayer(unit.getPosition(),getId(),-1);
 
             if (vec2Int!=null)
             {

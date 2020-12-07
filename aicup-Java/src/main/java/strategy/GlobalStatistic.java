@@ -13,6 +13,8 @@ public class GlobalStatistic {
     ArrayList<MyPlayer> mMyPlayers;
     ArrayList<MyEntity> mMyEntityArrayList;
 
+    MyPlayer left;
+    MyPlayer right;
 
     public GlobalStatistic(){
         mMyPlayers = new ArrayList<>();
@@ -140,6 +142,20 @@ public class GlobalStatistic {
 
         finishGlobalList();
 
+
+        left = getPlayer(4);
+        right = getPlayer(3);
+
+        if (left.getPopulationCurrent()==0 && left.getBuildingArrayList().size()==0)
+        {
+            left = getPlayer(2);
+        }
+
+        if (right.getPopulationCurrent()==0 && right.getBuildingArrayList().size()==0)
+        {
+            right = getPlayer(2);
+        }
+
         //playerView.getPlayers()[i].getResource()
 
     }
@@ -189,4 +205,13 @@ public class GlobalStatistic {
     public ArrayList<MyEntity> getMyEntityArrayList() {
         return mMyEntityArrayList;
     }
+
+    public MyPlayer getLeftPlyer() {
+        return left;
+    }
+
+    public MyPlayer getRightPlyer() {
+        return right;
+    }
+
 }

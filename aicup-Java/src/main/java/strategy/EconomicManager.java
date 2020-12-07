@@ -131,7 +131,7 @@ public class EconomicManager {
                 actionHashMap.put(builderUnit.getId(), new EntityAction(m, b, a, r));
             } else {
 
-                ArrayList<MyEntity> arrayList = globalManager.getGlobalMap().getEntityMap(builderUnit.getPosition(), 8, FinalConstant.getMyID(), true, false,true,EntityType.ALL,false);
+                ArrayList<MyEntity> arrayList = globalManager.getGlobalMap().getEntityMap(builderUnit.getPosition(), 8, FinalConstant.getMyID(), true, false,true,EntityType.ALL,false,false);
 
                 if (arrayList.size() != 0) {
                     boolean range = false;
@@ -143,7 +143,7 @@ public class EconomicManager {
 
                     if (range == false) {
                         // милишники
-                        arrayList = globalManager.getGlobalMap().getEntityMap(builderUnit.getPosition(), 2, FinalConstant.getMyID(), true, false,true,EntityType.ALL,false);
+                        arrayList = globalManager.getGlobalMap().getEntityMap(builderUnit.getPosition(), 2, FinalConstant.getMyID(), true, false,true,EntityType.ALL,false,false);
                         if (arrayList.size() != 0) {
                             m = null;
                             //a = null;
@@ -581,9 +581,11 @@ public class EconomicManager {
 
 
         if (myPlayer.getResource()>myPlayer.getCost(EntityType.MELEE_UNIT) &&
-                4*meleeUnitArrayList.size()<rangedUnitArrayList.size()  &&
+                5
+                        *meleeUnitArrayList.size()<rangedUnitArrayList.size()  &&
                 (globalManager.getMapPotField().checkAttackBaseTwo(myPlayer.getId()) || FinalConstant.getCurrentTik()>150)
-        && myPlayer.getPopulationMax()>120
+
+                //&& myPlayer.getPopulationMax()>120
         ) {
             for (int i = 0; i < meleeBaseArrayList.size(); i++) {
                 b = new BuildAction(

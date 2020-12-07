@@ -56,10 +56,26 @@ public class FinalGraphic {
         if (a>1.0f) {
             a = 1.0f;
 
-            return new Color(0.0f, 1.0f,0,0.8f);
+            return new Color(0.0f, 1.0f,0,0.7f);
         }
 
-        Color color = new Color(1.0f-a, a,0,0.8f);
+        Color color = new Color(1.0f-a, a,0,0.7f);
+
+        return color;
+    }
+
+    static public Color getColorDinamicRED(int sum, int max){
+
+        float a = (1.0f *sum )/max;
+
+        // System.out.println("sum: " + sum + " max: " + max + " a: " + a);
+        if (a>1.0f) {
+            a = 1.0f;
+
+            return new Color(1.0f, 0.0f,0,0.7f);
+        }
+
+        Color color = new Color(a,1.0f-a, 0,0.7f);
 
         return color;
     }

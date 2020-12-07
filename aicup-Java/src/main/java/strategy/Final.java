@@ -18,6 +18,7 @@ public class Final {
     public final static boolean COORDINATE =false;
     public final static boolean INFO_UNIT =false;
     public final static boolean PLAYER_AREA =true;
+    public final static boolean DANGER_AREA =false;
 
     static public Player getMyPlayer(PlayerView playerView){
         int myID = playerView.getMyId();

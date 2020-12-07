@@ -5,6 +5,8 @@ import strategy.*;
 
 import java.util.ArrayList;
 
+import static strategy.GlobalMap.checkCoord;
+
 public class MapPotField {
 
     Field[][] mMapPotField;
@@ -66,6 +68,11 @@ public class MapPotField {
                 if (map[i][j].getPlayerId()== FinalConstant.getMyID()) {
 
                     addPlayerArea(map[i][j], new Vec2Int(i, j), map);
+
+                    addSafare(map[i][j],map);
+                }
+                else {
+                    addDanger(map[i][j],map);
                 }
 
                 // отмечаем вражеские войска
@@ -73,6 +80,83 @@ public class MapPotField {
         }
 
     //    globalMap.getMap()
+
+    }
+
+    private void addSafare(MyEntity entity, MyEntity[][] map) {
+        if (entity.getEntityType()!=EntityType.RANGED_UNIT && entity.getEntityType()!=EntityType.MELEE_UNIT && entity.getEntityType()!=EntityType.TURRET) return;
+
+        EntityProperties entityProperties = FinalConstant.getEntityProperties(entity);
+
+        if (entity.getPosition()==null)
+        {
+            int k=0;
+        }
+
+        Vec2Int position = entity.getPosition();
+
+        EntityType entityType = entity.getEntityType();
+
+        if (entity.getEntityType()==EntityType.MELEE_UNIT)
+        {
+            entityType = EntityType.RANGED_UNIT;
+        }
+
+        for (int i=0; i<GlobalMap.getRadiusUnit(entityType).length; i++) {
+            int x =GlobalMap.getRadiusUnit(entityType)[i][0];
+            int y = GlobalMap.getRadiusUnit(entityType)[i][1];
+
+            if (!GlobalMap.checkCoord(position.getX()+x,position.getY()+y)) continue;
+
+            if (x + position.getX() < 0 || x + position.getX() >= FinalConstant.getMapSize()) continue;
+            if (y + position.getY() < 0 || y + position.getY() >= FinalConstant.getMapSize()) continue;
+
+            switch (entity.getEntityType())
+            {
+                case MELEE_UNIT:
+                    mMapPotField[x + position.getX()][y + position.getY()].addSafetyMelee();
+                    break;
+                case RANGED_UNIT:
+                    mMapPotField[x + position.getX()][y + position.getY()].addSafetyRanger();
+                    break;
+                case TURRET:
+                    mMapPotField[x + position.getX()][y + position.getY()].addSafetyTurret();
+                    break;
+            }
+        }
+
+    }
+
+    private void addDanger(MyEntity entity, MyEntity[][] map) {
+        if (entity.getEntityType()!=EntityType.RANGED_UNIT && entity.getEntityType()!=EntityType.MELEE_UNIT && entity.getEntityType()!=EntityType.TURRET) return;
+
+        EntityProperties entityProperties = FinalConstant.getEntityProperties(entity);
+
+        Vec2Int position = entity.getPosition();
+
+            for (int i=0; i<GlobalMap.getRadiusUnit(entity.getEntityType()).length; i++) {
+                int x =GlobalMap.getRadiusUnit(entity.getEntityType())[i][0];
+                int y = GlobalMap.getRadiusUnit(entity.getEntityType())[i][1];
+
+                if (!GlobalMap.checkCoord(position.getX()+x,position.getY()+y)) continue;
+
+                    if (x + position.getX() < 0 || x + position.getX() >= FinalConstant.getMapSize()) continue;
+                if (y + position.getY() < 0 || y + position.getY() >= FinalConstant.getMapSize()) continue;
+
+                switch (entity.getEntityType())
+                {
+                    case MELEE_UNIT:
+                        mMapPotField[x + position.getX()][y + position.getY()].addDangerMelee();
+                        break;
+                    case RANGED_UNIT:
+                        mMapPotField[x + position.getX()][y + position.getY()].addDangerRanger();
+                        break;
+                    case TURRET:
+                        mMapPotField[x + position.getX()][y + position.getY()].addDangerTurret();
+                        break;
+                }
+            }
+
 
     }
 
@@ -230,7 +314,7 @@ public class MapPotField {
                     }
                 }
 
-                size = 10;
+                size = 13;
                 for (int x=-size; x<size; x++) {
                     if (x + position.getX() < 0 || x + position.getX() >= FinalConstant.getMapSize()) continue;
 
@@ -266,6 +350,15 @@ public class MapPotField {
             {
                 for (int j=0; j<size; j++)
                 {
+                    if (Final.DANGER_AREA)
+                    {
+                        if (!getMapPotField()[i][j].checkDanger())
+                        {
+                            FinalGraphic.sendSquare(debugInterface,new Vec2Int(i,j),1, FinalGraphic.getColorDinamicRED(getMapPotField()[i][j].getSumDanger(),5));
+                        }
+                    }
+
+
                     if (getMapPotField()[i][j].getPlayerArea()<=0) continue;
 
                     if (Final.PLAYER_AREA)
@@ -420,6 +513,10 @@ public class MapPotField {
                     }
                 }
             }
+
+            if (leftPosition!=null) {
+                leftPosition.setY(leftPosition.getY() - 5);
+            }
         }
 
         if (rightPosition == null){
@@ -442,6 +539,9 @@ public class MapPotField {
                     }
                 }
             }
+            if (rightPosition!=null) {
+                rightPosition.setX(rightPosition.getX() - 5);
+            }
         }
 
         switch (position)
@@ -453,5 +553,61 @@ public class MapPotField {
         }
 
         return null;
+    }
+
+    public Vec2Int getDangerAttack(MyEntity entity) {
+
+        byte[][] bytes= new byte[][]{
+                {-1,0},{0,-1},{0,1},{1,0},
+        };
+
+        Vec2Int position = entity.getPosition();
+        Vec2Int current = null;
+        Vec2Int currentSafety = null;
+
+        int minDanger = 0xFFFF;
+        int maxSafety = 0;
+
+        for (int i=0; i<4; i++) {
+            Vec2Int newPosition = position.add(bytes[i][0], bytes[i][1]);
+
+            if (!mGlobalMap.checkCoord(newPosition)) continue;
+            if (!mGlobalMap.checkEmpty(newPosition)) continue;
+
+            Field field = mMapPotField[newPosition.getX()][newPosition.getY()];
+
+            if (field.getSumDanger(entity.getEntityType())>0 && field.getSumDanger(entity.getEntityType())<minDanger)
+            {
+                minDanger= field.getSumDanger(entity.getEntityType());
+                current = newPosition;
+            }
+
+            if (field.getSumSafaty(entity.getEntityType())>0 &&
+                    field.getSumSafaty(entity.getEntityType()) - field.getSumDanger(entity.getEntityType())<maxSafety)
+            {
+                maxSafety= field.getSumSafaty(entity.getEntityType()) - field.getSumDanger(entity.getEntityType());
+                currentSafety = newPosition;
+            }
+        }
+
+        if (minDanger==0xFFFF) return null;
+
+        if (maxSafety>=3 && minDanger!=0xFFFF)
+        {
+            return currentSafety;
+        }
+
+        if (minDanger>1)
+        {
+            if (currentSafety!=null) {
+                current = currentSafety;
+            }
+        }
+
+        return current;
+    }
+
+    public boolean checkPlayerArea(Vec2Int position) {
+        return mMapPotField[position.getX()][position.getY()].getPlayerArea()>0;
     }
 }
