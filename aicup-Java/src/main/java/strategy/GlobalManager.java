@@ -55,7 +55,7 @@ public class GlobalManager {
         Final.DEBUG("", "Tik: " + FinalConstant.getCurrentTik() + " resource: " + getGlobalMap().getResourceMap() + " ID:" + getGlobalStatistic().getMyPlayer().getId() + " Alltime: " + allTime / 1000000);
 
         if (Final.debugRelease) {
-            if (FinalConstant.getCurrentTik() == 1) {
+            if (FinalConstant.getCurrentTik() == 0) {
                 Final.DEBUGRelease("", "Tik: " + FinalConstant.getCurrentTik() + " ID:" + getGlobalStatistic().getMyPlayer().getId());
             }
 

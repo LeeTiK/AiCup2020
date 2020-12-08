@@ -46,7 +46,7 @@ public class FinalGraphic {
         debugInterface.send(add);
     }
 
-    static public Color getColorDinamic(int sum, int max) {
+    static public Color getColorDinamicGREEN(int sum, int max) {
 
         float a = (1.0f * sum) / max;
 

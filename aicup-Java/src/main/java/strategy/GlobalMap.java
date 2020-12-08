@@ -52,7 +52,7 @@ public class GlobalMap {
 
     final public static byte[][] rangerAndContourArray = new byte[][]{
             {-6, 0},
-            {-5, -1}, {-5, 0}, {-5, 1},
+            {-5, 1}, {-5, 0}, {-5, -1},
             {-4, 2}, {-4, 1}, {-4, 0}, {-4, -1}, {-4, -2},
             {-3, 3}, {-3, 2}, {-3, 1}, {-3, 0}, {-3, -1}, {-3, -2}, {-3, -3},
             {-2, 4}, {-2, 3}, {-2, 2}, {-2, 1}, {-2, 0}, {-2, -1}, {-2, -2}, {-2, -3}, {-2, -4},
@@ -60,15 +60,15 @@ public class GlobalMap {
             {0, 6}, {0, 5}, {0, 4}, {0, 3}, {0, 2}, {0, 1}, {0, 0}, {0, -1}, {0, -2}, {0, -3}, {0, -4}, {0, -5}, {0, -6},
             {1, 5}, {1, 4}, {1, 3}, {1, 2}, {1, 1}, {1, 0}, {1, -1}, {1, -2}, {1, -3}, {1, -4}, {1, -5},
             {2, 4}, {2, 3}, {2, 2}, {2, 1}, {2, 0}, {2, -1}, {2, -2}, {2, -3}, {2, -4},
-            {3, 1}, {3, 2}, {3, 1}, {3, 0}, {3, -1}, {3, -2}, {3, -3},
-            {4, 0}, {4, 1}, {4, 0}, {4, -1}, {4, -2},
-            {5, -1}, {5, 0}, {5, 1},
+            {3, 3}, {3, 2}, {3, 1}, {3, 0}, {3, -1}, {3, -2}, {3, -3},
+            {4, 2}, {4, 1}, {4, 0}, {4, -1}, {4, -2},
+            {5, 1}, {5, 0}, {5, -1},
             {6, 0},
     };
 
     final public static byte[][] rangerContourArray = new byte[][]{
             {-6, 0},
-            {-5, -1}, {-5, 1},
+            {-5, 1}, {-5, -1},
             {-4, 2}, {-4, -2},
             {-3, 3}, {-3, -3},
             {-2, 4}, {-2, -4},
@@ -76,9 +76,9 @@ public class GlobalMap {
             {0, 6}, {0, -6},
             {1, 5}, {1, -5},
             {2, 4}, {2, -4},
-            {3, 1}, {3, -3},
-            {4, 0}, {4, -2},
-            {5, -1}, {5, 1},
+            {3, 3}, {3, -3},
+            {4, 2}, {4, -2},
+            {5, 1}, {5, -1},
             {6, 0},
     };
 
@@ -101,9 +101,9 @@ public class GlobalMap {
             {-6, 1}, {-6, 0},
             {-5, 2}, {-5, 1}, {-5, 0}, {-5, -1},
             {-4, 3}, {-4, 2}, {-4, 1}, {-4, 0}, {-4, -1}, {-4, -2},
-            {-3, 3}, {-3, 2}, {-3, 1}, {-3, 0}, {-3, -1}, {-3, -2},
+            {-3, 4}, {-3, 3}, {-3, 2}, {-3, 1}, {-3, 0}, {-3, -1}, {-3, -2}, {-3, -3},
             {-2, 5}, {-2, 4}, {-2, 3}, {-2, 2}, {-2, 1}, {-2, 0}, {-2, -1}, {-2, -2}, {-2, -3}, {-2, -4},
-            {-1, 6}, {-1, 5}, {-1, 4}, {-1, 3}, {-1, 2}, {-1, 1}, {-1, 0}, {-1, -1}, {-1, -2}, {-1, -3}, {-1, -4}, {-1, -5}, {-1, -6},
+            {-1, 6}, {-1, 5}, {-1, 4}, {-1, 3}, {-1, 2}, {-1, 1}, {-1, 0}, {-1, -1}, {-1, -2}, {-1, -3}, {-1, -4}, {-1, -5},
             {0, 7}, {0, 6}, {0, 5}, {0, 4}, {0, 3}, {0, 2}, {0, 1}, {0, 0}, {0, -1}, {0, -2}, {0, -3}, {0, -4}, {0, -5}, {0, -6},
             {1, 7}, {1, 6}, {1, 5}, {1, 4}, {1, 3}, {1, 2}, {1, 1}, {1, 0}, {1, -1}, {1, -2}, {1, -3}, {1, -4}, {1, -5}, {1, -6},
             {2, 6}, {2, 5}, {2, 4}, {2, 3}, {2, 2}, {2, 1}, {2, 0}, {2, -1}, {2, -2}, {2, -3}, {2, -4}, {2, -5},
@@ -118,9 +118,9 @@ public class GlobalMap {
             {-6, 1}, {-6, 0},
             {-5, 2}, {-5, -1},
             {-4, 3}, {-4, -2},
-            {-3, 3}, {-3, -2},
+            {-3, 4}, {-3, -3},
             {-2, 5}, {-2, -4},
-            {-1, 6}, {-1, -6},
+            {-1, 6}, {-1, -5},
             {0, 7}, {0, -6},
             {1, 7}, {1, -6},
             {2, 6}, {2, -5},
@@ -615,7 +615,19 @@ public class GlobalMap {
         return currentPos;
     }
 
-    public Vec2Int getNearestPlayer(Vec2Int vec2Int, int myID, int enemyID) {
+    public Vec2Int getNearestPlayer(Vec2Int vec2Int, int myID){
+        return getNearestPlayer(vec2Int,myID,-1,null);
+    }
+
+    public Vec2Int getNearestPlayer(Vec2Int vec2Int, int myID, int enemyID){
+        return getNearestPlayer(vec2Int,myID,enemyID,null);
+    }
+
+    public Vec2Int getNearestPlayer(Vec2Int vec2Int, int myID,  EntityType entityType){
+        return getNearestPlayer(vec2Int,myID,-1,entityType);
+    }
+
+    public Vec2Int getNearestPlayer(Vec2Int vec2Int, int myID, int enemyID, EntityType entityType) {
         double minDis = 0xFFFFF;
         Vec2Int currentPos = null;
 
@@ -628,6 +640,11 @@ public class GlobalMap {
                 if (map[i][j].getPlayerId() == myID) continue;
 
                 if (enemyID != -1 && map[i][j].getPlayerId() != enemyID) continue;
+
+                if (entityType!=null)
+                {
+                    if (map[i][j].getEntityType() != entityType) continue;
+                }
 
                 double dis = map[i][j].getPosition().distance(vec2Int);
 
@@ -742,6 +759,37 @@ public class GlobalMap {
                 }
             }
         }
+
+        return arrayList;
+    }
+
+    // список юнитов в позициях в bytes с центром position
+    public ArrayList<MyEntity> getEntityMap(Vec2Int position, byte[][] bytes, int playerID, boolean onlyUnit, EntityType entityType) {
+        ArrayList<MyEntity> arrayList = new ArrayList<>();
+
+        for (int i=0; i<bytes.length; i++)
+        {
+            int x = position.getX() + bytes[i][0];
+            int y = position.getY() + bytes[i][1];
+
+            if (!checkCoord(x,y)) continue;
+
+            MyEntity entity = map[x][y];
+            if (((entity.getEntityType() == EntityType.RANGED_UNIT || entity.getEntityType() == EntityType.MELEE_UNIT) || !onlyUnit) &&
+
+                    (entity.getEntityType() != EntityType.Empty && entity.getEntityType() != EntityType.RESOURCE)
+            ) {
+                if (entityType != EntityType.ALL && entity.getEntityType() != entityType) continue;
+
+                if (entity.getPlayerId() == null) continue;
+
+
+                if (entity.getPlayerId() == playerID) {
+                    arrayList.add(entity);
+                }
+            }
+        }
+
 
         return arrayList;
     }
@@ -879,11 +927,11 @@ public class GlobalMap {
             case RANGED_UNIT:
                 return rangerContourArray;
             case MELEE_UNIT:
-                return aroundArray;
+                return aroundContourArray;
             case TURRET:
-                return turretArray;
+                return turretContourArray;
             case BUILDER_UNIT:
-                return aroundArray;
+                return aroundContourArray;
         }
 
         return null;
@@ -898,7 +946,6 @@ public class GlobalMap {
                 if (!checkCoord(x + vec2Int.getX(), y + vec2Int.getY())) continue;
 
                 if (map[x + vec2Int.getX()][y + vec2Int.getY()].getPlayerId() == null) continue;
-                ;
 
                 if (map[x + vec2Int.getX()][y + vec2Int.getY()].getEntityType() == EntityType.TURRET && map[x + vec2Int.getX()][y + vec2Int.getY()].getPlayerId() == FinalConstant.getMyID()) {
 

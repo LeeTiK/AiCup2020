@@ -14,6 +14,10 @@ public class MoveAction {
     public void setBreakThrough(boolean breakThrough) { this.breakThrough = breakThrough; }
     public MoveAction() {}
     public MoveAction(model.Vec2Int target, boolean findClosestPosition, boolean breakThrough) {
+        if (target==null)
+        {
+            int k =0;
+        }
         this.target = target;
         this.findClosestPosition = findClosestPosition;
         this.breakThrough = breakThrough;

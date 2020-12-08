@@ -790,13 +790,19 @@ public class WarManager {
                             }
                         } else {
 
-                            m = new MoveAction(globalManager.getMapPotField().getPositionDefencePlayerArea(range.getPositionDefense()), true, true);
-                            range.getEntityAction().setMoveAction(m);
+                            Vec2Int vec2Int = globalManager.getMapPotField().getPositionDefencePlayerArea(range.getPositionDefense());
+                            if (vec2Int!=null) {
+                                m = new MoveAction(globalManager.getMapPotField().getPositionDefencePlayerArea(range.getPositionDefense()), true, true);
+                                range.getEntityAction().setMoveAction(m);
+                            }
                         }
                     } else {
                         //  globalManager.getMapPotField().getNearestPlayerIntoPlayerArea().get
-                        m = new MoveAction(globalManager.getMapPotField().getPositionDefencePlayerArea(range.getPositionDefense()), true, true);
-                        range.getEntityAction().setMoveAction(m);
+                        Vec2Int vec2Int = globalManager.getMapPotField().getPositionDefencePlayerArea(range.getPositionDefense());
+                        if (vec2Int!=null) {
+                            m = new MoveAction(globalManager.getMapPotField().getPositionDefencePlayerArea(range.getPositionDefense()), true, true);
+                            range.getEntityAction().setMoveAction(m);
+                        }
                     }
                 }
 

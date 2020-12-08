@@ -18,9 +18,10 @@ public class Final {
     public final static boolean COORDINATE = false;
     public final static boolean INFO_UNIT = false;
     public final static boolean PLAYER_AREA = false;
-    public final static boolean DANGER_AREA = true;
-    public final static boolean SAFETY_AREA = true;
-    public final static boolean DANGER_AND_SAFETY_AREA_TEXT = true;
+    public final static boolean DANGER_AREA = false;
+    public final static boolean DANGER_CONTOUR_AREA = false;
+    public final static boolean SAFETY_AREA = false;
+    public final static boolean DANGER_AND_SAFETY_AREA_TEXT = false;
 
     static public Player getMyPlayer(PlayerView playerView) {
         int myID = playerView.getMyId();
