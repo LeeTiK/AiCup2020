@@ -16,6 +16,7 @@ public class EconomicManager {
     // количество жилых мест
     int countMaxUnit;
 
+
     public EconomicManager() {
 
     }
@@ -202,7 +203,6 @@ public class EconomicManager {
         if (myPlayer.getResource() > myPlayer.getCost(EntityType.HOUSE) - 5 && ((myPlayer.getPopulationCurrent() * 1.2 >= myPlayer.getPopulationMax() && myPlayer.getResource() > myPlayer.getCost(EntityType.HOUSE) * 2) || myPlayer.getPopulationMax() < 80)
                 && (myPlayer.getPopulationMax() < 165 || myPlayer.getEntityArrayList(EntityType.RANGED_BASE).size() > 1)
                 && (myPlayer.getCountBuildDontCreate(EntityType.HOUSE) < 2 || myPlayer.getResource() > 500 && myPlayer.getCountBuildDontCreate(EntityType.HOUSE) < 3)
-                && (myPlayer.getEntityArrayList(EntityType.RANGED_UNIT).size() + myPlayer.getEntityArrayList(EntityType.MELEE_UNIT).size())>1
         ) {
 
             Vec2Int positionBuildHouse = globalManager.getGlobalMap().getPositionBuildHouse(FinalConstant.getEntityProperties(EntityType.HOUSE));
@@ -278,10 +278,10 @@ public class EconomicManager {
 
 
         if (myPlayer.getResource() > myPlayer.getCost(EntityType.TURRET) - 10 && myPlayer.getPopulationMax() >= 50 && true) {
-            int[][] positionTurret = {{7, 25}, {8, 25}, {11, 25}, {14, 25}, {12, 25},
-                    //{25,14},{25,11},{25,7},
-                    {7, 31}, {8, 31}, {11, 31}, {14, 31}, {12, 31},
-                    //{31,14},{31,11},{31,7},
+            int[][] positionTurret = {{5, 25}, {8, 25}, {11, 25}, {14, 25}, {12, 25},
+                    {25,14},{25,11},{25,7},
+                    {5, 31}, {8, 31}, {11, 31}, {14, 31}, {12, 31},
+                    {31,14},{31,11},{31,7},
             };
             // int[][] positionTurret = new int[10][2];
             Vec2Int vec2IntLeft = globalManager.getMapPotField().getPositionDefencePlayerArea(0);
@@ -526,6 +526,7 @@ public class EconomicManager {
                 !(globalManager.getGlobalMap().getResourceMap() < 20000 && builderUnitArrayList.size() > 25
                 )
                 && !globalManager.getMapPotField().checkAttackBase(myPlayer.getId(), globalManager.getGlobalStatistic())
+                && (myPlayer.getEntityArrayList(EntityType.RANGED_UNIT).size() + myPlayer.getEntityArrayList(EntityType.MELEE_UNIT).size())>1
 
         ) {
 
@@ -555,7 +556,7 @@ public class EconomicManager {
 
         Final.DEBUG(TAG, "arrayList RANGED_BASE BASE: " + rangeBaseArrayList.size() + " resource: " + myPlayer.getResource());
         if (myPlayer.getResource() > myPlayer.getCost(EntityType.RANGED_UNIT) &&
-                (globalManager.getMapPotField().checkAttackBaseTwo(myPlayer.getId()) || FinalConstant.getCurrentTik() > 150)) {
+                (globalManager.getMapPotField().checkAttackBaseTwo(myPlayer.getId()) || FinalConstant.getCurrentTik() > 1)) {
             for (int i = 0; i < rangeBaseArrayList.size(); i++) {
                 b = new BuildAction(
                         EntityType.RANGED_UNIT, globalManager.getGlobalMap().getPositionBuildUnit(rangeBaseArrayList.get(i))
@@ -573,7 +574,8 @@ public class EconomicManager {
         if (myPlayer.getResource() > myPlayer.getCost(EntityType.MELEE_UNIT) &&
                 6
                         * meleeUnitArrayList.size() < rangedUnitArrayList.size() &&
-                (globalManager.getMapPotField().checkAttackBaseTwo(myPlayer.getId()) || FinalConstant.getCurrentTik() > 150)
+                (globalManager.getMapPotField().checkAttackBaseTwo(myPlayer.getId()) || FinalConstant.getCurrentTik() > 1)
+                && meleeUnitArrayList.size()<4
 
             //&& myPlayer.getPopulationMax()>120
         ) {

@@ -132,19 +132,73 @@ public class GlobalStatistic {
 
 
         if (mMyPlayers.size() > 2) {
-            left = getPlayer(4);
-            right = getPlayer(3);
+            int myID = FinalConstant.getMyID();
 
-            if (left.getPopulationCurrent() == 0 && left.getBuildingArrayList().size() == 0) {
-                left = getPlayer(2);
+            switch (myID)
+            {
+                case 1:
+                    left = getPlayer(3);
+                    right = getPlayer(4);
+
+                    if (left.getPopulationCurrent() == 0 && left.getBuildingArrayList().size() == 0) {
+                        left = getPlayer(2);
+                    }
+
+                    if (right.getPopulationCurrent() == 0 && right.getBuildingArrayList().size() == 0) {
+                        right = getPlayer(2);
+                    }
+                    break;
+                case 2:
+                    left = getPlayer(4);
+                    right = getPlayer(3);
+
+                    if (left.getPopulationCurrent() == 0 && left.getBuildingArrayList().size() == 0) {
+                        left = getPlayer(1);
+                    }
+
+                    if (right.getPopulationCurrent() == 0 && right.getBuildingArrayList().size() == 0) {
+                        right = getPlayer(1);
+                    }
+                    break;
+                case 3:
+                    left = getPlayer(2);
+                    right = getPlayer(1);
+
+                    if (left.getPopulationCurrent() == 0 && left.getBuildingArrayList().size() == 0) {
+                        left = getPlayer(4);
+                    }
+
+                    if (right.getPopulationCurrent() == 0 && right.getBuildingArrayList().size() == 0) {
+                        right = getPlayer(4);
+                    }
+                    break;
+                case 4:
+                    left = getPlayer(1);
+                    right = getPlayer(2);
+
+                    if (left.getPopulationCurrent() == 0 && left.getBuildingArrayList().size() == 0) {
+                        left = getPlayer(3);
+                    }
+
+                    if (right.getPopulationCurrent() == 0 && right.getBuildingArrayList().size() == 0) {
+                        right = getPlayer(3);
+                    }
+                    break;
             }
 
-            if (right.getPopulationCurrent() == 0 && right.getBuildingArrayList().size() == 0) {
-                right = getPlayer(2);
-            }
         } else {
-            left = getPlayer(2);
-            right = getPlayer(2);
+            int myID = FinalConstant.getMyID();
+
+            switch (myID) {
+                case 1:
+                    left = getPlayer(2);
+                    right = getPlayer(2);
+                    break;
+                case 2:
+                    left = getPlayer(1);
+                    right = getPlayer(1);
+                    break;
+            }
         }
         //playerView.getPlayers()[i].getResource()
 

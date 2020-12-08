@@ -18,7 +18,11 @@ public class WarManager {
     int sizeRight;
     int sizeMy;
 
+
+    int globalPositionDefense = 0;
+
     //отвечаем за атаку и защиту
+
 
     public HashMap<Integer, EntityAction> update(PlayerView playerView, GlobalManager globalManager) {
         HashMap<Integer, EntityAction> actionHashMap = new HashMap<>();
@@ -33,9 +37,9 @@ public class WarManager {
         ArrayList<MyPlayer> arrayList = globalStatistic.getPlayers();
         MyPlayer targetPlayerAttack;
 
-        sizeMy = myPlayer.getEntityArrayList(EntityType.RANGED_UNIT).size() * 2 + myPlayer.getEntityArrayList(EntityType.MELEE_UNIT).size();
-        sizeLeft = globalManager.getGlobalStatistic().getLeftPlyer().getEntityArrayList(EntityType.RANGED_UNIT).size() * 2 + myPlayer.getEntityArrayList(EntityType.MELEE_UNIT).size();
-        sizeRight = globalManager.getGlobalStatistic().getRightPlyer().getEntityArrayList(EntityType.RANGED_UNIT).size() * 2 + myPlayer.getEntityArrayList(EntityType.MELEE_UNIT).size();
+        sizeMy = myPlayer.getEntityArrayList(EntityType.RANGED_UNIT).size() + myPlayer.getEntityArrayList(EntityType.MELEE_UNIT).size();
+        sizeLeft = globalManager.getGlobalStatistic().getLeftPlyer().getEntityArrayList(EntityType.RANGED_UNIT).size() + myPlayer.getEntityArrayList(EntityType.MELEE_UNIT).size();
+        sizeRight = globalManager.getGlobalStatistic().getRightPlyer().getEntityArrayList(EntityType.RANGED_UNIT).size() + myPlayer.getEntityArrayList(EntityType.MELEE_UNIT).size();
         if (Final.OFF_WAR) return actionHashMap;
 
         //if (globalStatistic.getCurrentTik()<30) return actionHashMap;
@@ -46,10 +50,16 @@ public class WarManager {
         // сортируем всех юнитов готовых на атаку, по ближайщему врагу, кто ближе тот и первый будет обрабатываться
         myPlayer.sortAttackUnit(globalManager.getGlobalMap());
 
-        if (FinalConstant.getCurrentTik() < 400) {
-            moveUnitOld(myPlayer, globalManager, actionHashMap, 17);
-        } else {
+
+        if (FinalConstant.getCurrentTik() < 100) {
             moveUnitOld(myPlayer, globalManager, actionHashMap, 1000);
+        } else {
+
+            if (FinalConstant.getCurrentTik() < 400) {
+                moveUnitOld(myPlayer, globalManager, actionHashMap, 17);
+            } else {
+                moveUnitOld(myPlayer, globalManager, actionHashMap, 1000);
+            }
         }
 
         // проверяем атаку юнитов
@@ -580,7 +590,8 @@ public class WarManager {
             MyEntity melee = meleeArrayList.get(i);
 
             if (melee.getPositionDefense() == -1) {
-                melee.setPositionDefense(i%2);
+                globalPositionDefense++;
+                melee.setPositionDefense(globalPositionDefense%2);
             }
 
             EntityAction entityAction = actionHashMap.get(melee.getId());
@@ -665,7 +676,8 @@ public class WarManager {
 
             // задаю позицию при начальной защите
             if (range.getPositionDefense() == -1) {
-                range.setPositionDefense(i%2);
+                globalPositionDefense++;
+                range.setPositionDefense(globalPositionDefense%2);
             }
 
             EntityAction entityAction = actionHashMap.get(range.getId());
