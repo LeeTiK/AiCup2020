@@ -46,8 +46,8 @@ public class WarManager {
         // сортируем всех юнитов готовых на атаку, по ближайщему врагу, кто ближе тот и первый будет обрабатываться
         myPlayer.sortAttackUnit(globalManager.getGlobalMap());
 
-        if (FinalConstant.getCurrentTik() < 550) {
-            moveUnitOld(myPlayer, globalManager, actionHashMap, 14);
+        if (FinalConstant.getCurrentTik() < 400) {
+            moveUnitOld(myPlayer, globalManager, actionHashMap, 17);
         } else {
             moveUnitOld(myPlayer, globalManager, actionHashMap, 1000);
         }
@@ -580,7 +580,7 @@ public class WarManager {
             MyEntity melee = meleeArrayList.get(i);
 
             if (melee.getPositionDefense() == -1) {
-                melee.setPositionDefense(0);
+                melee.setPositionDefense(i%2);
             }
 
             EntityAction entityAction = actionHashMap.get(melee.getId());
@@ -663,13 +663,13 @@ public class WarManager {
         for (int i = 0; i < rangeArrayList.size(); i++) {
             MyEntity range = rangeArrayList.get(i);
 
+            // задаю позицию при начальной защите
             if (range.getPositionDefense() == -1) {
-                range.setPositionDefense(0);
+                range.setPositionDefense(i%2);
             }
 
             EntityAction entityAction = actionHashMap.get(range.getId());
             if (entityAction == null) entityAction = new EntityAction(null, null, null, null);
-
 
             // увороты от милишников
 
@@ -685,7 +685,7 @@ public class WarManager {
                 range.setDodge(true);
 
                 actionHashMap.put(range.getId(), entityAction);
-                return;
+                continue;
             }
 
             if (entityAction.getAttackAction() != null) continue;
@@ -904,6 +904,15 @@ public class WarManager {
                         minHPTurret = entity1.getSimulationHP();
                     }
                     break;
+            }
+        }
+
+        if (building!=null)
+        {
+            if (!building.isActive())
+            {
+                building.attackHP(entityProperties.getAttack().getDamage());
+                return new DataAttack(building);
             }
         }
 
