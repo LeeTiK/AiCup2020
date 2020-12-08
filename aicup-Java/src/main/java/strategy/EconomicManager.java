@@ -320,18 +320,20 @@ public class EconomicManager {
                         AttackAction a = null;
                         RepairAction r = null;
                         Vec2Int vec2Int1 = globalManager.getGlobalMap().getMinPositionBuilding(current.getPosition(), vec2Int, FinalConstant.getEntityProperties(EntityType.TURRET));
-                        m = new MoveAction(vec2Int1, true, false);
+                        if (vec2Int1!=null) {
+                            m = new MoveAction(vec2Int1, true, false);
 
-                        b = new BuildAction(EntityType.TURRET, vec2Int);
-                        checkCreate = true;
-                        a = null;
+                            b = new BuildAction(EntityType.TURRET, vec2Int);
+                            checkCreate = true;
+                            a = null;
 
-                        current.setDataTaskUnit(new DataTaskUnit(EUnitState.BUILD));
-                        current.getDataTaskUnit().setEntityType(EntityType.TURRET);
+                            current.setDataTaskUnit(new DataTaskUnit(EUnitState.BUILD));
+                            current.getDataTaskUnit().setEntityType(EntityType.TURRET);
 
-                        Final.DEBUG(TAG, "VECTOR BUILD: " + vec2Int.toString() + " currentP: " + current.getPosition());
+                            Final.DEBUG(TAG, "VECTOR BUILD: " + vec2Int.toString() + " currentP: " + current.getPosition());
 
-                        actionHashMap.put(current.getId(), new EntityAction(m, b, a, r));
+                            actionHashMap.put(current.getId(), new EntityAction(m, b, a, r));
+                        }
                     }
                 }
             }
