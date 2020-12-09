@@ -111,17 +111,17 @@ public class GlobalStatistic {
         }
 
         for (int j = 0; j < mMyPlayers.size(); j++) {
-            EntityType entityType = mMyPlayers.get(j).checkDelete();
+            MyEntity entity = GlobalMap.empty;
 
-            if (entityType != null) {
-                Final.DEBUG(TAG, "Player ID: " + mMyPlayers.get(j).getId() + " Event: " + EStatus.DELETE_Entity + " Type: " + entityType);
-            }
+            while (entity != null) {
+                entity = mMyPlayers.get(j).checkDelete();
 
-            while (entityType != null) {
-                entityType = mMyPlayers.get(j).checkDelete();
-
-                if (entityType != null) {
-                    Final.DEBUG(TAG, "Player ID: " + mMyPlayers.get(j).getId() + " Event: " + EStatus.DELETE_Entity + " Type: " + entityType);
+                if (entity != null) {
+                    Final.DEBUG(TAG, "Player ID: " + mMyPlayers.get(j).getId() + " Event: " + EStatus.DELETE_Entity + " Type: " + entity.getEntityType() );
+                    if (entity.getEntityType()==EntityType.RANGED_UNIT && entity.getHealth()>5)
+                    {
+                        Final.DEBUG(TAG, "BAD POSITION " + FinalConstant.getCurrentTik() + " Player ID: " + mMyPlayers.get(j).getId() + " ID: " + entity.getId() );
+                    }
                 }
             }
 

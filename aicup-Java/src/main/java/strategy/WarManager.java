@@ -51,7 +51,7 @@ public class WarManager {
         myPlayer.sortAttackUnit(globalManager.getGlobalMap());
 
 
-        if (FinalConstant.getCurrentTik() < 100) {
+        if (FinalConstant.getCurrentTik() < 90) {
             moveUnitOld(myPlayer, globalManager, actionHashMap, 1000);
         } else {
 

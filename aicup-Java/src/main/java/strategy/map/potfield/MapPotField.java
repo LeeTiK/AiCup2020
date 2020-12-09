@@ -5,6 +5,8 @@ import strategy.*;
 
 import java.util.ArrayList;
 
+import static strategy.GlobalMap.checkCoord;
+
 public class MapPotField {
 
     Field[][] mMapPotField;
@@ -47,9 +49,9 @@ public class MapPotField {
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
                 if (map[i][j].getEntityType() == EntityType.RESOURCE) {
-                    int resourceDirect = resourceDirect(mMapPotField[i][j]);
-                    if (resourceDirect == -1) {
-                        mMapPotField[i][j].setDistrictResource(0);
+                    if (mMapPotField[i][j].getDistrictResource()==-1)
+                    {
+                      //  addResource(i,j);
                     }
                 }
 
@@ -74,6 +76,35 @@ public class MapPotField {
 
     }
 
+    private void addResource(int x, int y) {
+        if (mGlobalMap.getMap()[x][y].getEntityType()!=EntityType.RESOURCE) return;
+        if (mMapPotField[x][y].getDistrictResource() == mBiomResourceMap.getSizeBiom()) return;
+
+        mBiomResourceMap.addSizeBiom();
+
+        recursiveResource(x,y);
+    }
+
+    private void recursiveResource(int x,int y){
+        if (!mGlobalMap.checkCoord(x,y)) return;
+
+        if (mGlobalMap.getMap()[x][y].getEntityType()!=EntityType.RESOURCE) return;
+
+        if (mMapPotField[x][y].getDistrictResource()!=-1) return;
+
+        mMapPotField[x][y].setDistrictResource(mBiomResourceMap.getSizeBiom());
+
+        mBiomResourceMap.addBiomResource( mMapPotField[x][y],mGlobalMap.getMap()[x][y].getHealth());
+
+        recursiveResource(x+1,y);
+
+        recursiveResource(x-1,y);
+
+        recursiveResource(x,y+1);
+
+        recursiveResource(x,y-1);
+    }
+
     private void addSafare(MyEntity entity, MyEntity[][] map) {
         if (entity.getEntityType() != EntityType.RANGED_UNIT && entity.getEntityType() != EntityType.MELEE_UNIT && entity.getEntityType() != EntityType.TURRET)
             return;
@@ -96,7 +127,7 @@ public class MapPotField {
             int x = GlobalMap.getRadiusUnit(entityType)[i][0];
             int y = GlobalMap.getRadiusUnit(entityType)[i][1];
 
-            if (!GlobalMap.checkCoord(position.getX() + x, position.getY() + y)) continue;
+            if (!checkCoord(position.getX() + x, position.getY() + y)) continue;
 
             if (x + position.getX() < 0 || x + position.getX() >= FinalConstant.getMapSize()) continue;
             if (y + position.getY() < 0 || y + position.getY() >= FinalConstant.getMapSize()) continue;
@@ -129,7 +160,7 @@ public class MapPotField {
             int x = GlobalMap.getRadiusUnit(entity.getEntityType())[i][0];
             int y = GlobalMap.getRadiusUnit(entity.getEntityType())[i][1];
 
-            if (!GlobalMap.checkCoord(position.getX() + x, position.getY() + y)) continue;
+            if (!checkCoord(position.getX() + x, position.getY() + y)) continue;
 
             if (x + position.getX() < 0 || x + position.getX() >= FinalConstant.getMapSize()) continue;
             if (y + position.getY() < 0 || y + position.getY() >= FinalConstant.getMapSize()) continue;
@@ -154,7 +185,7 @@ public class MapPotField {
             int x = GlobalMap.getRadiusContourUnit(entity.getEntityType())[i][0];
             int y = GlobalMap.getRadiusContourUnit(entity.getEntityType())[i][1];
 
-            if (!GlobalMap.checkCoord(position.getX() + x, position.getY() + y)) continue;
+            if (!checkCoord(position.getX() + x, position.getY() + y)) continue;
 
             if (x + position.getX() < 0 || x + position.getX() >= FinalConstant.getMapSize()) continue;
             if (y + position.getY() < 0 || y + position.getY() >= FinalConstant.getMapSize()) continue;
@@ -380,12 +411,21 @@ public class MapPotField {
                     }
 
                     if (Final.DANGER_AND_SAFETY_AREA_TEXT) {
-                        FinalGraphic.sendText(debugInterface, new Vec2Float(i * 1.0f, j * 1.0f + 0.85f), 11, "D:" +
-                                getMapPotField()[i][j].getDangerRanger() + "," + getMapPotField()[i][j].getDangerMelee() + "," + getMapPotField()[i][j].getDangerTurret());
-                        FinalGraphic.sendText(debugInterface, new Vec2Float(i * 1.0f, j * 1.0f + 0.65f), 11, "C:" +
-                                getMapPotField()[i][j].getDangerContourRanger() + "," + getMapPotField()[i][j].getDangerContourMelee() + "," + getMapPotField()[i][j].getDangerContourTurret());
-                        FinalGraphic.sendText(debugInterface, new Vec2Float(i * 1.0f, j * 1.0f + 0.45f), 11, "S:" +
-                                getMapPotField()[i][j].getSafetyRanger() + "," + getMapPotField()[i][j].getSafetyMelee() + "," + getMapPotField()[i][j].getSafetyTurret());
+                        if (getMapPotField()[i][j].getSumDanger()+getMapPotField()[i][j].getSumSafaty()+getMapPotField()[i][j].getSumDangerContour()>0) {
+                            FinalGraphic.sendText(debugInterface, new Vec2Float(i * 1.0f, j * 1.0f + 0.85f), 11, "D:" +
+                                    getMapPotField()[i][j].getDangerRanger() + "," + getMapPotField()[i][j].getDangerMelee() + "," + getMapPotField()[i][j].getDangerTurret());
+                            FinalGraphic.sendText(debugInterface, new Vec2Float(i * 1.0f, j * 1.0f + 0.65f), 11, "C:" +
+                                    getMapPotField()[i][j].getDangerContourRanger() + "," + getMapPotField()[i][j].getDangerContourMelee() + "," + getMapPotField()[i][j].getDangerContourTurret());
+                            FinalGraphic.sendText(debugInterface, new Vec2Float(i * 1.0f, j * 1.0f + 0.45f), 11, "S:" +
+                                    getMapPotField()[i][j].getSafetyRanger() + "," + getMapPotField()[i][j].getSafetyMelee() + "," + getMapPotField()[i][j].getSafetyTurret());
+                        }
+                    }
+
+                    if (Final.BIOM_RESOURCE) {
+                        if (getMapPotField()[i][j].getDistrictResource()>=0) {
+                            FinalGraphic.sendText(debugInterface, new Vec2Float(i * 1.0f, j * 1.0f + 0.5f), 11, "" +
+                                    getMapPotField()[i][j].getDistrictResource());
+                        }
                     }
 
 
@@ -578,19 +618,35 @@ public class MapPotField {
 
         int minDanger = 0xFFFF;
         int minCounterDanger = 0xFFFF;
+        int maxCounterOnlyUnitDanger = 0;
         int maxSafety = 0;
 
         for (int i = 0; i < bytes.length; i++) {
             Vec2Int newPosition = position.add(bytes[i][0], bytes[i][1]);
 
-            if (!mGlobalMap.checkCoord(newPosition)) continue;
+            if (!checkCoord(newPosition)) continue;
             if (!mGlobalMap.checkEmpty(newPosition)) continue;
 
             Field field = mMapPotField[newPosition.getX()][newPosition.getY()];
 
-            if (field.getSumDanger(entity.getEntityType()) > 0 && field.getSumDanger(entity.getEntityType()) < minDanger) {
-                minDanger = field.getSumDanger(entity.getEntityType());
-                current = field;
+            if (field.getSumDanger(entity.getEntityType()) > 0) {
+                /// проверяем контур атаки (это значит возможно на следующем ходу там появится второй юнит)
+                if (field.getSumDanger(entity.getEntityType()) == minDanger){
+                    if (current.getSumDangerContour()>field.getSumDangerContour()) {
+                        minDanger = field.getSumDanger(entity.getEntityType());
+                        current = field;
+                    }
+                }
+
+                if (field.getSumDanger(entity.getEntityType()) < minDanger){
+                    minDanger = field.getSumDanger(entity.getEntityType());
+                    current = field;
+                }
+            }
+
+            if (field.getSumDangerContourOnlyUnit()>maxCounterOnlyUnitDanger)
+            {
+                maxCounterOnlyUnitDanger = field.getSumDangerContourOnlyUnit();
             }
 
             if (field.getSumDangerContour() > 0 && field.getSumDangerContour() < minCounterDanger) {
@@ -599,7 +655,7 @@ public class MapPotField {
             }
 
             if (field.getSumDanger(entity.getEntityType()) == 0
-                 //   && field.getSumDangerContour() < 2
+                    && field.getSumDangerContourOnlyUnit() < 2
             ) {
                 currentNoDanger = field;
 
@@ -615,9 +671,11 @@ public class MapPotField {
 
         if (minDanger == 0xFFFF) {
 
-            if (minCounterDanger==1)
+            if (maxCounterOnlyUnitDanger>0)
             {
-                return currentContour.getPosition();
+                if (currentNoDanger!=null) {
+                    return currentNoDanger.getPosition();
+                }
             }
 
             return null;
@@ -658,10 +716,38 @@ public class MapPotField {
             if (mMapPotField[entity.getPosition().getX()][entity.getPosition().getY()].getSumDanger()==0) return entity.getPosition();
         }
 
+        if (minDanger==1 && current.getSumDangerContour()>0)
+        {
+            if (currentNoDanger!=null) {
+                return currentNoDanger.getPosition();
+            }
+        }
+
         return current.getPosition();
     }
 
     public boolean checkPlayerArea(Vec2Int position) {
         return mMapPotField[position.getX()][position.getY()].getPlayerArea() > 0;
+    }
+
+    public boolean checkSafety(Vec2Int vec2Int) {
+        return checkSafety(vec2Int, 1, 1);
+    }
+
+    public boolean checkSafety(Vec2Int vec2Int, int size) {
+        return checkSafety(vec2Int, size, size);
+    }
+
+    public boolean checkSafety(Vec2Int vec2Int, int width, int height) {
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                if (!checkCoord(vec2Int.getX() + x, vec2Int.getY() + y)) return false;
+                if (mGlobalMap.getMap()[vec2Int.getX() + x][vec2Int.getY() + y].getEntityType() != EntityType.Empty) return false;
+                if (mMapPotField[vec2Int.getX() + x][vec2Int.getY() + y].getSumDanger() > 0) return false;
+                if (mMapPotField[vec2Int.getX() + x][vec2Int.getY() + y].getSumDangerContour() > 0) return false;
+            }
+        }
+
+        return true;
     }
 }

@@ -1,6 +1,7 @@
 package strategy;
 
 import model.*;
+import strategy.map.potfield.MapPotField;
 
 import java.util.ArrayList;
 
@@ -244,8 +245,11 @@ public class GlobalMap {
             }
         }
     }
+    public ArrayList<Vec2Int> getCoordAround(Vec2Int start, int size, boolean checkEmpty){
+        return getCoordAround(start,size,checkEmpty,-1);
+    }
 
-    public ArrayList<Vec2Int> getCoordAround(Vec2Int start, int size, boolean checkEmpty) {
+    public ArrayList<Vec2Int> getCoordAround(Vec2Int start, int size, boolean checkEmpty, int myID) {
         ArrayList<Vec2Int> arrayList = new ArrayList<>();
 
         Vec2Int vec2Int = start;
@@ -255,11 +259,31 @@ public class GlobalMap {
 
             if (!checkCoord(vec2Int1)) continue;
 
+            boolean check = false;
+
+
+
             if (checkEmpty) {
                 if (checkEmpty(vec2Int1)) {
-                    arrayList.add(vec2Int1);
+                    check = true;
                 }
-            } else {
+                else {
+                    check = false;
+                }
+            }
+
+            if (myID!=-1)
+            {
+                if (map[vec2Int1.getX()][vec2Int1.getY()].getPlayerId()!=null)
+                {
+                    if (map[vec2Int1.getX()][vec2Int1.getY()].getPlayerId()==myID){
+                        return new ArrayList<>();
+                    }
+                }
+            }
+
+            if (check)
+            {
                 arrayList.add(vec2Int1);
             }
         }
@@ -277,6 +301,16 @@ public class GlobalMap {
             } else {
                 arrayList.add(vec2Int1);
             }
+
+            if (myID!=-1)
+            {
+                if (map[vec2Int1.getX()][vec2Int1.getY()].getPlayerId()!=null)
+                {
+                    if (map[vec2Int1.getX()][vec2Int1.getY()].getPlayerId()==myID){
+                        return new ArrayList<>();
+                    }
+                }
+            }
         }
 
         for (int x = size - 1; x >= 0; x--) {
@@ -290,6 +324,16 @@ public class GlobalMap {
                 }
             } else {
                 arrayList.add(vec2Int1);
+            }
+
+            if (myID!=-1)
+            {
+                if (map[vec2Int1.getX()][vec2Int1.getY()].getPlayerId()!=null)
+                {
+                    if (map[vec2Int1.getX()][vec2Int1.getY()].getPlayerId()==myID){
+                        return new ArrayList<>();
+                    }
+                }
             }
         }
 
@@ -305,17 +349,33 @@ public class GlobalMap {
             } else {
                 arrayList.add(vec2Int1);
             }
+
+            if (myID!=-1)
+            {
+                if (map[vec2Int1.getX()][vec2Int1.getY()].getPlayerId()!=null)
+                {
+                    if (map[vec2Int1.getX()][vec2Int1.getY()].getPlayerId()==myID){
+                        return new ArrayList<>();
+                    }
+                }
+            }
         }
 
         return arrayList;
     }
 
 
-    public Vec2Int getNearest(Vec2Int position, EntityType entityType) {
+
+
+    public Vec2Int getNearest(Vec2Int position, EntityType entityType, boolean checkEmpty, int myID) {
         double minDis = 0xFFFF;
         Vec2Int current = new Vec2Int(0, 0);
         for (int i = 0; i < allEntity.size(); i++) {
             if (allEntity.get(i).getEntityType() != entityType) continue;
+
+            ArrayList arrayList = getCoordAround(allEntity.get(i).getPosition(), 1, true, myID);
+            if (arrayList.size() == 0) continue;
+
             double dis = position.distance(allEntity.get(i).getPosition());
             if (dis < minDis) {
                 current = allEntity.get(i).getPosition();
@@ -348,7 +408,7 @@ public class GlobalMap {
         for (int x = entityProperties.getSize() - 1; x >= 0; x--) {
             if (checkEmpty(vec2Int.add(x, entityProperties.getSize()))) {
                 Vec2Int vec2Int1 = vec2Int.add(x, entityProperties.getSize());
-                Vec2Int vecReseurse = getNearest(vec2Int1, EntityType.RESOURCE);
+                Vec2Int vecReseurse = getNearest(vec2Int1, EntityType.RESOURCE,true,FinalConstant.getMyID());
                 double dis = vecReseurse.distance(vec2Int1);
                 if (dis < minDis) {
                     vec2IntCurrent = vec2Int1;
@@ -361,7 +421,7 @@ public class GlobalMap {
         for (int y = entityProperties.getSize() - 1; y >= 0; y--) {
             if (checkEmpty(vec2Int.add(entityProperties.getSize(), y))) {
                 Vec2Int vec2Int1 = vec2Int.add(entityProperties.getSize(), y);
-                Vec2Int vecReseurse = getNearest(vec2Int1, EntityType.RESOURCE);
+                Vec2Int vecReseurse = getNearest(vec2Int1, EntityType.RESOURCE,true,FinalConstant.getMyID());
                 double dis = vecReseurse.distance(vec2Int1);
                 if (dis < minDis) {
                     vec2IntCurrent = vec2Int1;
@@ -373,7 +433,7 @@ public class GlobalMap {
         for (int x = entityProperties.getSize() - 1; x >= 0; x--) {
             if (checkEmpty(vec2Int.add(x, -1))) {
                 Vec2Int vec2Int1 = vec2Int.add(x, -1);
-                Vec2Int vecReseurse = getNearest(vec2Int1, EntityType.RESOURCE);
+                Vec2Int vecReseurse = getNearest(vec2Int1, EntityType.RESOURCE,true,FinalConstant.getMyID());
                 double dis = vecReseurse.distance(vec2Int1);
                 if (dis < minDis) {
                     vec2IntCurrent = vec2Int1;
@@ -385,7 +445,7 @@ public class GlobalMap {
         for (int y = entityProperties.getSize() - 1; y >= 0; y--) {
             if (checkEmpty(vec2Int.add(-1, y))) {
                 Vec2Int vec2Int1 = vec2Int.add(-1, y);
-                Vec2Int vecReseurse = getNearest(vec2Int1, EntityType.RESOURCE);
+                Vec2Int vecReseurse = getNearest(vec2Int1, EntityType.RESOURCE,true,FinalConstant.getMyID());
                 double dis = vecReseurse.distance(vec2Int1);
                 if (dis < minDis) {
                     vec2IntCurrent = vec2Int1;
@@ -558,6 +618,19 @@ public class GlobalMap {
         Vec2Int vec2Int = getNearestCoord(positionUnit, arrayList);
 
         return vec2Int;
+    }
+
+    // функция для проверки можно ли поставить здания с безопасным уклоном
+    public boolean checkSafeСreationBuilding(Vec2Int vec2Int, EntityProperties entityProperties, MapPotField mapPotField)
+    {
+        // проверка на пустоту под здания, и сразу на опасность(не ставить здания в зоне удара вражеский юнитов)
+        if (!mapPotField.checkSafety(vec2Int, entityProperties.getSize())) return false;
+
+        // проверка возможности подхода к зданию
+        ArrayList arrayList = getCoordAround(vec2Int, entityProperties.getSize(), true);
+        if (arrayList.size() == 0) return false;
+
+        return true;
     }
 
     public boolean checkEmptyAndAround(Vec2Int vec2Int, EntityProperties entityProperties) {

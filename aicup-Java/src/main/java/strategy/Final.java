@@ -8,7 +8,7 @@ public class Final {
     final static boolean TEST = false;
     final static boolean debug = false;
     final static boolean debugRelease = true;
-    public final static boolean debugGraphic = true;
+    public final static boolean debugGraphic = false;
 
     final static boolean OFF_WAR = false;
 
@@ -22,6 +22,7 @@ public class Final {
     public final static boolean DANGER_CONTOUR_AREA = false;
     public final static boolean SAFETY_AREA = false;
     public final static boolean DANGER_AND_SAFETY_AREA_TEXT = false;
+    public final static boolean BIOM_RESOURCE = true;
 
     static public Player getMyPlayer(PlayerView playerView) {
         int myID = playerView.getMyId();

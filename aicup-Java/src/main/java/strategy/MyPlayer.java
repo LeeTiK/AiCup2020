@@ -33,6 +33,8 @@ public class MyPlayer extends Player {
     int resourceCurrentTik = 0;
     int resourceAllGame = 0;
 
+    int countAllBadPositionRange = 0;
+
     int historyAll;
 
     /// оптимизация массивов
@@ -135,7 +137,7 @@ public class MyPlayer extends Player {
         return EStatus.ERROR;
     }
 
-    public EntityType checkDelete() {
+    public MyEntity checkDelete() {
         //проверяем и удаляем старые юниты
         for (int i = 0; i < mBuildingArrayList.size(); i++) {
             if (!mBuildingArrayList.get(i).isUpdate()) {
@@ -151,8 +153,9 @@ public class MyPlayer extends Player {
                         countDeadOtherBuilders++;
                         break;
                 }
+                MyEntity entity = mBuildingArrayList.get(i);
                 mBuildingArrayList.remove(i);
-                return entityType;
+                return entity;
             }
         }
 
@@ -169,10 +172,14 @@ public class MyPlayer extends Player {
                         break;
                     case RANGED_UNIT:
                         countDeadRange++;
+                        if (mUnitArrayList.get(i).getHealth()>5){
+                            countAllBadPositionRange++;
+                        }
                         break;
                 }
+                MyEntity entity =mUnitArrayList .get(i);
                 mUnitArrayList.remove(i);
-                return entityType;
+                return entity;
             }
         }
 
@@ -337,14 +344,13 @@ public class MyPlayer extends Player {
         ArrayList<MyEntity> meleeArrayList = getEntityArrayList(EntityType.MELEE_UNIT);
         ArrayList<MyEntity> rangeArrayList = getEntityArrayList(EntityType.RANGED_UNIT);
         ArrayList<MyEntity> houseArrayList = getEntityArrayList(EntityType.HOUSE);
-        return "ID: " + getId() + " B: " + buildArrayList.size() + "/" + countDeadBiuld + "/" + countAllBiuld +
+        return "ID: " + getId() + " Res: " + getResourceAllGame() +
+                " B: " + buildArrayList.size() + "/" + countDeadBiuld + "/" + countAllBiuld +
                 " M: " + meleeArrayList.size() + "/" + countDeadMelee + "/" + countAllMelee +
-                " R: " + rangeArrayList.size() + "/" + countDeadRange + "/" + countAllRange +
+                " R: " + rangeArrayList.size() + "/" + countDeadRange + "/" + countAllRange + "/" + countAllBadPositionRange +
                 " H: " + houseArrayList.size() + "/" + countDeadHouse + "/" + countAllHouse +
                 " O: " + countDeadOtherBuilders +
-                " P: " + populationCurrent + "/" + populationMax +
-                " Res: " + getResourceAllGame();
-
+                " P: " + populationCurrent + "/" + populationMax;
         //  cgetResourceAllGame
     }
 

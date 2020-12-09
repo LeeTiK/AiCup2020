@@ -114,8 +114,8 @@ public class GlobalManager {
 
             for (int i = 0; i < myEntities.size(); i++) {
                 Vec2Float vec2Float = myEntities.get(i).getPosition().getVec2Float();
-                vec2Float.setY(vec2Float.getY() + 0.5f);
-                FinalGraphic.sendText(debugInterface, vec2Float, 15, myEntities.get(i).toString());
+                vec2Float.setY(vec2Float.getY()+ 0.45f);
+                FinalGraphic.sendText(debugInterface, vec2Float, 11, myEntities.get(i).toString());
             }
         }
     }

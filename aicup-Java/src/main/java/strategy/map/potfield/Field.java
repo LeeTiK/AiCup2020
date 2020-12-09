@@ -210,6 +210,10 @@ public class Field {
         return dangerContourRanger + dangerContourTurret + dangerContourMelee;
     }
 
+    public int getSumDangerContourOnlyUnit() {
+        return dangerContourRanger + dangerContourMelee;
+    }
+
     public int getSumDangerRanger() {
         return dangerRanger + dangerTurret + dangerMelee;
     }

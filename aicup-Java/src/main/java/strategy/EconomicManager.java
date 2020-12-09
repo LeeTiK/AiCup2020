@@ -65,7 +65,7 @@ public class EconomicManager {
         return actionHashMap;
     }
 
-    //ремонт
+    //ресурсы
     private HashMap resurceBuilder(MyPlayer myPlayer, PlayerView playerView, GlobalManager globalManager, HashMap<Integer, EntityAction> actionHashMap) {
         GlobalStatistic globalStatistic = globalManager.getGlobalStatistic();
 
@@ -202,7 +202,7 @@ public class EconomicManager {
 
         if (myPlayer.getResource() > myPlayer.getCost(EntityType.HOUSE) - 5 && ((myPlayer.getPopulationCurrent() * 1.2 >= myPlayer.getPopulationMax() && myPlayer.getResource() > myPlayer.getCost(EntityType.HOUSE) * 2) || myPlayer.getPopulationMax() < 80)
                 && (myPlayer.getPopulationMax() < 165 || myPlayer.getEntityArrayList(EntityType.RANGED_BASE).size() > 1)
-                && (myPlayer.getCountBuildDontCreate(EntityType.HOUSE) < 2 || myPlayer.getResource() > 500 && myPlayer.getCountBuildDontCreate(EntityType.HOUSE) < 3)
+                && (myPlayer.getCountBuildDontCreate(EntityType.HOUSE) < 2 || myPlayer.getResource() > 400 && myPlayer.getCountBuildDontCreate(EntityType.HOUSE) < 3)
         ) {
 
             Vec2Int positionBuildHouse = globalManager.getGlobalMap().getPositionBuildHouse(FinalConstant.getEntityProperties(EntityType.HOUSE));
@@ -260,18 +260,20 @@ public class EconomicManager {
                     AttackAction a = null;
                     RepairAction r = null;
                     Vec2Int vec2Int1 = globalManager.getGlobalMap().getMinPositionBuilding(current.getPosition(), positionBuildHouse, FinalConstant.getEntityProperties(EntityType.HOUSE));
-                    m = new MoveAction(vec2Int1, true, false);
+                    if (vec2Int1!=null) {
+                        m = new MoveAction(vec2Int1, true, false);
 
-                    b = new BuildAction(EntityType.HOUSE, positionBuildHouse);
-                    checkCreate = true;
-                    a = null;
+                        b = new BuildAction(EntityType.HOUSE, positionBuildHouse);
+                        checkCreate = true;
+                        a = null;
 
-                    current.setDataTaskUnit(new DataTaskUnit(EUnitState.BUILD));
-                    current.getDataTaskUnit().setEntityType(EntityType.HOUSE);
+                        current.setDataTaskUnit(new DataTaskUnit(EUnitState.BUILD));
+                        current.getDataTaskUnit().setEntityType(EntityType.HOUSE);
 
-                    Final.DEBUG(TAG, "VECTOR BUILD: " + positionBuildHouse.toString() + " currentP: " + current.getPosition());
+                        Final.DEBUG(TAG, "VECTOR BUILD: " + positionBuildHouse.toString() + " currentP: " + current.getPosition());
 
-                    actionHashMap.put(current.getId(), new EntityAction(m, b, a, r));
+                        actionHashMap.put(current.getId(), new EntityAction(m, b, a, r));
+                    }
                 }
             }
         }
