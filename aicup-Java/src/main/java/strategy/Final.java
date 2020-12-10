@@ -12,6 +12,8 @@ public class Final {
 
     final static boolean OFF_WAR = false;
 
+    // элементы игры
+    public final static boolean BUILD_TURRET = false;
 
     //////////DEBUG MAP GRAPHIC//////////////
 
@@ -21,8 +23,8 @@ public class Final {
     public final static boolean DANGER_AREA = false;
     public final static boolean DANGER_CONTOUR_AREA = false;
     public final static boolean SAFETY_AREA = false;
-    public final static boolean DANGER_AND_SAFETY_AREA_TEXT = false;
-    public final static boolean BIOM_RESOURCE = true;
+    public final static boolean DANGER_AND_SAFETY_AREA_TEXT = true;
+    public final static boolean BIOM_RESOURCE = false;
 
     static public Player getMyPlayer(PlayerView playerView) {
         int myID = playerView.getMyId();

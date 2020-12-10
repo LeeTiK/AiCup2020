@@ -122,6 +122,11 @@ public class GlobalStatistic {
                     {
                         Final.DEBUG(TAG, "BAD POSITION " + FinalConstant.getCurrentTik() + " Player ID: " + mMyPlayers.get(j).getId() + " ID: " + entity.getId() );
                     }
+
+                    if (entity.getEntityType()==EntityType.RANGED_UNIT && entity.getHealth()>5)
+                    {
+                        Final.DEBUG(TAG, "DEATH " + FinalConstant.getCurrentTik() + " Player ID: " + mMyPlayers.get(j).getId() + " ID: " + entity.getId() );
+                    }
                 }
             }
 

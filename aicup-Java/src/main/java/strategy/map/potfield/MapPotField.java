@@ -359,7 +359,7 @@ public class MapPotField {
                     }
                 }
 
-                size = 17;
+                size = 25;
                 for (int x = -size; x < size; x++) {
                     if (x + position.getX() < 0 || x + position.getX() >= FinalConstant.getMapSize()) continue;
 
@@ -456,9 +456,9 @@ public class MapPotField {
         return mMapPotField;
     }
 
-    public Vec2Int getNearestPlayerIntoPlayerArea(Vec2Int vec2Int, int myID) {
+    public MyEntity getNearestPlayerIntoPlayerArea(Vec2Int vec2Int, int myID) {
         double minDis = 0xFFFFF;
-        Vec2Int currentPos = null;
+        MyEntity current = null;
 
         MyEntity[][] map = mGlobalMap.getMap();
 
@@ -472,15 +472,19 @@ public class MapPotField {
 
                 if (mMapPotField[i][j].getPlayerAreaTwo() <= 0) continue;
 
+                if (map[i][j].getCountAttackingUnit()>0) {
+                    continue;
+                }
+
                 double dis = map[i][j].getPosition().distance(vec2Int);
 
                 if (dis < minDis) {
                     minDis = dis;
-                    currentPos = map[i][j].getPosition();
+                    current = map[i][j];
                 }
             }
         }
-        return currentPos;
+        return current;
     }
 
     public boolean checkAttackBase(int myID, GlobalStatistic globalStatistic) {
@@ -694,15 +698,19 @@ public class MapPotField {
             {
                 if (current.getDangerTurret()>=4)
                 {
-                    Vec2Int vec2Int = mGlobalMap.getNearestPlayer(entity.getPosition(),FinalConstant.getMyID(),EntityType.TURRET);
+                    MyEntity vec2Int = mGlobalMap.getNearestPlayer(entity.getPosition(),FinalConstant.getMyID(),EntityType.TURRET);
 
-                    ArrayList<MyEntity> arrayList = mGlobalMap.getEntityMap(vec2Int,GlobalMap.turretAndContourArray,FinalConstant.getMyID(),true,EntityType.ALL);
+                    ArrayList<MyEntity> arrayList = mGlobalMap.getEntityMap(vec2Int.getPosition(),GlobalMap.turretAndContourArray,FinalConstant.getMyID(),true,EntityType.ALL);
                     if (arrayList.size()>=4)
                     {
                         return current.getPosition();
                     }
                 }
             }
+
+            Field field = mMapPotField[position.getX()][position.getY()];
+
+            if (field.getSumDangerContour()<=1 && field.getSumDanger()==0) return position;
 
             if (minCounterDanger==1)
             {
@@ -718,6 +726,10 @@ public class MapPotField {
 
         if (minDanger==1 && current.getSumDangerContour()>0)
         {
+            Field field = mMapPotField[position.getX()][position.getY()];
+
+            if (field.getSumDangerContour()<=1) return position;
+
             if (currentNoDanger!=null) {
                 return currentNoDanger.getPosition();
             }

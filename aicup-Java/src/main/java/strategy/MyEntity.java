@@ -18,6 +18,8 @@ public class MyEntity extends Entity {
     int width, heigth;
 
     DataAttack dataAttack;
+    int countAttackingUnit;
+
     EntityAction mEntityAction;
     boolean rotation;
     boolean dodge;
@@ -66,6 +68,7 @@ public class MyEntity extends Entity {
         minDisToEnemy = 0xFFFF;
         setDataAttack(null);
         rotation = false;
+        countAttackingUnit = 0;
     }
 
     public void update(Entity entity) {
@@ -151,7 +154,7 @@ public class MyEntity extends Entity {
     }
 
     public boolean isMove() {
-        if (getEntityAction().getMoveAction() != null && oldTikPosition != null && !oldTikPosition.equals(getPosition())) {
+        if (getEntityAction().getMoveAction() != null && oldTwoTikPosition != null && !oldTwoTikPosition.equals(getPosition())) {
             return true;
         }
         return false;
@@ -203,5 +206,13 @@ public class MyEntity extends Entity {
 
     public int getPositionDefense() {
         return positionDefense;
+    }
+
+    public int getCountAttackingUnit() {
+        return countAttackingUnit;
+    }
+
+    public void addCountAttackingUnit(){
+        countAttackingUnit++;
     }
 }
