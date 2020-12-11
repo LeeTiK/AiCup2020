@@ -16,12 +16,15 @@ public class EconomicManager {
     // количество жилых мест
     int countMaxUnit;
 
+    DebugInterface debugInterface;
 
     public EconomicManager() {
 
     }
 
-    public HashMap<Integer, EntityAction> update(PlayerView playerView, GlobalManager globalManager) {
+    public HashMap<Integer, EntityAction> update(PlayerView playerView, GlobalManager globalManager,DebugInterface debugInterface) {
+        this.debugInterface = debugInterface;
+
         HashMap<Integer, EntityAction> actionHashMap = new HashMap<>();
         GlobalStatistic globalStatistic = globalManager.getGlobalStatistic();
         updateInfo(globalStatistic);
@@ -122,7 +125,7 @@ public class EconomicManager {
 
         ArrayList<MyEntity> builderUnitArrayListTwo = myPlayer.getBuildingUnitNearResourcesOther(globalManager.getGlobalMap());
 
-        Final.DEBUG(TAG, "BUILDER_UNIT_ONE SIZE: " + builderUnitArrayListOne.size());
+        Final.DEBUG(TAG, "BUILDER_UNIT_TWO SIZE: " + builderUnitArrayListTwo.size());
 
         for (int i = 0; i < builderUnitArrayListTwo.size(); i++) {
             MyEntity builder = builderUnitArrayListTwo.get(i);
@@ -190,8 +193,11 @@ public class EconomicManager {
 
             if (vec2IntDodgeMelee != null) {
                 m = new MoveAction(vec2IntDodgeMelee, true, true);
+                globalManager.getGlobalMap().setPositionNextTick(builderUnit.getPosition(),vec2IntDodgeMelee);
+
                 entityAction.setAttackAction(null);
                 entityAction.setMoveAction(m);
+
 
                 builderUnit.getEntityAction().setAttackAction(null);
                 builderUnit.getEntityAction().setMoveAction(m);
@@ -208,6 +214,7 @@ public class EconomicManager {
                 m = new MoveAction(vec2IntDodgeRange, true, true);
                 entityAction.setAttackAction(null);
                 entityAction.setMoveAction(m);
+                globalManager.getGlobalMap().setPositionNextTick(builderUnit.getPosition(),vec2IntDodgeRange);
 
                 builderUnit.getEntityAction().setAttackAction(null);
                 builderUnit.getEntityAction().setMoveAction(m);
@@ -223,7 +230,7 @@ public class EconomicManager {
             if (vec2IntDodgeRangeTwo != null) {
                 m = new MoveAction(vec2IntDodgeRangeTwo, true, true);
 
-                ArrayList<MyEntity> arrayList = globalManager.getGlobalMap().getEntityMap(builderUnit.getPosition(),GlobalMap.aroundArray,-1,false,EntityType.RESOURCE);
+                ArrayList<MyEntity> arrayList = globalManager.getGlobalMap().getEntityMap(builderUnit.getPosition(),GlobalMap.aroundArray,FinalConstant.getMyID(),-1,false,EntityType.RESOURCE);
 
                 if (arrayList.size()==0)
                 {
@@ -236,6 +243,7 @@ public class EconomicManager {
 
               //  entityAction.setAttackAction(null);
                 entityAction.setMoveAction(m);
+                globalManager.getGlobalMap().setPositionNextTick(builderUnit.getPosition(),vec2IntDodgeRangeTwo);
 
                // builderUnit.getEntityAction().setAttackAction(null);
                 builderUnit.getEntityAction().setMoveAction(m);
@@ -641,7 +649,7 @@ public class EconomicManager {
         ArrayList<MyEntity> builderUnitArrayList = myPlayer.getEntityArrayList(EntityType.BUILDER_UNIT);
 
         // создаем новые юниты
-        if ((builderUnitArrayList.size() < myPlayer.getPopulationMax() * 0.75 && builderUnitArrayList.size() < 65 || builderUnitArrayList.size() < 20)
+        if ((builderUnitArrayList.size() < myPlayer.getPopulationMax() * 0.75 && builderUnitArrayList.size() < 65 || builderUnitArrayList.size() < 13)
                 && !(globalManager.getGlobalMap().getResourceMap() < 10000 && builderUnitArrayList.size() > 15) &&
                 !(globalManager.getGlobalMap().getResourceMap() < 20000 && builderUnitArrayList.size() > 25
                 )

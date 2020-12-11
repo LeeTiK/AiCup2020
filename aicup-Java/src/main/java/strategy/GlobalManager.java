@@ -3,13 +3,12 @@ package strategy;
 import model.*;
 import strategy.map.potfield.MapPotField;
 import strategy.map.wave.SearchAnswer;
-import strategy.map.wave.WaveSearch;
+import strategy.map.wave.WaveSearchModule;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import static strategy.Final.INFO_UNIT;
-import static strategy.Final.debugRelease;
 
 public class GlobalManager {
     // менеджер отвечает за экономическую состовляющую
@@ -22,6 +21,7 @@ public class GlobalManager {
 
     GlobalMap mGlobalMap;
     MapPotField mMapPotField;
+    static WaveSearchModule waveSearchModule;
 
     long startTime;
 
@@ -33,6 +33,7 @@ public class GlobalManager {
         mWarManager = new WarManager();
         mGlobalStatistic = new GlobalStatistic();
         mGlobalMap = new GlobalMap();
+        waveSearchModule = new WaveSearchModule(mGlobalMap);
 
         allTime = 0;
 
@@ -50,6 +51,7 @@ public class GlobalManager {
         mGlobalStatistic.updateInfo(playerView, this);
         mGlobalMap.update(getGlobalStatistic());
         mMapPotField.update(this);
+        waveSearchModule.updateMap(mMapPotField.getMapPotField());
 
         ////////////////////////STATISTIC/////////////////////////////
 
@@ -78,9 +80,9 @@ public class GlobalManager {
                 return new Action(hashMap1);
             }
         }
-        hashMap.putAll(mWarManager.update(playerView, this));
+        hashMap.putAll(mWarManager.update(playerView, this,debugInterface));
 
-        hashMap.putAll(mEconomicManager.update(playerView, this));
+        hashMap.putAll(mEconomicManager.update(playerView, this,debugInterface));
 
 
         allTime += System.nanoTime() - startTime;
@@ -129,13 +131,11 @@ public class GlobalManager {
 
             ArrayList<Vec2Int> arrayList = mGlobalMap.getCoordAround(vec2Int,5,true);
 
-            WaveSearch waveSearch = new WaveSearch(80);
+            waveSearchModule.updateMap(mMapPotField.getMapPotField());
 
-            waveSearch.initMap(mGlobalMap.getMap());
+            SearchAnswer searchAnswer = waveSearchModule.waveSearchNeedEntity(arrayList,50, EntityType.RESOURCE);
 
-            SearchAnswer searchAnswer = waveSearch.waveSearchNeedEntity(arrayList,50, EntityType.RESOURCE);
-
-            waveSearch.debugUpdate(playerView,debugInterface);
+            waveSearchModule.debugUpdate(playerView,debugInterface);
 
             if (searchAnswer == null) {
                 int k =0;
@@ -159,5 +159,9 @@ public class GlobalManager {
 
     public MapPotField getMapPotField() {
         return mMapPotField;
+    }
+
+    public static WaveSearchModule getWaveSearchModule() {
+        return waveSearchModule;
     }
 }

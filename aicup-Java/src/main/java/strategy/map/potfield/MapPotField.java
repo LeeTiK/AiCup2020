@@ -24,7 +24,7 @@ public class MapPotField {
         mMapPotField = new Field[size][size];
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
-                mMapPotField[i][j] = new Field();
+                mMapPotField[i][j] = new Field(new Vec2Int(i,j));
             }
         }
         mBiomResourceMap = new BiomResourceMap();
@@ -539,6 +539,7 @@ public class MapPotField {
 
         MyPlayer myPlayer = globalStatistic.getMyPlayer();
 
+
         for (int k = 0; k < integers.size(); k++) {
             MyPlayer enemy = globalStatistic.getPlayer(integers.get(k));
             if (enemy.getEntityArrayList(EntityType.RANGED_UNIT).size() +
@@ -650,8 +651,7 @@ public class MapPotField {
         for (int i = 0; i < bytes.length; i++) {
             Vec2Int newPosition = position.add(bytes[i][0], bytes[i][1]);
 
-            if (!checkCoord(newPosition)) continue;
-            if (!mGlobalMap.checkEmpty(newPosition)) continue;
+            if (!mGlobalMap.checkEmpty(mGlobalMap.getMapNextTick(),newPosition)) continue;
 
             Field field = mMapPotField[newPosition.getX()][newPosition.getY()];
 
@@ -711,8 +711,10 @@ public class MapPotField {
         {
             return currentSafety;
         }*/
-
-
+     /*   Field currentPosition = mMapPotField[position.getX()][position.getY()];
+        Final.DEBUG("DangerAttackRange", "T: "+FinalConstant.getCurrentTik()+"ID: " + entity.getId()
+        + " MD: " + minDanger + " " + currentPosition.toString() + " CD: " + (currentNoDanger==null ? "null" : currentNoDanger.toString()));
+*/
         if (minDanger > 1) {
 
             // надо чекнуть много ли наших рядом с турелью и только тогда заходим и выносим
@@ -722,7 +724,7 @@ public class MapPotField {
                 {
                     MyEntity vec2Int = mGlobalMap.getNearestPlayer(entity.getPosition(),FinalConstant.getMyID(),EntityType.TURRET);
 
-                    ArrayList<MyEntity> arrayList = mGlobalMap.getEntityMap(vec2Int.getPosition(),GlobalMap.turretAndContourArray,FinalConstant.getMyID(),true,EntityType.ALL);
+                    ArrayList<MyEntity> arrayList = mGlobalMap.getEntityMap(vec2Int.getPosition(),GlobalMap.turretAndContourArray,-1,FinalConstant.getMyID(),true,EntityType.ALL);
                     if (arrayList.size()>=4)
                     {
                         return current.getPosition();
@@ -734,10 +736,10 @@ public class MapPotField {
 
             if (field.getSumDangerContour()<=1 && field.getSumDanger()==0) return position;
 
-            if (minCounterDanger==1)
+           /* if (minCounterDanger==1)
             {
                 return currentContour.getPosition();
-            }
+            }*/
 
             if (currentNoDanger != null) return currentNoDanger.getPosition();
 

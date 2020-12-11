@@ -5,6 +5,7 @@ import model.Vec2Int;
 import strategy.MyEntity;
 
 public class Field {
+    Vec2Int position;
     MyEntity mMyEntity;
 
     int sum;
@@ -29,17 +30,18 @@ public class Field {
     int districtResource;
     boolean block;
 
-    public Field() {
+    public Field(Vec2Int position) {
+        this.position = position;
         mMyEntity = null;
         clear();
     }
 
     public int getX() {
-        return mMyEntity.getPosition().getX();
+        return position.getX();
     }
 
     public int getY() {
-        return mMyEntity.getPosition().getY();
+        return position.getY();
     }
 
     public void clear() {
@@ -71,7 +73,7 @@ public class Field {
     }
 
     public Vec2Int getPosition() {
-        return mMyEntity.getPosition();
+        return position;
     }
 
     public MyEntity getMyEntity() {
@@ -215,7 +217,7 @@ public class Field {
     }
 
     public int getSumDangerContour() {
-        return dangerContourRanger + dangerContourTurret + dangerContourMelee;
+        return dangerContourRanger + dangerContourTurret/4 + dangerContourMelee;
     }
 
     public int getSumDangerContourOnlyUnit() {
@@ -282,5 +284,10 @@ public class Field {
         }
 
         return getSumSafaty();
+    }
+
+    @Override
+    public String toString(){
+        return "" + getPosition().toString() + " D: " + getSumDanger() + " C: " + getSumDangerContour();
     }
 }

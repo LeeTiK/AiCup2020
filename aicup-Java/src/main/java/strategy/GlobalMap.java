@@ -3,9 +3,11 @@ package strategy;
 import model.*;
 import strategy.map.potfield.MapPotField;
 import strategy.map.wave.SearchAnswer;
-import strategy.map.wave.WaveSearch;
+import strategy.map.wave.WaveSearchModule;
 
 import java.util.ArrayList;
+
+import static strategy.GlobalManager.waveSearchModule;
 
 public class GlobalMap {
     // класс карты
@@ -477,11 +479,7 @@ public class GlobalMap {
 
         ArrayList<Vec2Int> arrayList = getCoordAround(vec2Int,entityProperties.getSize(),true);
 
-        WaveSearch waveSearch = new WaveSearch(map.length);
-
-        waveSearch.initMap(getMap());
-
-        SearchAnswer searchAnswer = waveSearch.waveSearchNeedEntity(arrayList,50,EntityType.RESOURCE);
+        SearchAnswer searchAnswer = waveSearchModule.waveSearchNeedEntity(arrayList,50,EntityType.RESOURCE);
 
         if (searchAnswer == null) return new Vec2Int(0, 0);
 
@@ -672,15 +670,23 @@ public class GlobalMap {
         else return true;
     }
 
+    public boolean checkEmpty(MyEntity[][] map,Vec2Int vec2Int) {
+        return checkEmpty(map, vec2Int, 1, 1);
+    }
+
+    public boolean checkEmpty(MyEntity[][] map,Vec2Int vec2Int, int size) {
+        return checkEmpty(map, vec2Int, size, size);
+    }
+
     public boolean checkEmpty(Vec2Int vec2Int) {
-        return checkEmpty(vec2Int, 1, 1);
+        return checkEmpty(getMap(), vec2Int, 1, 1);
     }
 
     public boolean checkEmpty(Vec2Int vec2Int, int size) {
-        return checkEmpty(vec2Int, size, size);
+        return checkEmpty(getMap(), vec2Int, size, size);
     }
 
-    public boolean checkEmpty(Vec2Int vec2Int, int width, int height) {
+    public boolean checkEmpty(MyEntity[][] map,Vec2Int vec2Int, int width, int height) {
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
                 if (!checkCoord(vec2Int.getX() + x, vec2Int.getY() + y)) return false;
@@ -816,8 +822,7 @@ public class GlobalMap {
         for (int i = 0; i < bytes.length; i++) {
             Vec2Int newPosition = position.add(bytes[i][0], bytes[i][1]);
 
-            if (!checkCoord(newPosition)) continue;
-            if (!checkEmpty(newPosition)) continue;
+            if (!checkEmpty(getMapNextTick(),newPosition)) continue;
 
             ArrayList<MyEntity> arrayList1 = getEntityMap(newPosition, radius, player.getId(), true, false, true, entityType, false, false);
             if (arrayList1.size() <= sizeMax || init && arrayList1.size() <= sizeMax) {
@@ -849,6 +854,12 @@ public class GlobalMap {
 
     // список юнитов в квардрате с центром position
     public ArrayList<MyEntity> getEntityMap(Vec2Int position, int size, int playerID, boolean onlyEnemy, boolean onlyPlayer, boolean onlyUnit, EntityType entityType, boolean squareRadius, boolean turret) {
+
+        if (turret)
+        {
+            return getEntityMap(position,turretArray,playerID,-1,onlyUnit,entityType);
+        }
+
         ArrayList<MyEntity> arrayList = new ArrayList<>();
 
         for (int x = -size; x <= size; x++) {
@@ -887,7 +898,7 @@ public class GlobalMap {
     }
 
     // список юнитов в позициях в bytes с центром position
-    public ArrayList<MyEntity> getEntityMap(Vec2Int position, byte[][] bytes, int playerID, boolean onlyUnit, EntityType entityType) {
+    public ArrayList<MyEntity> getEntityMap(Vec2Int position, byte[][] bytes, int myID, int enemyID, boolean onlyUnit, EntityType entityType) {
         ArrayList<MyEntity> arrayList = new ArrayList<>();
 
         for (int i=0; i<bytes.length; i++)
@@ -911,7 +922,9 @@ public class GlobalMap {
 
                 if (entity.getPlayerId() == null) continue;
 
-                if (entity.getPlayerId() == playerID) {
+                if (entity.getPlayerId()==myID) continue;
+
+                if (entity.getPlayerId() == enemyID || enemyID==-1) {
                     arrayList.add(entity);
                 }
             }
@@ -1147,4 +1160,10 @@ public class GlobalMap {
         return arrayList;
     }
 
+
+    public void setPositionNextTick(Vec2Int position, Vec2Int positionTwo) {
+        MyEntity entity = getMapNextTick()[position.getX()][position.getY()];
+        getMapNextTick()[position.getX()][position.getY()] = getMapNextTick()[positionTwo.getX()][positionTwo.getY()];
+        getMapNextTick()[positionTwo.getX()][positionTwo.getY()] = entity;
+    }
 }

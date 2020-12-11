@@ -11,6 +11,7 @@ public class WarManager {
 
     public static final boolean HEAL_RANGER = true;
 
+    DebugInterface debugInterface;
     //группы юнитов
     ArrayList<MyGroupUnit> mMyGroupUnitArrayList = new ArrayList<>();
 
@@ -24,7 +25,8 @@ public class WarManager {
     //отвечаем за атаку и защиту
 
 
-    public HashMap<Integer, EntityAction> update(PlayerView playerView, GlobalManager globalManager) {
+    public HashMap<Integer, EntityAction> update(PlayerView playerView, GlobalManager globalManager, DebugInterface debugInterface) {
+        this.debugInterface = debugInterface;
         HashMap<Integer, EntityAction> actionHashMap = new HashMap<>();
 
 
@@ -698,6 +700,8 @@ public class WarManager {
 
             if (vec2IntDodge != null) {
                 MoveAction m = new MoveAction(vec2IntDodge, true, false);
+                globalManager.getGlobalMap().setPositionNextTick(range.getPosition(),vec2IntDodge);
+
                 entityAction.setAttackAction(null);
 
                 if (vec2IntDodge.equals(range.getPosition()))
@@ -726,6 +730,7 @@ public class WarManager {
 
             if (vec2IntDanger != null) {
                 m = new MoveAction(vec2IntDanger, true, false);
+                globalManager.getGlobalMap().setPositionNextTick(range.getPosition(),vec2IntDanger);
             } else {
 
                 /// это если враг далеко
