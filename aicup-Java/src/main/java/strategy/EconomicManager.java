@@ -466,19 +466,43 @@ public class EconomicManager {
 
         }
 
-/*
-        if (myPlayer.getResource()>strategy.FinalConstant.getEntityProperties(EntityType.RANGED_BASE).getCost()*5 && myPlayer.getEntityArrayList(EntityType.RANGED_BASE).size()<2 )
-        {
-            if (entity.getPosition().getX()<70 && entity.getPosition().getY()<75) {
-                b = new BuildAction(
-                        EntityType.RANGED_BASE, new Vec2Int(
-                        entity.getPosition().getX() + 1,
-                        entity.getPosition().getY()
-                )
-                );
-            }
-        }
 
+        if (myPlayer.getResource()>strategy.FinalConstant.getEntityProperties(EntityType.RANGED_BASE).getCost() && myPlayer.getEntityArrayList(EntityType.RANGED_BASE).size()<1 )
+        {
+
+
+            for (int i = 0; i < builderUnitArrayList.size(); i++) {
+
+                MyEntity builderUnit = builderUnitArrayList.get(i);
+
+
+                if (builderUnit.getUnitState() == EUnitState.REPAIR || builderUnit.getUnitState() == EUnitState.BUILD)
+                    continue;
+
+                if (builderUnit.getPosition().getX()<70 && builderUnit.getPosition().getY()<75) {
+                    BuildAction b = new BuildAction(
+                            EntityType.RANGED_BASE, new Vec2Int(
+                            builderUnit.getPosition().getX() + 1,
+                            builderUnit.getPosition().getY()
+                    )
+                    );
+
+                    builderUnit.setDataTaskUnit(new DataTaskUnit(EUnitState.BUILD));
+                    builderUnit.getDataTaskUnit().setEntityType(EntityType.RANGED_BASE);
+
+                    Final.DEBUG(TAG, "VECTOR BUILD: " + builderUnit.toString() + " currentP: " + builderUnit.getPosition());
+
+                    EntityAction entityAction = actionHashMap.get(builderUnit.getId());
+                    if (entityAction==null) entityAction = new EntityAction(null,null,null,null);
+
+                    entityAction.setBuildAction(b);
+
+                    actionHashMap.put(builderUnit.getId(),entityAction);
+                }
+            }
+
+        }
+/*
         if (myPlayer.getResource()>strategy.FinalConstant.getEntityProperties(EntityType.MELEE_BASE).getCost()*4 && myPlayer.getEntityArrayList(EntityType.BUILDER_BASE).size()<1 &&  myPlayer.getEntityArrayList(EntityType.RANGED_BASE).size()>0)
         {
             if (b==null) {
@@ -650,11 +674,11 @@ public class EconomicManager {
 
         // создаем новые юниты
         if ((builderUnitArrayList.size() < myPlayer.getPopulationMax() * 0.75 && builderUnitArrayList.size() < 65 || builderUnitArrayList.size() < 13)
-                && !(globalManager.getGlobalMap().getResourceMap() < 10000 && builderUnitArrayList.size() > 15) &&
+               /* && !(globalManager.getGlobalMap().getResourceMap() < 10000 && builderUnitArrayList.size() > 15) &&
                 !(globalManager.getGlobalMap().getResourceMap() < 20000 && builderUnitArrayList.size() > 25
-                )
+                )*/
                 && !globalManager.getMapPotField().checkAttackBase(myPlayer.getId(), globalManager.getGlobalStatistic())
-                && ((myPlayer.getEntityArrayList(EntityType.RANGED_UNIT).size() + myPlayer.getEntityArrayList(EntityType.MELEE_UNIT).size())>1 && myPlayer.getEntityArrayList(EntityType.RANGED_BASE).size()>0)
+            //    && ((myPlayer.getEntityArrayList(EntityType.RANGED_UNIT).size() + myPlayer.getEntityArrayList(EntityType.MELEE_UNIT).size())>1 || myPlayer.getEntityArrayList(EntityType.RANGED_BASE).size()==0)
 
         ) {
 

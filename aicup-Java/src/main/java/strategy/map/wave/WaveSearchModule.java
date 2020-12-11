@@ -29,6 +29,7 @@ public class WaveSearchModule {
     }
 
     public void updateMap(Field[][] maps) {
+        size= maps.length;
         map = maps;
     }
 
