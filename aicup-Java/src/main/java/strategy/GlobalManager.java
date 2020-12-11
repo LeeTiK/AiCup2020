@@ -1,14 +1,15 @@
 package strategy;
 
-import model.Action;
-import model.PlayerView;
-import model.Vec2Float;
+import model.*;
 import strategy.map.potfield.MapPotField;
+import strategy.map.wave.SearchAnswer;
+import strategy.map.wave.WaveSearch;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import static strategy.Final.INFO_UNIT;
+import static strategy.Final.debugRelease;
 
 public class GlobalManager {
     // менеджер отвечает за экономическую состовляющую
@@ -118,6 +119,33 @@ public class GlobalManager {
                 FinalGraphic.sendText(debugInterface, vec2Float, 11, myEntities.get(i).toString());
             }
         }
+
+
+        if (Final.CHECK_SEARCH_WAVE_BUILDER)
+        {
+            MyEntity builderPos = mGlobalStatistic.getMyPlayer().getBuilderBase();
+
+            Vec2Int vec2Int = builderPos.getPosition();
+
+            ArrayList<Vec2Int> arrayList = mGlobalMap.getCoordAround(vec2Int,5,true);
+
+            WaveSearch waveSearch = new WaveSearch(80);
+
+            waveSearch.initMap(mGlobalMap.getMap());
+
+            SearchAnswer searchAnswer = waveSearch.waveSearchNeedEntity(arrayList,50, EntityType.RESOURCE);
+
+            waveSearch.debugUpdate(playerView,debugInterface);
+
+            if (searchAnswer == null) {
+                int k =0;
+            }
+            else {
+                FinalGraphic.sendSquare(debugInterface, searchAnswer.getStart(), 1, FinalGraphic.COLOR_BLUE);
+                FinalGraphic.sendSquare(debugInterface,searchAnswer.getEnd(), 1, FinalGraphic.COLOR_GREEN);
+            }
+
+        }
     }
 
 
@@ -126,7 +154,6 @@ public class GlobalManager {
             MyPlayer myPlayer = getGlobalStatistic().getPlayers().get(i);
             Final.DEBUGRelease("", myPlayer.toString());
             //   strategy.Final.DEBUGRelease(TAG,"Player: " + myPlayer.getId() + " B: " + myPlayer.getEntityArrayList(EntityType.BUILDER_UNIT).size() + " M: " + myPlayer.getEntityArrayList(EntityType.MELEE_UNIT).size() + " R: " + myPlayer.getEntityArrayList(EntityType.RANGED_UNIT).size() + " DeadB: " + myPlayer.getCountDeadBiuld() + " DeadM: " + myPlayer.getCountDeadMelee() + " DeadR: " + myPlayer.getCountDeadRange() + " DeadH " + myPlayer.getCountDeadHouse() );
-
         }
     }
 

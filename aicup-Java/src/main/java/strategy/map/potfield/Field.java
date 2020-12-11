@@ -2,9 +2,10 @@ package strategy.map.potfield;
 
 import model.EntityType;
 import model.Vec2Int;
+import strategy.MyEntity;
 
 public class Field {
-    Vec2Int mPosition;
+    MyEntity mMyEntity;
 
     int sum;
 
@@ -28,18 +29,17 @@ public class Field {
     int districtResource;
     boolean block;
 
-    public Field(Vec2Int vec2Int) {
-        this.mPosition = vec2Int;
-
+    public Field() {
+        mMyEntity = null;
         clear();
     }
 
     public int getX() {
-        return mPosition.getX();
+        return mMyEntity.getPosition().getX();
     }
 
     public int getY() {
-        return mPosition.getY();
+        return mMyEntity.getPosition().getY();
     }
 
     public void clear() {
@@ -59,7 +59,7 @@ public class Field {
         playerArea = 0;
         playerAreaTwo = 0;
 
-        cost = 0;
+        cost = 0xFFFF;
         district = -1;
         districtResource = -1;
         block = false;
@@ -71,7 +71,15 @@ public class Field {
     }
 
     public Vec2Int getPosition() {
-        return mPosition;
+        return mMyEntity.getPosition();
+    }
+
+    public MyEntity getMyEntity() {
+        return mMyEntity;
+    }
+
+    public void setMyEntity(MyEntity myEntity) {
+        mMyEntity = myEntity;
     }
 
     public void setSum(int sum) {

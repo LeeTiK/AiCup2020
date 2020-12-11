@@ -24,10 +24,16 @@ public class MyEntity extends Entity {
     boolean rotation;
     boolean dodge;
     float minDisToEnemy;
+    MyEntity mEnemyMinDis;
+
     Vec2Int oldTikPosition;
     Vec2Int oldTwoTikPosition;
 
     int positionDefense = -1;
+
+    int nearResource;
+    // цель этого MyEntity
+    MyEntity targetEntity;
 
     public MyEntity(Entity entity) {
         super(entity.getId(), entity.getPlayerId(), entity.getEntityType(), entity.getPosition(), entity.getHealth(), entity.isActive());
@@ -69,6 +75,9 @@ public class MyEntity extends Entity {
         setDataAttack(null);
         rotation = false;
         countAttackingUnit = 0;
+        nearResource = 0;
+        targetEntity = null;
+        mEnemyMinDis = null;
     }
 
     public void update(Entity entity) {
@@ -214,5 +223,29 @@ public class MyEntity extends Entity {
 
     public void addCountAttackingUnit(){
         countAttackingUnit++;
+    }
+
+    public void setTargetEntity(MyEntity targetEntity) {
+        this.targetEntity = targetEntity;
+    }
+
+    public MyEntity getTargetEntity() {
+        return targetEntity;
+    }
+
+    public int getNearResource() {
+        return nearResource;
+    }
+
+    public void setNearResource(int nearResource) {
+        this.nearResource = nearResource;
+    }
+
+    public void setEnemyMinDis(MyEntity enemyMinDis) {
+        mEnemyMinDis = enemyMinDis;
+    }
+
+    public MyEntity getEnemyMinDis() {
+        return mEnemyMinDis;
     }
 }

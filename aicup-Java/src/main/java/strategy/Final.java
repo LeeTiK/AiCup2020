@@ -6,9 +6,9 @@ import model.PlayerView;
 public class Final {
 
     final static boolean TEST = false;
-    final static boolean debug = false;
+    final static boolean debug = true;
     final static boolean debugRelease = true;
-    public final static boolean debugGraphic = false;
+    public final static boolean debugGraphic = true;
 
     final static boolean OFF_WAR = false;
 
@@ -20,11 +20,15 @@ public class Final {
     public final static boolean COORDINATE = false;
     public final static boolean INFO_UNIT = false;
     public final static boolean PLAYER_AREA = false;
+    public final static boolean PLAYER_AREA_TWO = false;
     public final static boolean DANGER_AREA = false;
     public final static boolean DANGER_CONTOUR_AREA = false;
     public final static boolean SAFETY_AREA = false;
-    public final static boolean DANGER_AND_SAFETY_AREA_TEXT = true;
+    public final static boolean DANGER_AND_SAFETY_AREA_TEXT = false;
     public final static boolean BIOM_RESOURCE = false;
+
+    public final static boolean CHECK_SEARCH_WAVE_BUILDER = true;
+    public final static boolean CHECK_SEARCH_WAVE_START_END = true;
 
     static public Player getMyPlayer(PlayerView playerView) {
         int myID = playerView.getMyId();

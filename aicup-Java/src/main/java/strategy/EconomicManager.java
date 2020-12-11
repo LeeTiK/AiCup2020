@@ -33,6 +33,13 @@ public class EconomicManager {
         //всё что связанно с новые зданиями
         buildBuilder(myPlayer, playerView, globalManager, actionHashMap);
 
+
+        /* ДОБЫЧА ресурсов
+        вызывается метод несколько, массив делится на 2 части
+        1. тут в отсортированном порядке рабочие у которых рядом есть ресурсы, от меньшего до большего
+        2. после того как вверхние обработаются, оставшихся рабочих сортируем по ближайщему свободному ресурсу
+         */
+
         //добыча ресурсов
         resurceBuilder(myPlayer, playerView, globalManager, actionHashMap);
 
@@ -69,39 +76,91 @@ public class EconomicManager {
     private HashMap resurceBuilder(MyPlayer myPlayer, PlayerView playerView, GlobalManager globalManager, HashMap<Integer, EntityAction> actionHashMap) {
         GlobalStatistic globalStatistic = globalManager.getGlobalStatistic();
 
-        ArrayList<MyEntity> builderUnitArrayList = myPlayer.getEntityArrayList(EntityType.BUILDER_UNIT);
+        ArrayList<MyEntity> builderUnitArrayListOne = myPlayer.getBuildingUnitNearResources(globalManager.getGlobalMap());
 
-        Final.DEBUG(TAG, "BUILDER_UNIT SIZE: " + builderUnitArrayList.size());
+        Final.DEBUG(TAG, "BUILDER_UNITSIZE: " + myPlayer.getEntityArrayList(EntityType.BUILDER_UNIT).size());
+        Final.DEBUG(TAG, "BUILDER_UNIT_ONE SIZE: " + builderUnitArrayListOne.size());
 
-        for (int i = 0; i < builderUnitArrayList.size(); i++) {
-            MyEntity entity = builderUnitArrayList.get(i);
+        for (int i = 0; i < builderUnitArrayListOne.size(); i++) {
+            MyEntity entity = builderUnitArrayListOne.get(i);
 
-            if (entity.getUnitState() == EUnitState.RESURCE || entity.getUnitState() == EUnitState.EMPTY) {
-                entity.setDataTaskUnit(new DataTaskUnit(EUnitState.RESURCE));
-            } else {
-                continue;
+            ArrayList<MyEntity> resource;
+
+            resource = globalManager.getGlobalMap().getEntityMapResourceSpecial(entity.getPosition());
+
+            if (resource.size() > 0)
+            {
+                if (entity.getUnitState() == EUnitState.RESURCE || entity.getUnitState() == EUnitState.EMPTY) {
+                    MoveAction m = null;
+                    BuildAction b = null;
+                    AttackAction a = null;
+                    RepairAction r = null;
+
+                    a = new AttackAction(
+                            //Arrays.stream(playerView.getEntities()).filter(e -> myId.equals(e.getEntityType()) & e.getEntityType() == EntityType.MELEE_BASE).findAny().get().getId(),
+                            resource.get(0).getId(),
+                            new AutoAttack(
+                                    FinalConstant.getEntityPropertiesBUILDER_UNIT().getSightRange(),
+                                    new EntityType[]{EntityType.RESOURCE}
+                            )
+                    );
+
+                    entity.setTargetEntity(resource.get(0));
+                    resource.get(0).setTargetEntity(entity);
+                    // strategy.Final.DEBUG(TAG, "arrayList.get(i).getId() " + builderUnitArrayList.get(i).getId() + " " +builderUnitArrayList.get(i).getPosition().toString());
+
+                    actionHashMap.put(entity.getId(), new EntityAction(m, b, a, r));
+                } else {
+                    resource.get(0).setTargetEntity(entity);
+                    continue;
+                }
+            }
+            else {
+                Final.DEBUG("ERROR",  "resource==0");
+            }
+        }
+
+        ArrayList<MyEntity> builderUnitArrayListTwo = myPlayer.getBuildingUnitNearResourcesOther(globalManager.getGlobalMap());
+
+        Final.DEBUG(TAG, "BUILDER_UNIT_ONE SIZE: " + builderUnitArrayListOne.size());
+
+        for (int i = 0; i < builderUnitArrayListTwo.size(); i++) {
+            MyEntity builder = builderUnitArrayListTwo.get(i);
+
+            ArrayList<MyEntity> resource;
+
+            resource = globalManager.getGlobalMap().getEntityMapResourceSpecial(builder.getPosition());
+
+            if (resource.size()>0){
+                Final.DEBUG("ERROR",  "resource>0");
             }
 
-            MoveAction m = null;
-            BuildAction b = null;
-            AttackAction a = null;
-            RepairAction r = null;
+            MyEntity resourceMidDis = globalManager.getGlobalMap().getNearest(builder.getPosition(), EntityType.RESOURCE,true, -1);
 
-            m = new MoveAction(new Vec2Int(playerView.getMapSize() - 1, playerView.getMapSize() - 1), true, false);
+            if (resourceMidDis!=null)
+            {
+                if (builder.getUnitState() == EUnitState.RESURCE || builder.getUnitState() == EUnitState.EMPTY) {
+                    builder.setDataTaskUnit(new DataTaskUnit(EUnitState.RESURCE));
 
-            a = new AttackAction(
-                    //Arrays.stream(playerView.getEntities()).filter(e -> myId.equals(e.getEntityType()) & e.getEntityType() == EntityType.MELEE_BASE).findAny().get().getId(),
-                    null,
-                    new AutoAttack(
-                            FinalConstant.getEntityPropertiesBUILDER_UNIT().getSightRange(),
-                            new EntityType[]{EntityType.RESOURCE}
-                    )
-            );
 
-            // strategy.Final.DEBUG(TAG, "arrayList.get(i).getId() " + builderUnitArrayList.get(i).getId() + " " +builderUnitArrayList.get(i).getPosition().toString());
+                    MoveAction m = new MoveAction(resourceMidDis.getPosition(),true,true);
+                    BuildAction b = null;
+                    AttackAction a = null;
+                    RepairAction r = null;
 
-            actionHashMap.put(entity.getId(), new EntityAction(m, b, a, r));
+                    a = null;
+                    resourceMidDis.setTargetEntity(builder);
+                    builder.setTargetEntity(resourceMidDis);
+                    // strategy.Final.DEBUG(TAG, "arrayList.get(i).getId() " + builderUnitArrayList.get(i).getId() + " " +builderUnitArrayList.get(i).getPosition().toString());
+
+                    actionHashMap.put(builder.getId(), new EntityAction(m, b, a, r));
+                } else {
+                    resourceMidDis.setTargetEntity(builder);
+                    continue;
+                }
+            }
         }
+
 
         return actionHashMap;
     }
@@ -127,7 +186,6 @@ public class EconomicManager {
 
 
             // увороты от милишников
-
             Vec2Int vec2IntDodgeMelee = globalManager.getGlobalMap().checkDangerBuildUnit(builderUnit.getPosition(), myPlayer, 2, EntityType.MELEE_UNIT);
 
             if (vec2IntDodgeMelee != null) {
@@ -583,12 +641,12 @@ public class EconomicManager {
         ArrayList<MyEntity> builderUnitArrayList = myPlayer.getEntityArrayList(EntityType.BUILDER_UNIT);
 
         // создаем новые юниты
-        if ((builderUnitArrayList.size() < myPlayer.getPopulationMax() * 0.75 && builderUnitArrayList.size() < 55 || builderUnitArrayList.size() < 20)
+        if ((builderUnitArrayList.size() < myPlayer.getPopulationMax() * 0.75 && builderUnitArrayList.size() < 65 || builderUnitArrayList.size() < 20)
                 && !(globalManager.getGlobalMap().getResourceMap() < 10000 && builderUnitArrayList.size() > 15) &&
                 !(globalManager.getGlobalMap().getResourceMap() < 20000 && builderUnitArrayList.size() > 25
                 )
                 && !globalManager.getMapPotField().checkAttackBase(myPlayer.getId(), globalManager.getGlobalStatistic())
-                && (myPlayer.getEntityArrayList(EntityType.RANGED_UNIT).size() + myPlayer.getEntityArrayList(EntityType.MELEE_UNIT).size())>1
+                && ((myPlayer.getEntityArrayList(EntityType.RANGED_UNIT).size() + myPlayer.getEntityArrayList(EntityType.MELEE_UNIT).size())>1 && myPlayer.getEntityArrayList(EntityType.RANGED_BASE).size()>0)
 
         ) {
 
@@ -597,13 +655,18 @@ public class EconomicManager {
             ArrayList<MyEntity> arrayList1 = myPlayer.getEntityArrayList(EntityType.BUILDER_BASE);
 
             for (int i = 0; i < arrayList1.size(); i++) {
-                b = new BuildAction(
-                        EntityType.BUILDER_UNIT, globalManager.getGlobalMap().getPositionBuildUnitPriorite(arrayList1.get(i)
-            /*new Vec2Int(
-                        arrayList1.get(i).getPosition().getX() + globalStatistic.getEntityPropertiesBUILDER_BASE().getSize(),
-                        arrayList1.get(i).getPosition().getY() + globalStatistic.getEntityPropertiesBUILDER_BASE().getSize() - 1*/
-                )
-                );
+
+
+                Vec2Int vec2Int =  null;
+
+                if (FinalConstant.getCurrentTik()<400) {
+                    vec2Int = globalManager.getGlobalMap().getPositionBuildUnitPrioriteV2(arrayList1.get(i));
+                }
+                else {
+                    vec2Int = globalManager.getGlobalMap().getPositionBuildUnitPriorite(arrayList1.get(i));
+                }
+
+                b = new BuildAction(EntityType.BUILDER_UNIT, vec2Int);
 
                 actionHashMap.put(arrayList1.get(i).getId(), new EntityAction(null, b, null, null));
             }

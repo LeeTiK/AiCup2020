@@ -54,8 +54,7 @@ public class WarManager {
         // сортируем всех юнитов готовых на атаку, по ближайщему врагу, кто ближе тот и первый будет обрабатываться
         myPlayer.sortAttackUnit(globalManager.getGlobalMap());
 
-
-        if (FinalConstant.getCurrentTik() < 120) {
+        if (FinalConstant.getCurrentTik() < 210) {
             moveUnitOld(myPlayer, globalManager, actionHashMap, 1000);
         } else {
 

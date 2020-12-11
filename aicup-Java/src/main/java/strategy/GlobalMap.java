@@ -2,6 +2,8 @@ package strategy;
 
 import model.*;
 import strategy.map.potfield.MapPotField;
+import strategy.map.wave.SearchAnswer;
+import strategy.map.wave.WaveSearch;
 
 import java.util.ArrayList;
 
@@ -369,18 +371,20 @@ public class GlobalMap {
 
 
 
-    public Vec2Int getNearest(Vec2Int position, EntityType entityType, boolean checkEmpty, int myID) {
+    public MyEntity getNearest(Vec2Int position, EntityType entityType, boolean checkEmpty, int myID) {
         double minDis = 0xFFFF;
-        Vec2Int current = new Vec2Int(0, 0);
+        MyEntity current = null;
         for (int i = 0; i < allEntity.size(); i++) {
             if (allEntity.get(i).getEntityType() != entityType) continue;
+
+            if (entityType==EntityType.RESOURCE && allEntity.get(i).getTargetEntity()!=null) continue;
 
             ArrayList arrayList = getCoordAround(allEntity.get(i).getPosition(), 1, true, myID);
             if (arrayList.size() == 0) continue;
 
             double dis = position.distance(allEntity.get(i).getPosition());
             if (dis < minDis) {
-                current = allEntity.get(i).getPosition();
+                current = allEntity.get(i);
                 minDis = dis;
             }
         }
@@ -410,8 +414,9 @@ public class GlobalMap {
         for (int x = entityProperties.getSize() - 1; x >= 0; x--) {
             if (checkEmpty(vec2Int.add(x, entityProperties.getSize()))) {
                 Vec2Int vec2Int1 = vec2Int.add(x, entityProperties.getSize());
-                Vec2Int vecReseurse = getNearest(vec2Int1, EntityType.RESOURCE,true,FinalConstant.getMyID());
-                double dis = vecReseurse.distance(vec2Int1);
+                MyEntity vecReseurse = getNearest(vec2Int1, EntityType.RESOURCE,true,FinalConstant.getMyID());
+                if (vecReseurse==null) continue;
+                double dis = vecReseurse.getPosition().distance(vec2Int1);
                 if (dis < minDis) {
                     vec2IntCurrent = vec2Int1;
                     minDis = dis;
@@ -423,8 +428,9 @@ public class GlobalMap {
         for (int y = entityProperties.getSize() - 1; y >= 0; y--) {
             if (checkEmpty(vec2Int.add(entityProperties.getSize(), y))) {
                 Vec2Int vec2Int1 = vec2Int.add(entityProperties.getSize(), y);
-                Vec2Int vecReseurse = getNearest(vec2Int1, EntityType.RESOURCE,true,FinalConstant.getMyID());
-                double dis = vecReseurse.distance(vec2Int1);
+                MyEntity vecReseurse = getNearest(vec2Int1, EntityType.RESOURCE,true,FinalConstant.getMyID());
+                if (vecReseurse==null) continue;
+                double dis = vecReseurse.getPosition().distance(vec2Int1);
                 if (dis < minDis) {
                     vec2IntCurrent = vec2Int1;
                     minDis = dis;
@@ -435,8 +441,9 @@ public class GlobalMap {
         for (int x = entityProperties.getSize() - 1; x >= 0; x--) {
             if (checkEmpty(vec2Int.add(x, -1))) {
                 Vec2Int vec2Int1 = vec2Int.add(x, -1);
-                Vec2Int vecReseurse = getNearest(vec2Int1, EntityType.RESOURCE,true,FinalConstant.getMyID());
-                double dis = vecReseurse.distance(vec2Int1);
+                MyEntity vecReseurse = getNearest(vec2Int1, EntityType.RESOURCE,true,FinalConstant.getMyID());
+                if (vecReseurse==null) continue;
+                double dis = vecReseurse.getPosition().distance(vec2Int1);
                 if (dis < minDis) {
                     vec2IntCurrent = vec2Int1;
                     minDis = dis;
@@ -447,8 +454,9 @@ public class GlobalMap {
         for (int y = entityProperties.getSize() - 1; y >= 0; y--) {
             if (checkEmpty(vec2Int.add(-1, y))) {
                 Vec2Int vec2Int1 = vec2Int.add(-1, y);
-                Vec2Int vecReseurse = getNearest(vec2Int1, EntityType.RESOURCE,true,FinalConstant.getMyID());
-                double dis = vecReseurse.distance(vec2Int1);
+                MyEntity vecReseurse = getNearest(vec2Int1, EntityType.RESOURCE,true,FinalConstant.getMyID());
+                if (vecReseurse==null) continue;
+                double dis = vecReseurse.getPosition().distance(vec2Int1);
                 if (dis < minDis) {
                     vec2IntCurrent = vec2Int1;
                     minDis = dis;
@@ -461,6 +469,27 @@ public class GlobalMap {
         return vec2IntCurrent;
 
     }
+
+    public Vec2Int getPositionBuildUnitPrioriteV2(Entity building) {
+        EntityProperties entityProperties = FinalConstant.getEntityProperties(building);
+
+        Vec2Int vec2Int = building.getPosition();
+
+        ArrayList<Vec2Int> arrayList = getCoordAround(vec2Int,entityProperties.getSize(),true);
+
+        WaveSearch waveSearch = new WaveSearch(map.length);
+
+        waveSearch.initMap(getMap());
+
+        SearchAnswer searchAnswer = waveSearch.waveSearchNeedEntity(arrayList,50,EntityType.RESOURCE);
+
+        if (searchAnswer == null) return new Vec2Int(0, 0);
+
+        return searchAnswer.getStart();
+
+    }
+
+
 
     public Vec2Int getPositionBuildUnit(Entity building) {
         EntityProperties entityProperties = FinalConstant.getEntityProperties(building);
@@ -1070,4 +1099,52 @@ public class GlobalMap {
 
         return false;
     }
+
+    public int getAroundEntity(Vec2Int position, EntityType entityType){
+        int x = position.getX();
+        int y = position.getY();
+
+        byte[][] array = GlobalMap.aroundArray;
+
+        int count = 0;
+
+        for (int i=0; i<array.length; i++) {
+            int x1 = x + array[i][0];
+            int y1 = y + array[i][1];
+
+            if (!checkCoord(x1,y1)) continue;
+
+            if (map[x1][y1].getEntityType()==entityType  && map[x1][y1].getTargetEntity()==null)
+            {
+                count++;
+            }
+        }
+
+        return count;
+    }
+
+    // список юнитов в позициях в bytes с центром position
+    public ArrayList<MyEntity> getEntityMapResourceSpecial(Vec2Int position) {
+        ArrayList<MyEntity> arrayList = new ArrayList<>();
+
+        byte[][] bytes = aroundArray;
+
+        for (int i=0; i<bytes.length; i++)
+        {
+            int x = position.getX() + bytes[i][0];
+            int y = position.getY() + bytes[i][1];
+
+            if (!checkCoord(x,y)) continue;
+
+            MyEntity entity = map[x][y];
+
+            if (entity.getEntityType()==EntityType.RESOURCE && entity.getTargetEntity()==null) {
+                arrayList.add(entity);
+                continue;
+            }
+        }
+
+        return arrayList;
+    }
+
 }

@@ -463,4 +463,65 @@ public class MyPlayer extends Player {
         mMeleeArrayList = getEntityArrayListSlow(EntityType.MELEE_UNIT);
         mBuilderArrayList = getEntityArrayListSlow(EntityType.BUILDER_UNIT);
     }
+
+    public ArrayList<MyEntity> getBuildingUnitNearResources(GlobalMap globalMap) {
+        ArrayList<MyEntity> builder = getEntityArrayList(EntityType.BUILDER_UNIT);
+        ArrayList<MyEntity> myEntityArrayList = new ArrayList<>();
+
+        for (int i=0; i<builder.size(); i++)
+        {
+            int count = globalMap.getAroundEntity(builder.get(i).getPosition(),EntityType.RESOURCE);
+            if (count>0){
+                builder.get(i).setNearResource(count);
+                myEntityArrayList.add(builder.get(i));
+            }
+        }
+
+        Collections.sort(myEntityArrayList, new Comparator<MyEntity>() {
+            public int compare(MyEntity a, MyEntity b) {
+                if (a.getNearResource() > b.getNearResource()) return 1;
+                if (a.getNearResource() < b.getNearResource()) return -1;
+                return 0;
+            }
+        });
+
+        return myEntityArrayList;
+    }
+
+    public ArrayList<MyEntity> getBuildingUnitNearResourcesOther(GlobalMap globalMap) {
+        ArrayList<MyEntity> builders = getEntityArrayList(EntityType.BUILDER_UNIT);
+        ArrayList<MyEntity> myEntityArrayList = new ArrayList<>();
+
+        for (int i=0; i<builders.size(); i++)
+        {
+            MyEntity builder = builders.get(i);
+            if (builder.getTargetEntity()!=null) continue;
+
+            int count = globalMap.getAroundEntity(builder.getPosition(),EntityType.RESOURCE);
+            if (count==0){
+                builder.setNearResource(count);
+                myEntityArrayList.add(builder);
+
+                MyEntity entity = globalMap.getNearest(builder.getPosition(), EntityType.RESOURCE,true, -1);
+
+                if (entity != null) {
+                    builder.setMinDisToEnemy((float) builder.getPosition().distance(entity.getPosition()));
+                    builder.setEnemyMinDis(entity);
+                } else {
+                    builder.setMinDisToEnemy(0xFFFF);
+                }
+            }
+        }
+
+        // сортируем по порядку
+        Collections.sort(myEntityArrayList, new Comparator<MyEntity>() {
+            public int compare(MyEntity a, MyEntity b) {
+                if (a.getMinDisToEnemy() > b.getMinDisToEnemy()) return 1;
+                if (a.getMinDisToEnemy() < b.getMinDisToEnemy()) return -1;
+                return 0;
+            }
+        });
+
+        return myEntityArrayList;
+    }
 }

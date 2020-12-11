@@ -24,7 +24,7 @@ public class MapPotField {
         mMapPotField = new Field[size][size];
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
-                mMapPotField[i][j] = new Field(new Vec2Int(i, j));
+                mMapPotField[i][j] = new Field();
             }
         }
         mBiomResourceMap = new BiomResourceMap();
@@ -42,7 +42,7 @@ public class MapPotField {
 
         MyEntity[][] map = mGlobalMap.getMap();
 
-        clearField();
+        clearField(map);
 
         int districtResource = 0;
 
@@ -229,10 +229,11 @@ public class MapPotField {
         return -1;
     }
 
-    private void clearField() {
+    private void clearField(MyEntity[][] map) {
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
                 mMapPotField[i][j].clear();
+                mMapPotField[i][j].setMyEntity(map[i][j]);
             }
         }
     }
@@ -359,7 +360,7 @@ public class MapPotField {
                     }
                 }
 
-                size = 25;
+                size = 10;
                 for (int x = -size; x < size; x++) {
                     if (x + position.getX() < 0 || x + position.getX() >= FinalConstant.getMapSize()) continue;
 
@@ -429,12 +430,23 @@ public class MapPotField {
                     }
 
 
-                    if (getMapPotField()[i][j].getPlayerArea() <= 0) continue;
+                    if (Final.PLAYER_AREA_TWO) {
+                        if (getMapPotField()[i][j].getPlayerAreaTwo()>0) {
+                            // FinalGraphic.sendText(debugInterface,new Vec2Float(i+0.5f,j+0.5f),20,"("+getMapPotField()[i][j].getPlayerArea()+")");
+                            FinalGraphic.sendSquare(debugInterface, new Vec2Int(i, j), 1, FinalGraphic.getColorDinamicGREEN(getMapPotField()[i][j].getPlayerAreaTwo(), 30));
+                        }
+                    }
+
+                   // if (getMapPotField()[i][j].getPlayerArea() <= 0) continue;
 
                     if (Final.PLAYER_AREA) {
-                        // FinalGraphic.sendText(debugInterface,new Vec2Float(i+0.5f,j+0.5f),20,"("+getMapPotField()[i][j].getPlayerArea()+")");
-                        FinalGraphic.sendSquare(debugInterface, new Vec2Int(i, j), 1, FinalGraphic.getColorDinamicGREEN(getMapPotField()[i][j].getPlayerArea(), 30));
+                        if (getMapPotField()[i][j].getPlayerArea()>0) {
+                            // FinalGraphic.sendText(debugInterface,new Vec2Float(i+0.5f,j+0.5f),20,"("+getMapPotField()[i][j].getPlayerArea()+")");
+                            FinalGraphic.sendSquare(debugInterface, new Vec2Int(i, j), 1, FinalGraphic.getColorDinamicGREEN(getMapPotField()[i][j].getPlayerArea(), 30));
+                        }
                     }
+
+
                 }
             }
 
@@ -446,6 +458,16 @@ public class MapPotField {
                     FinalGraphic.sendSquare(debugInterface, getPositionDefencePlayerArea(1), 1, FinalGraphic.COLOR_BLACK);
                 }
             }
+
+            if (Final.PLAYER_AREA) {
+                if (getPositionDefencePlayerArea(0) != null && getPositionDefencePlayerArea(1) != null) {
+                    // FinalGraphic.sendText(debugInterface,new Vec2Float(i+0.5f,j+0.5f),20,"("+getMapPotField()[i][j].getPlayerArea()+")");
+                    FinalGraphic.sendSquare(debugInterface, getPositionDefencePlayerArea(0), 1, FinalGraphic.COLOR_BLACK);
+                    FinalGraphic.sendSquare(debugInterface, getPositionDefencePlayerArea(1), 1, FinalGraphic.COLOR_BLACK);
+                }
+            }
+
+
         }
 
 
