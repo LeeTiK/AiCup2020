@@ -180,28 +180,36 @@ public class MapPotField {
             }
         }
 
-        // counter
-        for (int i = 0; i < GlobalMap.getRadiusContourUnit(entity.getEntityType()).length; i++) {
-            int x = GlobalMap.getRadiusContourUnit(entity.getEntityType())[i][0];
-            int y = GlobalMap.getRadiusContourUnit(entity.getEntityType())[i][1];
-
-            if (!checkCoord(position.getX() + x, position.getY() + y)) continue;
-
-            if (x + position.getX() < 0 || x + position.getX() >= FinalConstant.getMapSize()) continue;
-            if (y + position.getY() < 0 || y + position.getY() >= FinalConstant.getMapSize()) continue;
-
-            switch (entity.getEntityType()) {
-                case MELEE_UNIT:
-                    mMapPotField[x + position.getX()][y + position.getY()].addDangerContourMelee();
-                    break;
-                case RANGED_UNIT:
-                    mMapPotField[x + position.getX()][y + position.getY()].addDangerContourRanger();
-                    break;
-                case TURRET:
-                    mMapPotField[x + position.getX()][y + position.getY()].addDangerContourTurret();
-                    break;
-            }
+        if (entity.getEntityType()==EntityType.RANGED_UNIT)
+        {
+            mGlobalMap.checkNextPositionUnit(entity);
         }
+
+        // counter
+
+        //if ((entity.isUpPosition() || entity.isDownPosition() || entity.isLeftPosition() || entity.isRigthPosition()) || entity.getEntityType()!=EntityType.RANGED_UNIT) {
+            for (int i = 0; i < GlobalMap.getRadiusContourUnit(entity.getEntityType()).length; i++) {
+                int x = GlobalMap.getRadiusContourUnit(entity.getEntityType())[i][0];
+                int y = GlobalMap.getRadiusContourUnit(entity.getEntityType())[i][1];
+
+                if (!checkCoord(position.getX() + x, position.getY() + y)) continue;
+
+                if (x + position.getX() < 0 || x + position.getX() >= FinalConstant.getMapSize()) continue;
+                if (y + position.getY() < 0 || y + position.getY() >= FinalConstant.getMapSize()) continue;
+
+                switch (entity.getEntityType()) {
+                    case MELEE_UNIT:
+                        mMapPotField[x + position.getX()][y + position.getY()].addDangerContourMelee();
+                        break;
+                    case RANGED_UNIT:
+                        mMapPotField[x + position.getX()][y + position.getY()].addDangerContourRanger();
+                        break;
+                    case TURRET:
+                        mMapPotField[x + position.getX()][y + position.getY()].addDangerContourTurret();
+                        break;
+                }
+            }
+       // }
 
     }
 
@@ -537,8 +545,11 @@ public class MapPotField {
             }
         }
 
+
         MyPlayer myPlayer = globalStatistic.getMyPlayer();
 
+
+        if (integers.size()>0) return true;
 
         for (int k = 0; k < integers.size(); k++) {
             MyPlayer enemy = globalStatistic.getPlayer(integers.get(k));
@@ -697,7 +708,7 @@ public class MapPotField {
 
         if (minDanger == 0xFFFF) {
 
-            if (maxCounterOnlyUnitDanger>0)
+            if (maxCounterOnlyUnitDanger>1)
             {
                 if (currentNoDanger!=null) {
                     return currentNoDanger.getPosition();

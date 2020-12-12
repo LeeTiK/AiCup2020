@@ -67,7 +67,7 @@ public class EconomicManager {
         for (int i = 0; i < myEntities.size(); i++) {
             if (myEntities.get(i).getUnitState() == EUnitState.REPAIR) countRepear++;
             if (myEntities.get(i).getUnitState() == EUnitState.BUILD) countBuilder++;
-            Final.DEBUG(TAG, "BUILD_UNIT: " + myEntities.get(i).getId() + " " + myEntities.get(i).getUnitState());
+          // Final.DEBUG(TAG, "BUILD_UNIT: " + myEntities.get(i).getId() + " " + myEntities.get(i).getUnitState());
         }
 
         Final.DEBUG(TAG, "BUILD CB:" + countBuilder + " CR: " + countRepear);
@@ -325,10 +325,9 @@ public class EconomicManager {
 
         if (myPlayer.getResource() > myPlayer.getCost(EntityType.HOUSE) - 5 &&
                 ((myPlayer.getPopulationCurrent() * 1.2 >= myPlayer.getPopulationMax() && myPlayer.getResource() > myPlayer.getCost(EntityType.HOUSE) * 2) || myPlayer.getPopulationMax() < 80)
-                && (myPlayer.getPopulationMax() < 165 || myPlayer.getEntityArrayList(EntityType.RANGED_BASE).size() > 1)
-                && (myPlayer.getCountBuildDontCreate(EntityType.HOUSE) < 2 || myPlayer.getResource() > 400 && myPlayer.getCountBuildDontCreate(EntityType.HOUSE) < 3)
+                && (myPlayer.getPopulationMax() < 180)
+                && (myPlayer.getCountBuildDontCreate(EntityType.HOUSE) < 3 || myPlayer.getResource() > 400 && myPlayer.getCountBuildDontCreate(EntityType.HOUSE) < 4)
         ) {
-
             Vec2Int positionBuildHouse = globalManager.getGlobalMap().getPositionBuildHouse(FinalConstant.getEntityProperties(EntityType.HOUSE));
 
             if (positionBuildHouse == null) {
@@ -358,7 +357,6 @@ public class EconomicManager {
                 }
 
             } else {
-
 
                 double minDis = 0xFFFFF;
                 MyEntity current = null;
@@ -521,7 +519,7 @@ public class EconomicManager {
         return actionHashMap;
     }
 
-    // чиним здания
+    // чиним здания и юнитов
     private HashMap repairBuilder(MyPlayer myPlayer, PlayerView playerView, GlobalManager globalManager, HashMap<Integer, EntityAction> actionHashMap) {
         ArrayList<MyEntity> buildingArrayList = myPlayer.getBuildingArrayList();
         ArrayList<MyEntity> builderUnitArrayList = myPlayer.getEntityArrayList(EntityType.BUILDER_UNIT);
@@ -733,9 +731,9 @@ public class EconomicManager {
                 6
                         * meleeUnitArrayList.size() < rangedUnitArrayList.size() &&
                 (globalManager.getMapPotField().checkAttackBaseTwo(myPlayer.getId()) || FinalConstant.getCurrentTik() > 1)
-                && meleeUnitArrayList.size()<4
+                && meleeUnitArrayList.size()<2
 
-            && myPlayer.getPopulationMax()>120
+      //      && myPlayer.getPopulationMax()>120
         ) {
             for (int i = 0; i < meleeBaseArrayList.size(); i++) {
                 b = new BuildAction(
@@ -776,7 +774,7 @@ public class EconomicManager {
                     }
                 }
                 if (entity.getEntityType() == EntityType.RANGED_UNIT) {
-                    if (entity.getHealth() == 5) {
+                    if (entity.getHealth() <=5) {
                         Final.DEBUG(TAG, "Heal RANGER!!!");
                         return new RepairAction(entity.getId());
                     }

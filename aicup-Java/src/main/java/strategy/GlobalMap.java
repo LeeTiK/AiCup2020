@@ -382,7 +382,7 @@ public class GlobalMap {
             if (entityType==EntityType.RESOURCE && allEntity.get(i).getTargetEntity()!=null) continue;
 
             ArrayList arrayList = getCoordAround(allEntity.get(i).getPosition(), 1, true, myID);
-            if (arrayList.size() == 0) continue;
+            if (arrayList.size() == 0 && checkEmpty) continue;
 
             double dis = position.distance(allEntity.get(i).getPosition());
             if (dis < minDis) {
@@ -726,22 +726,22 @@ public class GlobalMap {
     }
 
     public MyEntity getNearestPlayer(Vec2Int vec2Int, int myID){
-        return getNearestPlayer(vec2Int,myID,-1,null);
+        return getNearestPlayer(vec2Int,myID,-1,null,false);
     }
 
     public MyEntity getNearestPlayer(Vec2Int vec2Int, int myID, int enemyID){
-        return getNearestPlayer(vec2Int,myID,enemyID,null);
+        return getNearestPlayer(vec2Int,myID,enemyID,null,false);
     }
 
     public MyEntity getNearestPlayer(Vec2Int vec2Int, int myID,  EntityType entityType){
-        return getNearestPlayer(vec2Int,myID,-1,entityType);
+        return getNearestPlayer(vec2Int,myID,-1,entityType,false);
     }
 
     public MyEntity getMyUnitPlayer(Vec2Int vec2Int, EntityType entityType){
-        return getNearestPlayer(vec2Int,-1,FinalConstant.getMyID(),entityType);
+        return getNearestPlayer(vec2Int,-1,FinalConstant.getMyID(),entityType,false);
     }
 
-    public MyEntity getNearestPlayer(Vec2Int vec2Int, int myID, int enemyID, EntityType entityType) {
+    public MyEntity getNearestPlayer(Vec2Int vec2Int, int myID, int enemyID, EntityType entityType, boolean update) {
         double minDis = 0xFFFFF;
         MyEntity current = null;
 
@@ -756,6 +756,10 @@ public class GlobalMap {
                 if (enemyID==FinalConstant.getMyID() && i==vec2Int.getX() && j == vec2Int.getY()) continue;
 
                 if (enemyID != -1 && map[i][j].getPlayerId() != enemyID) continue;
+
+                if (update && map[i][j].isUpdate()) continue;
+
+               // if (map[i][j].getTargetEntity() != null) continue;
 
                 if (entityType!=null)
                 {
@@ -814,8 +818,9 @@ public class GlobalMap {
         };
 
         Vec2Int current = null;
+        int maxEmpty = 0;
 
-        boolean init = false;
+     //   boolean init = false;
         MyEntity positionMyUnit = getMyUnitPlayer(position,EntityType.ATTACK_ENTITY);
 
 
@@ -824,7 +829,38 @@ public class GlobalMap {
 
             if (!checkEmpty(getMapNextTick(),newPosition)) continue;
 
+            int sizeEmptyPosition =  getCoordAround(newPosition, 1, true).size();
+
             ArrayList<MyEntity> arrayList1 = getEntityMap(newPosition, radius, player.getId(), true, false, true, entityType, false, false);
+
+            if (arrayList1.size() < sizeMax) {
+                sizeMax = arrayList1.size();
+                current = newPosition;
+                maxEmpty = sizeEmptyPosition;
+            }
+            else {
+                if (arrayList1.size() == sizeMax)
+                {
+                    if (maxEmpty<sizeEmptyPosition)
+                    {
+                        sizeMax = arrayList1.size();
+                        current = newPosition;
+                        maxEmpty = sizeEmptyPosition;
+                    }
+                    else {
+                        if (current!=null &&
+                                positionMyUnit!=null &&
+                                newPosition.distance(positionMyUnit.getPosition()) < current.distance(positionMyUnit.getPosition()) &&
+                                maxEmpty==sizeEmptyPosition)
+                        {
+                            sizeMax = arrayList1.size();
+                            current = newPosition;
+                            maxEmpty = sizeEmptyPosition;
+                        }
+                    }
+                }
+            }
+            /*
             if (arrayList1.size() <= sizeMax || init && arrayList1.size() <= sizeMax) {
                 if (init && positionMyUnit != null) {
                     if (sizeMax>arrayList1.size() || newPosition.distance(positionMyUnit.getPosition()) < current.distance(positionMyUnit.getPosition())) {
@@ -835,8 +871,9 @@ public class GlobalMap {
                     sizeMax = arrayList1.size();
                     current = newPosition;
                     init = true;
+                    maxEmpty = sizeEmptyPosition;
                 }
-            }
+            }*/
 
         }
 
@@ -1165,5 +1202,39 @@ public class GlobalMap {
         MyEntity entity = getMapNextTick()[position.getX()][position.getY()];
         getMapNextTick()[position.getX()][position.getY()] = getMapNextTick()[positionTwo.getX()][positionTwo.getY()];
         getMapNextTick()[positionTwo.getX()][positionTwo.getY()] = entity;
+    }
+
+    public void checkNextPositionUnit(MyEntity entity) {
+
+        if (entity.isInitNextTickPosition()) return;
+
+        for (int i=0; i<aroundArray.length; i++)
+        {
+            int x = entity.getPosition().getX()+aroundArray[i][0];
+            int y =  entity.getPosition().getY()+aroundArray[i][1];
+
+            if (!checkCoord(x,y)) continue;
+
+            Vec2Int vec2Int = new Vec2Int(x,y);
+
+            if (checkEmpty(new Vec2Int(x,y))){
+                entity.setPositionNextTick(vec2Int);
+            }
+            else {
+               /* if (map[x][y].getEntityType()!=EntityType.RESOURCE)
+                {
+                    if (map[x][y].getPlayerId()==entity.getPlayerId())
+                    {
+                        if (map[x][y].getEntityType()==EntityType.RANGED_UNIT || map[x][y].getEntityType()==EntityType.MELEE_UNIT || map[x][y].getEntityType()==EntityType.BUILDER_UNIT)
+                        {
+                            checkNextPositionUnit(map[x][y]);
+
+                        }
+                    }
+                }*/
+            }
+        }
+
+        entity.setInitNextTickPosition(true);
     }
 }

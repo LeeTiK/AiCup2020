@@ -35,6 +35,13 @@ public class MyEntity extends Entity {
     // цель этого MyEntity
     MyEntity targetEntity;
 
+    /// эксперементальные значения для определения следующего возможного хода соперника(для определения контура опасности)
+    boolean initNextTickPosition;
+    boolean leftPosition;
+    boolean rigthPosition;
+    boolean upPosition;
+    boolean downPosition;
+
     public MyEntity(Entity entity) {
         super(entity.getId(), entity.getPlayerId(), entity.getEntityType(), entity.getPosition(), entity.getHealth(), entity.isActive());
 
@@ -78,6 +85,11 @@ public class MyEntity extends Entity {
         nearResource = 0;
         targetEntity = null;
         mEnemyMinDis = null;
+        initNextTickPosition = false;
+        leftPosition = false;
+        rigthPosition = false;
+        upPosition= false;
+        downPosition= false;
     }
 
     public void update(Entity entity) {
@@ -163,7 +175,7 @@ public class MyEntity extends Entity {
     }
 
     public boolean isMove() {
-        if (getEntityAction().getMoveAction() != null && oldTwoTikPosition != null && !oldTwoTikPosition.equals(getPosition())) {
+        if (getEntityAction().getMoveAction() != null && oldTikPosition != null && !oldTikPosition.equals(getPosition())) {
             return true;
         }
         return false;
@@ -247,5 +259,48 @@ public class MyEntity extends Entity {
 
     public MyEntity getEnemyMinDis() {
         return mEnemyMinDis;
+    }
+
+    public void setPositionNextTick(Vec2Int vec2Int) {
+        if (vec2Int.getX() == -1 && vec2Int.getY()==0)
+        {
+            leftPosition = true;
+        }
+        if (vec2Int.getX() == 0 && vec2Int.getY()==-1)
+        {
+            downPosition = true;
+        }
+        if (vec2Int.getX() == 1 && vec2Int.getY()==0)
+        {
+            rigthPosition = true;
+        }
+        if (vec2Int.getX() == 0 && vec2Int.getY()==1)
+        {
+            upPosition = true;
+        }
+    }
+
+    public boolean isDownPosition() {
+        return downPosition;
+    }
+
+    public boolean isLeftPosition() {
+        return leftPosition;
+    }
+
+    public boolean isRigthPosition() {
+        return rigthPosition;
+    }
+
+    public boolean isUpPosition() {
+        return upPosition;
+    }
+
+    public void setInitNextTickPosition(boolean initNextTickPosition) {
+        this.initNextTickPosition = initNextTickPosition;
+    }
+
+    public boolean isInitNextTickPosition() {
+        return initNextTickPosition;
     }
 }

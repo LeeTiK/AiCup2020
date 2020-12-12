@@ -223,7 +223,7 @@ public class WaveSearchModule {
     }
 
 
-    SearchAnswer searchPathRange(Vec2Int start1, int maxCount) {
+    public SearchAnswer searchPathRange(Vec2Int start1, int maxCount) {
 
         clearMapPath();
 
@@ -289,7 +289,7 @@ public class WaveSearchModule {
                     if (map[x][y].getCost()==cost)
                     {
                         start = new Vec2Int(x,y);
-                        linkedList.add(start);
+                        if (cost>0) linkedList.add(start);
                         break;
                     }
                 }
@@ -306,7 +306,7 @@ public class WaveSearchModule {
             return searchAnswer;
         }
 
-        Final.DEBUG("WaveSearch", "time: " +(System.nanoTime()-timeStart) +" " + "BAD ");
+        Final.DEBUG("WaveSearch", "time: " +(System.nanoTime()-timeStart) +" " + "BAD "  +" start: " + start1.toString());
         return null;
     }
 

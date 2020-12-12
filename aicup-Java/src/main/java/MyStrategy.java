@@ -12,6 +12,7 @@ public class MyStrategy {
         {
             mGlobalManager = new GlobalManager();
         }
+      //  debugInterface.getState().
 
 
         //debugInterface.getState().

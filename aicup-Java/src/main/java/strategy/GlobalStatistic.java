@@ -117,7 +117,8 @@ public class GlobalStatistic {
                 entity = mMyPlayers.get(j).checkDelete();
 
                 if (entity != null) {
-                    Final.DEBUG(TAG, "Player ID: " + mMyPlayers.get(j).getId() + " Event: " + EStatus.DELETE_Entity + " Type: " + entity.getEntityType() );
+                    Final.DEBUG(TAG,"ID: " + entity.getId() +  " Player ID: " + mMyPlayers.get(j).getId() + " Event: " + EStatus.DELETE_Entity + " Type: " + entity.getEntityType() );
+
                     if (entity.getEntityType()==EntityType.RANGED_UNIT && entity.getHealth()>5)
                     {
                         Final.DEBUG(TAG, "BAD POSITION " + FinalConstant.getCurrentTik() + " Player ID: " + mMyPlayers.get(j).getId() + " ID: " + entity.getId() );
@@ -209,10 +210,12 @@ public class GlobalStatistic {
 
     }
 
+    // финальная подчистка умерших объектов
     private void finishGlobalList() {
         for (int i = 0; i < mMyEntityArrayList.size(); i++) {
             if (!mMyEntityArrayList.get(i).isUpdate()) {
                 mMyEntityArrayList.remove(i);
+                i--;
             }
         }
     }

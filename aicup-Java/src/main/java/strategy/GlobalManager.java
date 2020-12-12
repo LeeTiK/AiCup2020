@@ -84,8 +84,35 @@ public class GlobalManager {
 
         hashMap.putAll(mEconomicManager.update(playerView, this,debugInterface));
 
-
         allTime += System.nanoTime() - startTime;
+
+        if (Final.debug)
+        {
+            for ( Integer key : hashMap.keySet() ) {
+                boolean check = false;
+                Entity entity = null;
+                for (int i=0; i<playerView.getEntities().length; i++)
+                {
+                    if (key==playerView.getEntities()[i].getId()){
+                        entity = playerView.getEntities()[i];
+                    }
+                    if (playerView.getEntities()[i].getPlayerId()==null) continue;
+                    if (key==playerView.getEntities()[i].getId() && playerView.getEntities()[i].getPlayerId()==FinalConstant.getMyID()){
+                        check = true;
+                        break;
+                    }
+
+
+                }
+
+                if (!check)
+                {
+
+                    Final.DEBUG("JOPA!!!!", "id: " + key + " entity: " + entity);
+                }
+            }
+        }
+
 
         return new Action(hashMap);
     }

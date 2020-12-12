@@ -43,16 +43,8 @@ public class MyPlayer extends Player {
     ArrayList<MyEntity> mBuilderArrayList;
     ArrayList<MyEntity> mHouseArrayList;
 
-    /*WALL(0),
-    HOUSE(1),
-    BUILDER_BASE(2),
-    BUILDER_UNIT(3),
-    MELEE_BASE(4),
-    MELEE_UNIT(5),
-    RANGED_BASE(6),
-    RANGED_UNIT(7),
-    RESOURCE(8),
-    TURRET(9);*/
+    // массив ближащих врагов к базе/ строителям
+    ArrayList<MyEntity> mEnemyArrayList;
 
     public MyPlayer(int id, int score, int resource) {
         super(id, score, resource);
@@ -68,6 +60,7 @@ public class MyPlayer extends Player {
     private void init() {
         mUnitArrayList = new ArrayList<>();
         mBuildingArrayList = new ArrayList<>();
+        mEnemyArrayList = new ArrayList<>();
         resourceAllGame = 0;
         resourceOldTik = 0;
     }
@@ -88,6 +81,8 @@ public class MyPlayer extends Player {
         for (int i = 0; i < mUnitArrayList.size(); i++) {
             mUnitArrayList.get(i).setUpdate(false);
         }
+
+        mEnemyArrayList.clear();
     }
 
     public EStatus updateEntity(MyEntity entity) {
@@ -433,27 +428,51 @@ public class MyPlayer extends Player {
         return null;
     }
 
-    // сортируем юнитов по дистанции к врагам
-    public void sortAttackUnit(GlobalMap globalMap) {
-
-        int minDis = 0xFFFF, maxDis = 0;
-
+    // поиск ближайщих врагов ко всем нашим зданиям и юнитам
+    public void searchEnemy(GlobalMap globalMap){
         for (int i = 0; i < mUnitArrayList.size(); i++) {
             MyEntity unit = mUnitArrayList.get(i);
-            MyEntity vec2Int = globalMap.getNearestPlayer(unit.getPosition(), getId(), -1);
+            if (unit.getMinDisToEnemy()==0xFFFF) {
+                MyEntity enemy = globalMap.getNearestPlayer(unit.getPosition(), getId(), -1);
 
-            if (vec2Int != null) {
-                unit.setMinDisToEnemy((float) unit.getPosition().distance(vec2Int.getPosition()));
-            } else {
-                unit.setMinDisToEnemy(0xFFFF);
+                if (enemy != null) {
+                    unit.setMinDisToEnemy((float) unit.getPosition().distance(enemy.getPosition()));
+                    unit.setEnemyMinDis(enemy);
+                } else {
+                    unit.setMinDisToEnemy(0xFFFF);
+                }
             }
         }
 
+        for (int i = 0; i < mBuildingArrayList.size(); i++) {
+            MyEntity unit = mBuildingArrayList.get(i);
+            if (unit.getMinDisToEnemy()==0xFFFF) {
+                MyEntity enemy = globalMap.getNearestPlayer(unit.getPosition(), getId(), -1);
+
+                if (enemy != null) {
+                    unit.setMinDisToEnemy((float) unit.getPosition().distance(enemy.getPosition()));
+                    unit.setEnemyMinDis(enemy);
+                } else {
+                    unit.setMinDisToEnemy(0xFFFF);
+                }
+            }
+        }
+    }
+
+
+    // сортируем юнитов по дистанции к врагам
+    public void sortAttackUnit(boolean direction) {
         // сортируем по порядку
         Collections.sort(mUnitArrayList, new Comparator<MyEntity>() {
             public int compare(MyEntity a, MyEntity b) {
-                if (a.getMinDisToEnemy() > b.getMinDisToEnemy()) return 1;
-                if (a.getMinDisToEnemy() < b.getMinDisToEnemy()) return -1;
+                if (direction)
+                {
+                    if (a.getMinDisToEnemy() > b.getMinDisToEnemy()) return 1;
+                    if (a.getMinDisToEnemy() < b.getMinDisToEnemy()) return -1;
+                } else {
+                    if (a.getMinDisToEnemy() < b.getMinDisToEnemy()) return 1;
+                    if (a.getMinDisToEnemy() > b.getMinDisToEnemy()) return -1;
+                }
                 return 0;
             }
         });
@@ -523,5 +542,43 @@ public class MyPlayer extends Player {
         });
 
         return myEntityArrayList;
+    }
+
+    public ArrayList<MyEntity> initEnemyArrayListSlow() {
+        mEnemyArrayList.clear();
+
+        for (int i = 0; i < mBuildingArrayList.size(); i++) {
+            MyEntity building = mBuildingArrayList.get(i);
+            if (building.getMinDisToEnemy()==0xFFFF) continue;
+
+            if (building.getMinDisToEnemy()<11+FinalConstant.getEntityProperties(building).getSize()){
+                addEnemy(building.getEnemyMinDis());
+            }
+        }
+
+        for (int i = 0; i < mUnitArrayList.size(); i++) {
+            MyEntity unit = mUnitArrayList.get(i);
+            if (unit.getMinDisToEnemy()==0xFFFF) continue;
+            if (unit.getEntityType()!=EntityType.BUILDER_UNIT) continue;
+
+            if (unit.getMinDisToEnemy()<14+FinalConstant.getEntityProperties(unit).getSize()){
+                addEnemy(unit.getEnemyMinDis());
+            }
+        }
+
+        return mEnemyArrayList;
+    }
+
+    private void addEnemy(MyEntity entity){
+        for (int i=0; i<mEnemyArrayList.size(); i++)
+        {
+            if (mEnemyArrayList.get(i).getId()==entity.getId()) return;
+        }
+
+        mEnemyArrayList.add(entity);
+    }
+
+    public ArrayList<MyEntity> getEnemyArrayList() {
+        return mEnemyArrayList;
     }
 }

@@ -1,5 +1,5 @@
 {
-  "seed": 12530185111748954112,
+  "seed": 13664242278376742468,
   "game": {
     "Create": "Round1"
   },
@@ -17,6 +17,24 @@
       "Tcp": {
         "host": null,
         "port": 31002,
+        "accept_timeout": null,
+        "timeout": null,
+        "token": null
+      }
+    },
+    {
+      "Tcp": {
+        "host": null,
+        "port": 31003,
+        "accept_timeout": null,
+        "timeout": null,
+        "token": null
+      }
+    },
+    {
+      "Tcp": {
+        "host": null,
+        "port": 31004,
         "accept_timeout": null,
         "timeout": null,
         "token": null
