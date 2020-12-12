@@ -645,9 +645,11 @@ public class WarManager {
                             globalManager.getGlobalMap().setPositionNextTick(range.getPosition(), nextMove);
 
 
-                            if (Final.CHECK_SEARCH_PATH_RANGER) {
-                                for (int k = 0; k < searchAnswer.getPath().size(); k++) {
-                                    FinalGraphic.sendSquare(debugInterface, searchAnswer.getPath().get(k), 1, FinalGraphic.COLOR_BLACK);
+                            if (Final.debugGraphic) {
+                                if (Final.CHECK_SEARCH_PATH_RANGER) {
+                                    for (int k = 0; k < searchAnswer.getPath().size(); k++) {
+                                        FinalGraphic.sendSquare(debugInterface, searchAnswer.getPath().get(k), 1, FinalGraphic.COLOR_BLACK);
+                                    }
                                 }
                             }
 
