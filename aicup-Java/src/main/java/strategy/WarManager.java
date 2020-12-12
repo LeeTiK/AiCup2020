@@ -322,7 +322,7 @@ public class WarManager {
 
             MoveAction m = null;
             // тут будем оцениваться когда враг рядом, выбираем удачную позицую для атаки
-            Vec2Int vec2IntDanger = globalManager.getMapPotField().getDangerAttack(range);
+            Vec2Int vec2IntDanger = globalManager.getMapPotField().getDangerAttackRanger(range);
 
             if (vec2IntDanger != null) {
                 m = new MoveAction(vec2IntDanger, true, false);
@@ -584,7 +584,7 @@ public class WarManager {
             EntityAction entityAction = actionHashMap.get(range.getId());
             if (entityAction == null) entityAction = new EntityAction(null, null, null, null);
 
-            Vec2Int vec2IntDanger = globalManager.getMapPotField().getDangerAttack(range);
+            Vec2Int vec2IntDanger = globalManager.getMapPotField().getDangerAttackRanger(range);
 
             if (vec2IntDanger != null && !range.isDodge()) {
                 MoveAction m = new MoveAction(vec2IntDanger, true, false);

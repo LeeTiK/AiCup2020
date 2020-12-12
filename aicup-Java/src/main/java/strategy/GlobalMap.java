@@ -89,6 +89,24 @@ public class GlobalMap {
             {6, 0},
     };
 
+    final public static byte[][] rangerTwoContourArray = new byte[][]{
+            {-7, 0},
+            {-6, 1}, {-6, -1},
+            {-5, 2}, {-5, -2},
+            {-4, 3}, {-4, -3},
+            {-3, 4}, {-3, -4},
+            {-2, 5}, {-2, -5},
+            {-1, 6}, {-1, -6},
+            {0, 7}, {0, -7},
+            {1, 6}, {1, -6},
+            {2, 5}, {2, -5},
+            {3, 4}, {3, -4},
+            {4, 3}, {4, -3},
+            {5, 2}, {5, -2},
+            {6, 1}, {6, -1},
+            {7, 0},
+    };
+
     final public static byte[][] turretArray = new byte[][]{
             {-5, 1}, {-5, 0},
             {-4, 2}, {-4, 1}, {-4, 0}, {-4, -1},
@@ -136,6 +154,23 @@ public class GlobalMap {
             {5, 3}, {5, -2},
             {6, 2}, {6, -1},
             {7, 1}, {7, 0},
+    };
+
+    final public static byte[][] housePosition = new byte[][]{
+            {0, 0}, {0, 3},{0, 6},{0, 9},{0, 12},{0, 15},{0, 18}, {0, 21},
+            {4, 0}, {7, 0},{10, 0},{13, 0}, {16, 0},{19, 0},{22, 0},{25, 0},
+
+            {11, 4},  {11, 8}, {11, 12}, {11, 16},
+            {4, 11}, {16, 11},
+
+            {21, 4},{21, 8},{21, 12}, {21, 16},
+            {4, 21},{8, 21},{12, 21},{16, 21},
+
+        //    {25, 4}, {25, 8},//25, 12},// {25, 16},
+        //    {4, 25}, {8, 25}, //{12, 25}, //{16, 25},
+
+          //  33, 4
+
     };
 
     public GlobalMap() {
@@ -373,13 +408,22 @@ public class GlobalMap {
 
 
 
-    public MyEntity getNearest(Vec2Int position, EntityType entityType, boolean checkEmpty, int myID) {
+    public MyEntity getNearest(Vec2Int position, EntityType entityType, boolean checkEmpty, int myID, MapPotField mapPotField) {
         double minDis = 0xFFFF;
         MyEntity current = null;
+
         for (int i = 0; i < allEntity.size(); i++) {
             if (allEntity.get(i).getEntityType() != entityType) continue;
 
             if (entityType==EntityType.RESOURCE && allEntity.get(i).getTargetEntity()!=null) continue;
+
+            if (mapPotField!=null)
+            {
+                Vec2Int pos = allEntity.get(i).getPosition();
+                if (mapPotField.getMapPotField()[pos.getX()][pos.getY()].getSumDanger()>0) {
+                    continue;
+                }
+             }
 
             ArrayList arrayList = getCoordAround(allEntity.get(i).getPosition(), 1, true, myID);
             if (arrayList.size() == 0 && checkEmpty) continue;
@@ -406,7 +450,7 @@ public class GlobalMap {
         return current;
     }
 
-    public Vec2Int getPositionBuildUnitPriorite(Entity building) {
+    public Vec2Int getPositionBuildUnitPriorite(Entity building, MapPotField mapPotField) {
         EntityProperties entityProperties = FinalConstant.getEntityProperties(building);
 
         Vec2Int vec2Int = building.getPosition().copy();
@@ -416,7 +460,7 @@ public class GlobalMap {
         for (int x = entityProperties.getSize() - 1; x >= 0; x--) {
             if (checkEmpty(vec2Int.add(x, entityProperties.getSize()))) {
                 Vec2Int vec2Int1 = vec2Int.add(x, entityProperties.getSize());
-                MyEntity vecReseurse = getNearest(vec2Int1, EntityType.RESOURCE,true,FinalConstant.getMyID());
+                MyEntity vecReseurse = getNearest(vec2Int1, EntityType.RESOURCE,true,FinalConstant.getMyID(),mapPotField);
                 if (vecReseurse==null) continue;
                 double dis = vecReseurse.getPosition().distance(vec2Int1);
                 if (dis < minDis) {
@@ -430,7 +474,7 @@ public class GlobalMap {
         for (int y = entityProperties.getSize() - 1; y >= 0; y--) {
             if (checkEmpty(vec2Int.add(entityProperties.getSize(), y))) {
                 Vec2Int vec2Int1 = vec2Int.add(entityProperties.getSize(), y);
-                MyEntity vecReseurse = getNearest(vec2Int1, EntityType.RESOURCE,true,FinalConstant.getMyID());
+                MyEntity vecReseurse = getNearest(vec2Int1, EntityType.RESOURCE,true,FinalConstant.getMyID(),mapPotField);
                 if (vecReseurse==null) continue;
                 double dis = vecReseurse.getPosition().distance(vec2Int1);
                 if (dis < minDis) {
@@ -443,7 +487,7 @@ public class GlobalMap {
         for (int x = entityProperties.getSize() - 1; x >= 0; x--) {
             if (checkEmpty(vec2Int.add(x, -1))) {
                 Vec2Int vec2Int1 = vec2Int.add(x, -1);
-                MyEntity vecReseurse = getNearest(vec2Int1, EntityType.RESOURCE,true,FinalConstant.getMyID());
+                MyEntity vecReseurse = getNearest(vec2Int1, EntityType.RESOURCE,true,FinalConstant.getMyID(),mapPotField);
                 if (vecReseurse==null) continue;
                 double dis = vecReseurse.getPosition().distance(vec2Int1);
                 if (dis < minDis) {
@@ -456,7 +500,7 @@ public class GlobalMap {
         for (int y = entityProperties.getSize() - 1; y >= 0; y--) {
             if (checkEmpty(vec2Int.add(-1, y))) {
                 Vec2Int vec2Int1 = vec2Int.add(-1, y);
-                MyEntity vecReseurse = getNearest(vec2Int1, EntityType.RESOURCE,true,FinalConstant.getMyID());
+                MyEntity vecReseurse = getNearest(vec2Int1, EntityType.RESOURCE,true,FinalConstant.getMyID(),mapPotField);
                 if (vecReseurse==null) continue;
                 double dis = vecReseurse.getPosition().distance(vec2Int1);
                 if (dis < minDis) {
@@ -1236,5 +1280,21 @@ public class GlobalMap {
         }
 
         entity.setInitNextTickPosition(true);
+    }
+
+    public ArrayList<Vec2Int> getPositionBuildHouseV2(EntityProperties entityProperties,MapPotField mapPotField) {
+        ArrayList<Vec2Int> arrayList = new ArrayList<>();
+
+        for (int i=0; i<housePosition.length; i++)
+        {
+            Vec2Int vec2Int = new Vec2Int(housePosition[i][0],housePosition[i][1]);
+
+
+            if (checkSafeСreationBuilding(vec2Int, entityProperties,mapPotField)){
+                arrayList.add(vec2Int.add(1,1));
+            }
+        }
+
+        return arrayList;
     }
 }

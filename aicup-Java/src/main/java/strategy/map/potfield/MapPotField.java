@@ -179,10 +179,13 @@ public class MapPotField {
                     break;
             }
         }
-
+        int sizeMyUnitTwoCounter =0;
         if (entity.getEntityType()==EntityType.RANGED_UNIT)
         {
-            mGlobalMap.checkNextPositionUnit(entity);
+          //  mGlobalMap.checkNextPositionUnit(entity);
+
+            ArrayList<MyEntity> arrayList = mGlobalMap.getEntityMap(position,GlobalMap.rangerTwoContourArray,-1,FinalConstant.getMyID(),true,EntityType.RANGED_UNIT);
+            sizeMyUnitTwoCounter = arrayList.size();
         }
 
         // counter
@@ -203,6 +206,7 @@ public class MapPotField {
                         break;
                     case RANGED_UNIT:
                         mMapPotField[x + position.getX()][y + position.getY()].addDangerContourRanger();
+                        mMapPotField[x + position.getX()][y + position.getY()].setSafetyContour(sizeMyUnitTwoCounter);
                         break;
                     case TURRET:
                         mMapPotField[x + position.getX()][y + position.getY()].addDangerContourTurret();
@@ -425,8 +429,8 @@ public class MapPotField {
                                     getMapPotField()[i][j].getDangerRanger() + "," + getMapPotField()[i][j].getDangerMelee() + "," + getMapPotField()[i][j].getDangerTurret());
                             FinalGraphic.sendText(debugInterface, new Vec2Float(i * 1.0f, j * 1.0f + 0.65f), 11, "C:" +
                                     getMapPotField()[i][j].getDangerContourRanger() + "," + getMapPotField()[i][j].getDangerContourMelee() + "," + getMapPotField()[i][j].getDangerContourTurret());
-                            FinalGraphic.sendText(debugInterface, new Vec2Float(i * 1.0f, j * 1.0f + 0.45f), 11, "S:" +
-                                    getMapPotField()[i][j].getSafetyRanger() + "," + getMapPotField()[i][j].getSafetyMelee() + "," + getMapPotField()[i][j].getSafetyTurret());
+                            FinalGraphic.sendText(debugInterface, new Vec2Float(i * 1.0f, j * 1.0f + 0.45f), 11, "SC:" +
+                                    getMapPotField()[i][j].getSafetyContour());
                         }
                     }
 
@@ -641,7 +645,7 @@ public class MapPotField {
         return null;
     }
 
-    public Vec2Int getDangerAttack(MyEntity entity) {
+    public Vec2Int getDangerAttackRanger(MyEntity entity) {
 
         byte[][] bytes = new byte[][]{
                 {-1, 0}, {0, -1}, {0, 0},{0, 1}, {1, 0},
@@ -736,7 +740,7 @@ public class MapPotField {
                     MyEntity vec2Int = mGlobalMap.getNearestPlayer(entity.getPosition(),FinalConstant.getMyID(),EntityType.TURRET);
 
                     ArrayList<MyEntity> arrayList = mGlobalMap.getEntityMap(vec2Int.getPosition(),GlobalMap.turretAndContourArray,-1,FinalConstant.getMyID(),true,EntityType.ALL);
-                    if (arrayList.size()>=4)
+                    if (arrayList.size()>=5)
                     {
                         return current.getPosition();
                     }
@@ -759,7 +763,7 @@ public class MapPotField {
             if (mMapPotField[entity.getPosition().getX()][entity.getPosition().getY()].getSumDanger()==0) return entity.getPosition();
         }
 
-        if (minDanger==1 && current.getSumDangerContour()>0)
+        if (minDanger==1 && current.getSumDangerContour()>0 && current.getSumDangerContour()-current.getSafetyContour()+1>0)
         {
             Field field = mMapPotField[position.getX()][position.getY()];
 

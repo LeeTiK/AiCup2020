@@ -18,6 +18,8 @@ public class Field {
     int dangerContourMelee;
     int dangerContourTurret;
 
+    int safetyContour;
+
     int safetyRanger;
     int safetyMelee;
     int safetyTurret;
@@ -60,6 +62,8 @@ public class Field {
         safetyTurret = 0;
         playerArea = 0;
         playerAreaTwo = 0;
+
+        safetyContour = 0;
 
         cost = 0xFFFF;
         district = -1;
@@ -288,6 +292,16 @@ public class Field {
 
     @Override
     public String toString(){
-        return "" + getPosition().toString() + " D: " + getSumDanger() + " C: " + getSumDangerContour();
+        return "" + getPosition().toString() + " D: " + getSumDanger() + " C: " + getSumDangerContour() + " SC: " + getSafetyContour();
+    }
+
+    public int getSafetyContour() {
+        return safetyContour;
+    }
+
+    public void setSafetyContour(int safetyContour) {
+        if (safetyContour<safetyContour) {
+            this.safetyContour = safetyContour;
+        }
     }
 }

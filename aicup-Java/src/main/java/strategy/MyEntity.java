@@ -42,6 +42,10 @@ public class MyEntity extends Entity {
     boolean upPosition;
     boolean downPosition;
 
+    // специальные переменные для строителей
+    float minDisToHouse;
+    Vec2Int positionHouse;
+
     public MyEntity(Entity entity) {
         super(entity.getId(), entity.getPlayerId(), entity.getEntityType(), entity.getPosition(), entity.getHealth(), entity.isActive());
 
@@ -302,5 +306,13 @@ public class MyEntity extends Entity {
 
     public boolean isInitNextTickPosition() {
         return initNextTickPosition;
+    }
+
+    public void setMinDisToHouse(float disToHouse, Vec2Int position){
+        if (minDisToHouse>disToHouse)
+        {
+            minDisToHouse = disToHouse;
+            this.positionHouse = position;
+        }
     }
 }

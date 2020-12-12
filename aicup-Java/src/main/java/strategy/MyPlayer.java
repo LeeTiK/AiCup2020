@@ -3,6 +3,7 @@ package strategy;
 import model.EntityType;
 import model.Player;
 import model.Vec2Int;
+import strategy.map.potfield.MapPotField;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -507,9 +508,11 @@ public class MyPlayer extends Player {
         return myEntityArrayList;
     }
 
-    public ArrayList<MyEntity> getBuildingUnitNearResourcesOther(GlobalMap globalMap) {
+    public ArrayList<MyEntity> getBuildingUnitNearResourcesOther(GlobalMap globalMap, MapPotField mapPotField) {
         ArrayList<MyEntity> builders = getEntityArrayList(EntityType.BUILDER_UNIT);
         ArrayList<MyEntity> myEntityArrayList = new ArrayList<>();
+
+
 
         for (int i=0; i<builders.size(); i++)
         {
@@ -521,7 +524,7 @@ public class MyPlayer extends Player {
                 builder.setNearResource(count);
                 myEntityArrayList.add(builder);
 
-                MyEntity entity = globalMap.getNearest(builder.getPosition(), EntityType.RESOURCE,true, -1);
+                MyEntity entity = globalMap.getNearest(builder.getPosition(), EntityType.RESOURCE,true, -1,mapPotField);
 
                 if (entity != null) {
                     builder.setMinDisToEnemy((float) builder.getPosition().distance(entity.getPosition()));
@@ -552,7 +555,7 @@ public class MyPlayer extends Player {
             if (building.getMinDisToEnemy()==0xFFFF) continue;
 
             if (building.getMinDisToEnemy()<11+FinalConstant.getEntityProperties(building).getSize()){
-                addEnemy(building.getEnemyMinDis());
+                addEnemy(building.getEnemyMinDis(),building.getMinDisToEnemy());
             }
         }
 
@@ -562,19 +565,37 @@ public class MyPlayer extends Player {
             if (unit.getEntityType()!=EntityType.BUILDER_UNIT) continue;
 
             if (unit.getMinDisToEnemy()<14+FinalConstant.getEntityProperties(unit).getSize()){
-                addEnemy(unit.getEnemyMinDis());
+                addEnemy(unit.getEnemyMinDis(),unit.getMinDisToEnemy());
             }
+        }
+
+        if (mEnemyArrayList.size()>1) {
+            // сортируем от меньшего к большему
+            Collections.sort(mEnemyArrayList, new Comparator<MyEntity>() {
+                public int compare(MyEntity a, MyEntity b) {
+                    if (a.getMinDisToEnemy() > b.getMinDisToEnemy()) return 1;
+                    if (a.getMinDisToEnemy() < b.getMinDisToEnemy()) return -1;
+                    return 0;
+                }
+            });
         }
 
         return mEnemyArrayList;
     }
 
-    private void addEnemy(MyEntity entity){
+    private void addEnemy(MyEntity entity, float dis){
         for (int i=0; i<mEnemyArrayList.size(); i++)
         {
-            if (mEnemyArrayList.get(i).getId()==entity.getId()) return;
+            if (mEnemyArrayList.get(i).getId()==entity.getId()) {
+                if (mEnemyArrayList.get(i).getMinDisToEnemy()>dis)
+                {
+                    mEnemyArrayList.get(i).setMinDisToEnemy(dis);
+                }
+                return;
+            }
         }
 
+        entity.setMinDisToEnemy(dis);
         mEnemyArrayList.add(entity);
     }
 

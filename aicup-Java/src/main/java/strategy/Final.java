@@ -17,20 +17,20 @@ public class Final {
 
     //////////DEBUG MAP GRAPHIC//////////////
 
-    public final static boolean COORDINATE = true;
+    public final static boolean COORDINATE = false;
     public final static boolean INFO_UNIT = false;
     public final static boolean PLAYER_AREA = false;
     public final static boolean PLAYER_AREA_TWO = false;
     public final static boolean DANGER_AREA = false;
     public final static boolean DANGER_CONTOUR_AREA = false;
     public final static boolean SAFETY_AREA = false;
-    public final static boolean DANGER_AND_SAFETY_AREA_TEXT = false;
+    public final static boolean DANGER_AND_SAFETY_AREA_TEXT = true;
     public final static boolean BIOM_RESOURCE = false;
 
     public final static boolean CHECK_SEARCH_WAVE_BUILDER = false;
     public final static boolean CHECK_SEARCH_WAVE_START_END = false;
 
-    public final static boolean CHECK_SEARCH_PATH_RANGER = true;
+    public final static boolean CHECK_SEARCH_PATH_RANGER = false;
 
     static public Player getMyPlayer(PlayerView playerView) {
         int myID = playerView.getMyId();

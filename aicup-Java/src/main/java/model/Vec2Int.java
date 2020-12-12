@@ -130,6 +130,11 @@ public class Vec2Int {
     }
 
 
+    public Vec2Int subtract(int x1, int y1) {
+        return new Vec2Int(x - x1, y- y1);
+    }
+
+
     public Vec2Int addThis(Vec2Int speed) {
         this.x += speed.x;
         this.y += speed.y;

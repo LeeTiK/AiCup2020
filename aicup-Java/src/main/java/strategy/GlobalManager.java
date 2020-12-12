@@ -80,6 +80,7 @@ public class GlobalManager {
                 return new Action(hashMap1);
             }
         }
+
         hashMap.putAll(mWarManager.update(playerView, this,debugInterface));
 
         hashMap.putAll(mEconomicManager.update(playerView, this,debugInterface));
@@ -146,6 +147,15 @@ public class GlobalManager {
                 Vec2Float vec2Float = myEntities.get(i).getPosition().getVec2Float();
                 vec2Float.setY(vec2Float.getY()+ 0.45f);
                 FinalGraphic.sendText(debugInterface, vec2Float, 11, myEntities.get(i).toString());
+            }
+        }
+
+        if (false)
+        {
+            Vec2Int start = new Vec2Int(10,10);
+            for (int i=0; i<GlobalMap.rangerTwoContourArray.length; i++)
+            {
+                FinalGraphic.sendSquare(debugInterface, start.add(GlobalMap.rangerTwoContourArray[i][0],GlobalMap.rangerTwoContourArray[i][1]), 1, FinalGraphic.COLOR_BLACK);
             }
         }
 

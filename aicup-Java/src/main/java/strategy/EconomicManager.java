@@ -123,7 +123,7 @@ public class EconomicManager {
             }
         }
 
-        ArrayList<MyEntity> builderUnitArrayListTwo = myPlayer.getBuildingUnitNearResourcesOther(globalManager.getGlobalMap());
+        ArrayList<MyEntity> builderUnitArrayListTwo = myPlayer.getBuildingUnitNearResourcesOther(globalManager.getGlobalMap(),globalManager.getMapPotField());
 
         Final.DEBUG(TAG, "BUILDER_UNIT_TWO SIZE: " + builderUnitArrayListTwo.size());
 
@@ -138,7 +138,7 @@ public class EconomicManager {
                 Final.DEBUG("ERROR",  "resource>0");
             }
 
-            MyEntity resourceMidDis = globalManager.getGlobalMap().getNearest(builder.getPosition(), EntityType.RESOURCE,true, -1);
+            MyEntity resourceMidDis = globalManager.getGlobalMap().getNearest(builder.getPosition(), EntityType.RESOURCE,true, -1, globalManager.getMapPotField());
 
             if (resourceMidDis!=null)
             {
@@ -321,83 +321,14 @@ public class EconomicManager {
 
         ArrayList<MyEntity> builderUnitArrayList = myPlayer.getEntityArrayList(EntityType.BUILDER_UNIT);
 
-        boolean checkCreate = false;
+        //boolean checkCreate = false;
 
         if (myPlayer.getResource() > myPlayer.getCost(EntityType.HOUSE) - 5 &&
                 ((myPlayer.getPopulationCurrent() * 1.2 >= myPlayer.getPopulationMax() && myPlayer.getResource() > myPlayer.getCost(EntityType.HOUSE) * 2) || myPlayer.getPopulationMax() < 80)
                 && (myPlayer.getPopulationMax() < 180)
-                && (myPlayer.getCountBuildDontCreate(EntityType.HOUSE) < 3 || myPlayer.getResource() > 400 && myPlayer.getCountBuildDontCreate(EntityType.HOUSE) < 4)
+                && (myPlayer.getCountBuildDontCreate(EntityType.HOUSE) < 3 || (myPlayer.getResource() > 300 && myPlayer.getCountBuildDontCreate(EntityType.HOUSE) < 4 && myPlayer.getPopulationMax() < 70))
         ) {
-            Vec2Int positionBuildHouse = globalManager.getGlobalMap().getPositionBuildHouse(FinalConstant.getEntityProperties(EntityType.HOUSE));
-
-            if (positionBuildHouse == null) {
-                // positionBuildHouse = new Vec2Int();
-                for (int i = 0; i < builderUnitArrayList.size(); i++) {
-                    MyEntity entity = builderUnitArrayList.get(i);
-
-                    if (entity.getUnitState() == EUnitState.REPAIR) continue;
-
-                    if (entity.getPosition().getX() - 1 < 0 || entity.getPosition().getX() - 1 > 80 - 3) continue;
-                    if (entity.getPosition().getY() < 0 || entity.getPosition().getY() > 80 - 3) continue;
-                    BuildAction b = new BuildAction(
-                            EntityType.HOUSE, new Vec2Int(
-                            entity.getPosition().getX() - 1,
-                            entity.getPosition().getY()
-                    )
-                    );
-
-                    MoveAction m = new MoveAction(new Vec2Int(playerView.getMapSize() - 1, playerView.getMapSize() - 1), true, false);
-
-                    AttackAction a = null;
-
-                    entity.setDataTaskUnit(new DataTaskUnit(EUnitState.BUILD));
-                    entity.getDataTaskUnit().setEntityType(EntityType.HOUSE);
-
-                    actionHashMap.put(entity.getId(), new EntityAction(m, b, a, null));
-                }
-
-            } else {
-
-                double minDis = 0xFFFFF;
-                MyEntity current = null;
-
-
-                for (int i = 0; i < builderUnitArrayList.size(); i++) {
-
-                    MyEntity builderUnit = builderUnitArrayList.get(i);
-
-                    if (builderUnit.getUnitState() == EUnitState.REPAIR || builderUnit.getUnitState() == EUnitState.BUILD)
-                        continue;
-
-                    double dis = builderUnitArrayList.get(i).getPosition().distance(positionBuildHouse);
-                    if (dis < minDis) {
-                        current = builderUnitArrayList.get(i);
-                        minDis = dis;
-                    }
-                }
-
-                if (current != null) {
-                    MoveAction m = null;
-                    BuildAction b = null;
-                    AttackAction a = null;
-                    RepairAction r = null;
-                    Vec2Int vec2Int1 = globalManager.getGlobalMap().getMinPositionBuilding(current.getPosition(), positionBuildHouse, FinalConstant.getEntityProperties(EntityType.HOUSE));
-                    if (vec2Int1!=null) {
-                        m = new MoveAction(vec2Int1, true, false);
-
-                        b = new BuildAction(EntityType.HOUSE, positionBuildHouse);
-                        checkCreate = true;
-                        a = null;
-
-                        current.setDataTaskUnit(new DataTaskUnit(EUnitState.BUILD));
-                        current.getDataTaskUnit().setEntityType(EntityType.HOUSE);
-
-                        Final.DEBUG(TAG, "VECTOR BUILD: " + positionBuildHouse.toString() + " currentP: " + current.getPosition());
-
-                        actionHashMap.put(current.getId(), new EntityAction(m, b, a, r));
-                    }
-                }
-            }
+            createHouseV2(builderUnitArrayList,globalManager,actionHashMap);
         }
 
 
@@ -448,7 +379,7 @@ public class EconomicManager {
                             m = new MoveAction(vec2Int1, true, false);
 
                             b = new BuildAction(EntityType.TURRET, vec2Int);
-                            checkCreate = true;
+                           // checkCreate = true;
                             a = null;
 
                             current.setDataTaskUnit(new DataTaskUnit(EUnitState.BUILD));
@@ -518,6 +449,143 @@ public class EconomicManager {
 
         return actionHashMap;
     }
+
+    private void createHouse(ArrayList<MyEntity>  builderUnitArrayList, GlobalManager globalManager, HashMap<Integer, EntityAction> actionHashMap ) {
+
+        Vec2Int positionBuildHouse = globalManager.getGlobalMap().getPositionBuildHouse(FinalConstant.getEntityProperties(EntityType.HOUSE));
+
+        if (positionBuildHouse == null) {
+            // positionBuildHouse = new Vec2Int();
+            for (int i = 0; i < builderUnitArrayList.size(); i++) {
+                MyEntity entity = builderUnitArrayList.get(i);
+
+                if (entity.getUnitState() == EUnitState.REPAIR) continue;
+
+                if (entity.getPosition().getX() - 1 < 0 || entity.getPosition().getX() - 1 > 80 - 3) continue;
+                if (entity.getPosition().getY() < 0 || entity.getPosition().getY() > 80 - 3) continue;
+                BuildAction b = new BuildAction(
+                        EntityType.HOUSE, new Vec2Int(
+                        entity.getPosition().getX() - 1,
+                        entity.getPosition().getY()
+                )
+                );
+
+                MoveAction m = new MoveAction(new Vec2Int(79, 79), true, false);
+
+                AttackAction a = null;
+
+                //entity.setDataTaskUnit(new DataTaskUnit(EUnitState.BUILD));
+                //entity.getDataTaskUnit().setEntityType(EntityType.HOUSE);
+
+                actionHashMap.put(entity.getId(), new EntityAction(m, b, a, null));
+            }
+
+        } else {
+
+            double minDis = 0xFFFFF;
+            MyEntity current = null;
+
+
+            for (int i = 0; i < builderUnitArrayList.size(); i++) {
+
+                MyEntity builderUnit = builderUnitArrayList.get(i);
+
+                if (builderUnit.getUnitState() == EUnitState.REPAIR || builderUnit.getUnitState() == EUnitState.BUILD)
+                    continue;
+
+                double dis = builderUnitArrayList.get(i).getPosition().distance(positionBuildHouse);
+                if (dis < minDis) {
+                    current = builderUnitArrayList.get(i);
+                    minDis = dis;
+                }
+            }
+
+            if (current != null) {
+                MoveAction m = null;
+                BuildAction b = null;
+                AttackAction a = null;
+                RepairAction r = null;
+                Vec2Int vec2Int1 = globalManager.getGlobalMap().getMinPositionBuilding(current.getPosition(), positionBuildHouse, FinalConstant.getEntityProperties(EntityType.HOUSE));
+                if (vec2Int1!=null) {
+                    m = new MoveAction(vec2Int1, true, false);
+
+                    b = new BuildAction(EntityType.HOUSE, positionBuildHouse);
+                  //  checkCreate = true;
+                    a = null;
+
+                    current.setDataTaskUnit(new DataTaskUnit(EUnitState.BUILD));
+                    current.getDataTaskUnit().setEntityType(EntityType.HOUSE);
+
+                    Final.DEBUG(TAG, "VECTOR BUILD: " + positionBuildHouse.toString() + " currentP: " + current.getPosition());
+
+                    actionHashMap.put(current.getId(), new EntityAction(m, b, a, r));
+                }
+            }
+        }
+    }
+
+    private void createHouseV2(ArrayList<MyEntity>  builderUnitArrayList, GlobalManager globalManager, HashMap<Integer, EntityAction> actionHashMap ) {
+
+        ArrayList<Vec2Int> positionBuildHouse = globalManager.getGlobalMap().getPositionBuildHouseV2(FinalConstant.getEntityProperties(EntityType.HOUSE),globalManager.getMapPotField());
+
+        if (positionBuildHouse.size()==0) {
+            Final.DEBUG(TAG," BAD POSITION CREATE HOUSE");
+            createHouse(builderUnitArrayList,globalManager,actionHashMap);
+            return;
+        }
+
+        MyEntity current = null;
+        Vec2Int positionHouse = null;
+        float minDis = 0xFFFF;
+
+        for (int i=0; i<builderUnitArrayList.size(); i++)
+        {
+            MyEntity builderUnit = builderUnitArrayList.get(i);
+
+            if (builderUnit.getUnitState() == EUnitState.REPAIR || builderUnit.getUnitState() == EUnitState.BUILD)
+                continue;
+
+            for (int j=0; j<positionBuildHouse.size(); j++)
+            {
+                double dis = builderUnit.getPosition().distance(positionBuildHouse.get(j));
+                if (dis<minDis)
+                {
+                    current = builderUnit;
+                    minDis = (float) dis;
+                    positionHouse = positionBuildHouse.get(j);
+                }
+            }
+        }
+
+        if (current!=null)
+        {
+            MoveAction m = null;
+            BuildAction b = null;
+            AttackAction a = null;
+            RepairAction r = null;
+            positionHouse = positionHouse.subtract(1,1);
+            Vec2Int vec2Int1 = globalManager.getGlobalMap().getMinPositionBuilding(current.getPosition(), positionHouse, FinalConstant.getEntityProperties(EntityType.HOUSE));
+            if (vec2Int1!=null) {
+                m = new MoveAction(vec2Int1, true, false);
+
+                b = new BuildAction(EntityType.HOUSE, positionHouse);
+                //  checkCreate = true;
+                a = null;
+
+                current.setDataTaskUnit(new DataTaskUnit(EUnitState.BUILD));
+                current.getDataTaskUnit().setEntityType(EntityType.HOUSE);
+
+                Final.DEBUG(TAG, "VECTOR BUILD: " + positionBuildHouse.toString() + " currentP: " + current.getPosition());
+
+                actionHashMap.put(current.getId(), new EntityAction(m, b, a, r));
+            }
+            else {
+                Final.DEBUG(TAG," BAD POSITION MinPositionBuilding");
+            }
+        }
+
+    }
+
 
     // чиним здания и юнитов
     private HashMap repairBuilder(MyPlayer myPlayer, PlayerView playerView, GlobalManager globalManager, HashMap<Integer, EntityAction> actionHashMap) {
@@ -693,7 +761,7 @@ public class EconomicManager {
                     vec2Int = globalManager.getGlobalMap().getPositionBuildUnitPrioriteV2(arrayList1.get(i));
                 }
                 else {
-                    vec2Int = globalManager.getGlobalMap().getPositionBuildUnitPriorite(arrayList1.get(i));
+                    vec2Int = globalManager.getGlobalMap().getPositionBuildUnitPriorite(arrayList1.get(i),globalManager.getMapPotField());
                 }
 
                 b = new BuildAction(EntityType.BUILDER_UNIT, vec2Int);
@@ -733,7 +801,7 @@ public class EconomicManager {
                 (globalManager.getMapPotField().checkAttackBaseTwo(myPlayer.getId()) || FinalConstant.getCurrentTik() > 1)
                 && meleeUnitArrayList.size()<2
 
-      //      && myPlayer.getPopulationMax()>120
+            && myPlayer.getPopulationCurrent()>60
         ) {
             for (int i = 0; i < meleeBaseArrayList.size(); i++) {
                 b = new BuildAction(
