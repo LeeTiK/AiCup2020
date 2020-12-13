@@ -36,6 +36,8 @@ public class MyPlayer extends Player {
 
     int countAllBadPositionRange = 0;
 
+    int countBuildDodge = 0;
+
     int historyAll;
 
     /// оптимизация массивов
@@ -341,7 +343,7 @@ public class MyPlayer extends Player {
         ArrayList<MyEntity> rangeArrayList = getEntityArrayList(EntityType.RANGED_UNIT);
         ArrayList<MyEntity> houseArrayList = getEntityArrayList(EntityType.HOUSE);
         return "ID: " + getId() + " Res: " + getResourceAllGame() +
-                " B: " + buildArrayList.size() + "/" + countDeadBiuld + "/" + countAllBiuld +
+                " B: " + buildArrayList.size() + "/" + countDeadBiuld + "/" + countAllBiuld + "/" + countBuildDodge +
                 " M: " + meleeArrayList.size() + "/" + countDeadMelee + "/" + countAllMelee +
                 " R: " + rangeArrayList.size() + "/" + countDeadRange + "/" + countAllRange + "/" + countAllBadPositionRange +
                 " H: " + houseArrayList.size() + "/" + countDeadHouse + "/" + countAllHouse +
@@ -601,5 +603,13 @@ public class MyPlayer extends Player {
 
     public ArrayList<MyEntity> getEnemyArrayList() {
         return mEnemyArrayList;
+    }
+
+    public void addCountBuildDodge() {
+        this.countBuildDodge++;
+    }
+
+    public int getCountBuildDodge() {
+        return countBuildDodge;
     }
 }

@@ -163,14 +163,38 @@ public class GlobalMap {
             {11, 4},  {11, 8}, {11, 12}, {11, 16},
             {4, 11}, {16, 11},
 
-            {21, 4},{21, 8},{21, 12}, {21, 16},
-            {4, 21},{8, 21},{12, 21},{16, 21},
+          //  {17, 4},  {17, 8}, {17, 12}, {17, 16},
+           // {4, 17},  {8, 17}, {12, 17},
+
+         //   {21, 4},{21, 8},{21, 12}, {21, 16},
+         //   {4, 21},{8, 21},{12, 21},{16, 21},
 
         //    {25, 4}, {25, 8},//25, 12},// {25, 16},
         //    {4, 25}, {8, 25}, //{12, 25}, //{16, 25},
 
           //  33, 4
 
+    };
+
+    final public static byte[][] housePositionV2 = new byte[][]{
+          //  {0, 0}, {0, 3},{0, 6},{0, 9},{0, 12},{0, 15},{0, 18}, {0, 21},
+          //  {4, 0}, {7, 0},{10, 0},{13, 0}, {16, 0},{19, 0},{22, 0},{25, 0},
+
+          //  {11, 4},  {11, 8}, {11, 12}, {11, 16},
+          //  {4, 11}, {16, 11},
+
+            {21, 4},{21, 8},{21, 12}, {21, 16},
+            {4, 21},{8, 21},{12, 21},{16, 21},
+
+            //    {25, 4}, {25, 8},//25, 12},// {25, 16},
+            //    {4, 25}, {8, 25}, //{12, 25}, //{16, 25},
+
+            //  33, 4
+
+    };
+
+    final public static byte[][] basePosition = new byte[][]{
+              {5, 5}, {15, 5},{5, 15},{11, 5},{5, 11},{0, 15},{0, 18}, {0, 21},
     };
 
     public GlobalMap() {
@@ -1288,6 +1312,35 @@ public class GlobalMap {
         for (int i=0; i<housePosition.length; i++)
         {
             Vec2Int vec2Int = new Vec2Int(housePosition[i][0],housePosition[i][1]);
+
+
+            if (checkSafeСreationBuilding(vec2Int, entityProperties,mapPotField)){
+                arrayList.add(vec2Int.add(1,1));
+            }
+        }
+
+        if (arrayList.size()==0)
+        {
+            for (int i=0; i<housePositionV2.length; i++)
+            {
+                Vec2Int vec2Int = new Vec2Int(housePositionV2[i][0],housePositionV2[i][1]);
+
+
+                if (checkSafeСreationBuilding(vec2Int, entityProperties,mapPotField)){
+                    arrayList.add(vec2Int.add(1,1));
+                }
+            }
+        }
+
+        return arrayList;
+    }
+
+    public ArrayList<Vec2Int> getPositionBuildBase(EntityProperties entityProperties,MapPotField mapPotField) {
+        ArrayList<Vec2Int> arrayList = new ArrayList<>();
+
+        for (int i=0; i<basePosition.length; i++)
+        {
+            Vec2Int vec2Int = new Vec2Int(basePosition[i][0],basePosition[i][1]);
 
 
             if (checkSafeСreationBuilding(vec2Int, entityProperties,mapPotField)){
