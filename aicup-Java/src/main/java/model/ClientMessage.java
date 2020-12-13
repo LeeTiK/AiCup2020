@@ -1,11 +1,15 @@
 package model;
 
-import util.StreamUtil;
+import util.StreamUtilBAD;
+
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.nio.ByteBuffer;
 
 public abstract class ClientMessage {
-    public abstract void writeTo(java.io.OutputStream stream) throws java.io.IOException;
-    public static ClientMessage readFrom(java.io.InputStream stream) throws java.io.IOException {
-        switch (StreamUtil.readInt(stream)) {
+    public abstract void writeTo(DataOutputStream stream) throws java.io.IOException;
+    public static ClientMessage readFrom(DataInputStream stream) throws java.io.IOException {
+        switch (StreamUtilBAD.readInt(stream)) {
             case DebugMessage.TAG:
                 return DebugMessage.readFrom(stream);
             case ActionMessage.TAG:
@@ -28,14 +32,14 @@ public abstract class ClientMessage {
         public DebugMessage(model.DebugCommand command) {
             this.command = command;
         }
-        public static DebugMessage readFrom(java.io.InputStream stream) throws java.io.IOException {
+        public static DebugMessage readFrom(DataInputStream stream) throws java.io.IOException {
             DebugMessage result = new DebugMessage();
             result.command = model.DebugCommand.readFrom(stream);
             return result;
         }
         @Override
-        public void writeTo(java.io.OutputStream stream) throws java.io.IOException {
-            StreamUtil.writeInt(stream, TAG);
+        public void writeTo(DataOutputStream stream) throws java.io.IOException {
+            StreamUtilBAD.writeInt(stream, TAG);
             command.writeTo(stream);
         }
     }
@@ -49,14 +53,15 @@ public abstract class ClientMessage {
         public ActionMessage(model.Action action) {
             this.action = action;
         }
-        public static ActionMessage readFrom(java.io.InputStream stream) throws java.io.IOException {
+        public static ActionMessage readFrom(ByteBuffer byteBuffer) throws java.io.IOException {
             ActionMessage result = new ActionMessage();
-            result.action = model.Action.readFrom(stream);
+            result.action = model.Action.readFrom(byteBuffer);
             return result;
         }
+
         @Override
-        public void writeTo(java.io.OutputStream stream) throws java.io.IOException {
-            StreamUtil.writeInt(stream, TAG);
+        public void writeTo(DataOutputStream stream) throws java.io.IOException {
+            StreamUtilBAD.writeInt(stream, TAG);
             action.writeTo(stream);
         }
     }
@@ -64,26 +69,26 @@ public abstract class ClientMessage {
     public static class DebugUpdateDone extends ClientMessage {
         public static final int TAG = 2;
         public DebugUpdateDone() {}
-        public static DebugUpdateDone readFrom(java.io.InputStream stream) throws java.io.IOException {
+        public static DebugUpdateDone readFrom(DataInputStream stream) throws java.io.IOException {
             DebugUpdateDone result = new DebugUpdateDone();
             return result;
         }
         @Override
-        public void writeTo(java.io.OutputStream stream) throws java.io.IOException {
-            StreamUtil.writeInt(stream, TAG);
+        public void writeTo(DataOutputStream stream) throws java.io.IOException {
+            StreamUtilBAD.writeInt(stream, TAG);
         }
     }
 
     public static class RequestDebugState extends ClientMessage {
         public static final int TAG = 3;
         public RequestDebugState() {}
-        public static RequestDebugState readFrom(java.io.InputStream stream) throws java.io.IOException {
+        public static RequestDebugState readFrom(DataInputStream stream) throws java.io.IOException {
             RequestDebugState result = new RequestDebugState();
             return result;
         }
         @Override
-        public void writeTo(java.io.OutputStream stream) throws java.io.IOException {
-            StreamUtil.writeInt(stream, TAG);
+        public void writeTo(DataOutputStream stream) throws java.io.IOException {
+            StreamUtilBAD.writeInt(stream, TAG);
         }
     }
 }

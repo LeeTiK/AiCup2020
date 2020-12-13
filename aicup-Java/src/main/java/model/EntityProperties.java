@@ -1,6 +1,9 @@
 package model;
 
-import util.StreamUtil;
+import util.FinalProtocol;
+import util.StreamUtilBAD;
+
+import java.nio.ByteBuffer;
 
 public class EntityProperties {
     private int size;
@@ -58,62 +61,62 @@ public class EntityProperties {
         this.attack = attack;
         this.repair = repair;
     }
-    public static EntityProperties readFrom(java.io.InputStream stream) throws java.io.IOException {
+    public static EntityProperties readFrom(ByteBuffer inputByteBuffer) throws java.io.IOException {
         EntityProperties result = new EntityProperties();
-        result.size = StreamUtil.readInt(stream);
-        result.buildScore = StreamUtil.readInt(stream);
-        result.destroyScore = StreamUtil.readInt(stream);
-        result.canMove = StreamUtil.readBoolean(stream);
-        result.populationProvide = StreamUtil.readInt(stream);
-        result.populationUse = StreamUtil.readInt(stream);
-        result.maxHealth = StreamUtil.readInt(stream);
-        result.cost = StreamUtil.readInt(stream);
-        result.sightRange = StreamUtil.readInt(stream);
-        result.resourcePerHealth = StreamUtil.readInt(stream);
-        if (StreamUtil.readBoolean(stream)) {
-            result.build = model.BuildProperties.readFrom(stream);
+        result.size = inputByteBuffer.getInt();
+        result.buildScore = inputByteBuffer.getInt();
+        result.destroyScore = inputByteBuffer.getInt();
+        result.canMove = FinalProtocol.decoderBooleanByteBuffer(inputByteBuffer);
+        result.populationProvide = inputByteBuffer.getInt();
+        result.populationUse = inputByteBuffer.getInt();
+        result.maxHealth = inputByteBuffer.getInt();
+        result.cost =inputByteBuffer.getInt();
+        result.sightRange = inputByteBuffer.getInt();
+        result.resourcePerHealth = inputByteBuffer.getInt();
+        if (FinalProtocol.decoderBooleanByteBuffer(inputByteBuffer)) {
+            result.build = model.BuildProperties.readFrom(inputByteBuffer);
         } else {
             result.build = null;
         }
-        if (StreamUtil.readBoolean(stream)) {
-            result.attack = model.AttackProperties.readFrom(stream);
+        if (FinalProtocol.decoderBooleanByteBuffer(inputByteBuffer)) {
+            result.attack = model.AttackProperties.readFrom(inputByteBuffer);
         } else {
             result.attack = null;
         }
-        if (StreamUtil.readBoolean(stream)) {
-            result.repair = model.RepairProperties.readFrom(stream);
+        if (FinalProtocol.decoderBooleanByteBuffer(inputByteBuffer)) {
+            result.repair = model.RepairProperties.readFrom(inputByteBuffer);
         } else {
             result.repair = null;
         }
         return result;
     }
     public void writeTo(java.io.OutputStream stream) throws java.io.IOException {
-        StreamUtil.writeInt(stream, size);
-        StreamUtil.writeInt(stream, buildScore);
-        StreamUtil.writeInt(stream, destroyScore);
-        StreamUtil.writeBoolean(stream, canMove);
-        StreamUtil.writeInt(stream, populationProvide);
-        StreamUtil.writeInt(stream, populationUse);
-        StreamUtil.writeInt(stream, maxHealth);
-        StreamUtil.writeInt(stream, cost);
-        StreamUtil.writeInt(stream, sightRange);
-        StreamUtil.writeInt(stream, resourcePerHealth);
+        StreamUtilBAD.writeInt(stream, size);
+        StreamUtilBAD.writeInt(stream, buildScore);
+        StreamUtilBAD.writeInt(stream, destroyScore);
+        StreamUtilBAD.writeBoolean(stream, canMove);
+        StreamUtilBAD.writeInt(stream, populationProvide);
+        StreamUtilBAD.writeInt(stream, populationUse);
+        StreamUtilBAD.writeInt(stream, maxHealth);
+        StreamUtilBAD.writeInt(stream, cost);
+        StreamUtilBAD.writeInt(stream, sightRange);
+        StreamUtilBAD.writeInt(stream, resourcePerHealth);
         if (build == null) {
-            StreamUtil.writeBoolean(stream, false);
+            StreamUtilBAD.writeBoolean(stream, false);
         } else {
-            StreamUtil.writeBoolean(stream, true);
+            StreamUtilBAD.writeBoolean(stream, true);
             build.writeTo(stream);
         }
         if (attack == null) {
-            StreamUtil.writeBoolean(stream, false);
+            StreamUtilBAD.writeBoolean(stream, false);
         } else {
-            StreamUtil.writeBoolean(stream, true);
+            StreamUtilBAD.writeBoolean(stream, true);
             attack.writeTo(stream);
         }
         if (repair == null) {
-            StreamUtil.writeBoolean(stream, false);
+            StreamUtilBAD.writeBoolean(stream, false);
         } else {
-            StreamUtil.writeBoolean(stream, true);
+            StreamUtilBAD.writeBoolean(stream, true);
             repair.writeTo(stream);
         }
     }

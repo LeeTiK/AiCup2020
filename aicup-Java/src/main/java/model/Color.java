@@ -1,6 +1,8 @@
 package model;
 
-import util.StreamUtil;
+import util.StreamUtilBAD;
+
+import java.nio.ByteBuffer;
 
 public class Color {
     private float r;
@@ -22,18 +24,18 @@ public class Color {
         this.b = b;
         this.a = a;
     }
-    public static Color readFrom(java.io.InputStream stream) throws java.io.IOException {
+    public static Color readFrom(ByteBuffer stream) throws java.io.IOException {
         Color result = new Color();
-        result.r = StreamUtil.readFloat(stream);
-        result.g = StreamUtil.readFloat(stream);
-        result.b = StreamUtil.readFloat(stream);
-        result.a = StreamUtil.readFloat(stream);
+        result.r = stream.getFloat();
+        result.g = stream.getFloat();
+        result.b = stream.getFloat();
+        result.a = stream.getFloat();
         return result;
     }
     public void writeTo(java.io.OutputStream stream) throws java.io.IOException {
-        StreamUtil.writeFloat(stream, r);
-        StreamUtil.writeFloat(stream, g);
-        StreamUtil.writeFloat(stream, b);
-        StreamUtil.writeFloat(stream, a);
+        StreamUtilBAD.writeFloat(stream, r);
+        StreamUtilBAD.writeFloat(stream, g);
+        StreamUtilBAD.writeFloat(stream, b);
+        StreamUtilBAD.writeFloat(stream, a);
     }
 }

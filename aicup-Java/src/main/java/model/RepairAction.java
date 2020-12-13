@@ -1,6 +1,8 @@
 package model;
 
-import util.StreamUtil;
+import util.StreamUtilBAD;
+
+import java.nio.ByteBuffer;
 
 public class RepairAction {
     private int target;
@@ -10,12 +12,12 @@ public class RepairAction {
     public RepairAction(int target) {
         this.target = target;
     }
-    public static RepairAction readFrom(java.io.InputStream stream) throws java.io.IOException {
+    public static RepairAction readFrom(ByteBuffer inputByteBuffer) throws java.io.IOException {
         RepairAction result = new RepairAction();
-        result.target = StreamUtil.readInt(stream);
+        result.target = inputByteBuffer.getInt();
         return result;
     }
     public void writeTo(java.io.OutputStream stream) throws java.io.IOException {
-        StreamUtil.writeInt(stream, target);
+        StreamUtilBAD.writeInt(stream, target);
     }
 }

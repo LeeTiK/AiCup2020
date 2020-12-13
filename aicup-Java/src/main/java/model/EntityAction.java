@@ -1,6 +1,9 @@
 package model;
 
-import util.StreamUtil;
+import util.FinalProtocol;
+import util.StreamUtilBAD;
+
+import java.nio.ByteBuffer;
 
 public class EntityAction {
     private model.MoveAction moveAction;
@@ -22,25 +25,25 @@ public class EntityAction {
         this.attackAction = attackAction;
         this.repairAction = repairAction;
     }
-    public static EntityAction readFrom(java.io.InputStream stream) throws java.io.IOException {
+    public static EntityAction readFrom(ByteBuffer inputByteBuffer) throws java.io.IOException {
         EntityAction result = new EntityAction();
-        if (StreamUtil.readBoolean(stream)) {
-            result.moveAction = model.MoveAction.readFrom(stream);
+        if (FinalProtocol.decoderBooleanByteBuffer(inputByteBuffer)) {
+            result.moveAction = model.MoveAction.readFrom(inputByteBuffer);
         } else {
             result.moveAction = null;
         }
-        if (StreamUtil.readBoolean(stream)) {
-            result.buildAction = model.BuildAction.readFrom(stream);
+        if (FinalProtocol.decoderBooleanByteBuffer(inputByteBuffer)) {
+            result.buildAction = model.BuildAction.readFrom(inputByteBuffer);
         } else {
             result.buildAction = null;
         }
-        if (StreamUtil.readBoolean(stream)) {
-            result.attackAction = model.AttackAction.readFrom(stream);
+        if (FinalProtocol.decoderBooleanByteBuffer(inputByteBuffer)) {
+            result.attackAction = model.AttackAction.readFrom(inputByteBuffer);
         } else {
             result.attackAction = null;
         }
-        if (StreamUtil.readBoolean(stream)) {
-            result.repairAction = model.RepairAction.readFrom(stream);
+        if (FinalProtocol.decoderBooleanByteBuffer(inputByteBuffer)) {
+            result.repairAction = model.RepairAction.readFrom(inputByteBuffer);
         } else {
             result.repairAction = null;
         }
@@ -48,27 +51,27 @@ public class EntityAction {
     }
     public void writeTo(java.io.OutputStream stream) throws java.io.IOException {
         if (moveAction == null) {
-            StreamUtil.writeBoolean(stream, false);
+            StreamUtilBAD.writeBoolean(stream, false);
         } else {
-            StreamUtil.writeBoolean(stream, true);
+            StreamUtilBAD.writeBoolean(stream, true);
             moveAction.writeTo(stream);
         }
         if (buildAction == null) {
-            StreamUtil.writeBoolean(stream, false);
+            StreamUtilBAD.writeBoolean(stream, false);
         } else {
-            StreamUtil.writeBoolean(stream, true);
+            StreamUtilBAD.writeBoolean(stream, true);
             buildAction.writeTo(stream);
         }
         if (attackAction == null) {
-            StreamUtil.writeBoolean(stream, false);
+            StreamUtilBAD.writeBoolean(stream, false);
         } else {
-            StreamUtil.writeBoolean(stream, true);
+            StreamUtilBAD.writeBoolean(stream, true);
             attackAction.writeTo(stream);
         }
         if (repairAction == null) {
-            StreamUtil.writeBoolean(stream, false);
+            StreamUtilBAD.writeBoolean(stream, false);
         } else {
-            StreamUtil.writeBoolean(stream, true);
+            StreamUtilBAD.writeBoolean(stream, true);
             repairAction.writeTo(stream);
         }
     }

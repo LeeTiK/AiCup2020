@@ -1,6 +1,8 @@
 package model;
 
-import util.StreamUtil;
+import util.StreamUtilBAD;
+
+import java.nio.ByteBuffer;
 
 public class Vec2Int {
     private int x;
@@ -20,15 +22,15 @@ public class Vec2Int {
         this.x = x;
         this.y = y;
     }
-    public static Vec2Int readFrom(java.io.InputStream stream) throws java.io.IOException {
+    public static Vec2Int readFrom(ByteBuffer byteBuffer) throws java.io.IOException {
         Vec2Int result = new Vec2Int();
-        result.x = StreamUtil.readInt(stream);
-        result.y = StreamUtil.readInt(stream);
+        result.x = byteBuffer.getInt();
+        result.y = byteBuffer.getInt();
         return result;
     }
     public void writeTo(java.io.OutputStream stream) throws java.io.IOException {
-        StreamUtil.writeInt(stream, x);
-        StreamUtil.writeInt(stream, y);
+        StreamUtilBAD.writeInt(stream, x);
+        StreamUtilBAD.writeInt(stream, y);
     }
 
 

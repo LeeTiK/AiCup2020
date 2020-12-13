@@ -1,6 +1,9 @@
 package model;
 
-import util.StreamUtil;
+import util.FinalProtocol;
+import util.StreamUtilBAD;
+
+import java.nio.ByteBuffer;
 
 public class Camera {
     private model.Vec2Float center;
@@ -26,20 +29,20 @@ public class Camera {
         this.distance = distance;
         this.perspective = perspective;
     }
-    public static Camera readFrom(java.io.InputStream stream) throws java.io.IOException {
+    public static Camera readFrom(ByteBuffer byteBuffer) throws java.io.IOException {
         Camera result = new Camera();
-        result.center = model.Vec2Float.readFrom(stream);
-        result.rotation = StreamUtil.readFloat(stream);
-        result.attack = StreamUtil.readFloat(stream);
-        result.distance = StreamUtil.readFloat(stream);
-        result.perspective = StreamUtil.readBoolean(stream);
+        result.center = model.Vec2Float.readFrom(byteBuffer);
+        result.rotation = byteBuffer.getFloat();
+        result.attack =  byteBuffer.getFloat();
+        result.distance =  byteBuffer.getFloat();
+        result.perspective = FinalProtocol.decoderBooleanByteBuffer(byteBuffer);
         return result;
     }
     public void writeTo(java.io.OutputStream stream) throws java.io.IOException {
         center.writeTo(stream);
-        StreamUtil.writeFloat(stream, rotation);
-        StreamUtil.writeFloat(stream, attack);
-        StreamUtil.writeFloat(stream, distance);
-        StreamUtil.writeBoolean(stream, perspective);
+        StreamUtilBAD.writeFloat(stream, rotation);
+        StreamUtilBAD.writeFloat(stream, attack);
+        StreamUtilBAD.writeFloat(stream, distance);
+        StreamUtilBAD.writeBoolean(stream, perspective);
     }
 }

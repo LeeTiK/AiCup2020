@@ -1,6 +1,8 @@
 package model;
 
-import util.StreamUtil;
+import util.StreamUtilBAD;
+
+import java.nio.ByteBuffer;
 
 public class Player {
     private int id;
@@ -18,16 +20,16 @@ public class Player {
         this.score = score;
         this.resource = resource;
     }
-    public static Player readFrom(java.io.InputStream stream) throws java.io.IOException {
+    public static Player readFrom(ByteBuffer inputByteBuffer) throws java.io.IOException {
         Player result = new Player();
-        result.id = StreamUtil.readInt(stream);
-        result.score = StreamUtil.readInt(stream);
-        result.resource = StreamUtil.readInt(stream);
+        result.id = inputByteBuffer.getInt();
+        result.score = inputByteBuffer.getInt();
+        result.resource = inputByteBuffer.getInt();
         return result;
     }
     public void writeTo(java.io.OutputStream stream) throws java.io.IOException {
-        StreamUtil.writeInt(stream, id);
-        StreamUtil.writeInt(stream, score);
-        StreamUtil.writeInt(stream, resource);
+        StreamUtilBAD.writeInt(stream, id);
+        StreamUtilBAD.writeInt(stream, score);
+        StreamUtilBAD.writeInt(stream, resource);
     }
 }

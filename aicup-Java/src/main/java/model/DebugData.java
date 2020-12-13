@@ -1,11 +1,14 @@
 package model;
 
-import util.StreamUtil;
+import util.FinalProtocol;
+import util.StreamUtilBAD;
+
+import java.nio.ByteBuffer;
 
 public abstract class DebugData {
     public abstract void writeTo(java.io.OutputStream stream) throws java.io.IOException;
     public static DebugData readFrom(java.io.InputStream stream) throws java.io.IOException {
-        switch (StreamUtil.readInt(stream)) {
+        switch (StreamUtilBAD.readInt(stream)) {
             case Log.TAG:
                 return Log.readFrom(stream);
             case Primitives.TAG:
@@ -28,13 +31,13 @@ public abstract class DebugData {
         }
         public static Log readFrom(java.io.InputStream stream) throws java.io.IOException {
             Log result = new Log();
-            result.text = StreamUtil.readString(stream);
+            result.text = StreamUtilBAD.readString(stream);
             return result;
         }
         @Override
         public void writeTo(java.io.OutputStream stream) throws java.io.IOException {
-            StreamUtil.writeInt(stream, TAG);
-            StreamUtil.writeString(stream, text);
+            StreamUtilBAD.writeInt(stream, TAG);
+            StreamUtilBAD.writeString(stream, text);
         }
     }
 
@@ -51,13 +54,13 @@ public abstract class DebugData {
             this.vertices = vertices;
             this.primitiveType = primitiveType;
         }
-        public static Primitives readFrom(java.io.InputStream stream) throws java.io.IOException {
+        public static Primitives readFrom(ByteBuffer inputByteBuffer) throws java.io.IOException {
             Primitives result = new Primitives();
-            result.vertices = new model.ColoredVertex[StreamUtil.readInt(stream)];
+            result.vertices = new model.ColoredVertex[inputByteBuffer.getInt()];
             for (int i = 0; i < result.vertices.length; i++) {
-                result.vertices[i] = model.ColoredVertex.readFrom(stream);
+                result.vertices[i] = model.ColoredVertex.readFrom(inputByteBuffer);
             }
-            switch (StreamUtil.readInt(stream)) {
+            switch (inputByteBuffer.getInt()) {
             case 0:
                 result.primitiveType = model.PrimitiveType.LINES;
                 break;
@@ -71,12 +74,12 @@ public abstract class DebugData {
         }
         @Override
         public void writeTo(java.io.OutputStream stream) throws java.io.IOException {
-            StreamUtil.writeInt(stream, TAG);
-            StreamUtil.writeInt(stream, vertices.length);
+            StreamUtilBAD.writeInt(stream, TAG);
+            StreamUtilBAD.writeInt(stream, vertices.length);
             for (model.ColoredVertex verticesElement : vertices) {
                 verticesElement.writeTo(stream);
             }
-            StreamUtil.writeInt(stream, primitiveType.tag);
+            StreamUtilBAD.writeInt(stream, primitiveType.tag);
         }
     }
 
@@ -101,21 +104,21 @@ public abstract class DebugData {
             this.alignment = alignment;
             this.size = size;
         }
-        public static PlacedText readFrom(java.io.InputStream stream) throws java.io.IOException {
+        public static PlacedText readFrom(ByteBuffer byteBuffer) throws java.io.IOException {
             PlacedText result = new PlacedText();
-            result.vertex = model.ColoredVertex.readFrom(stream);
-            result.text = StreamUtil.readString(stream);
-            result.alignment = StreamUtil.readFloat(stream);
-            result.size = StreamUtil.readFloat(stream);
+            result.vertex = model.ColoredVertex.readFrom(byteBuffer);
+            result.text = FinalProtocol.decoderStringByteBufferUTF8(byteBuffer);
+            result.alignment = byteBuffer.getFloat();
+            result.size =byteBuffer.getFloat();
             return result;
         }
         @Override
         public void writeTo(java.io.OutputStream stream) throws java.io.IOException {
-            StreamUtil.writeInt(stream, TAG);
+            StreamUtilBAD.writeInt(stream, TAG);
             vertex.writeTo(stream);
-            StreamUtil.writeString(stream, text);
-            StreamUtil.writeFloat(stream, alignment);
-            StreamUtil.writeFloat(stream, size);
+            StreamUtilBAD.writeString(stream, text);
+            StreamUtilBAD.writeFloat(stream, alignment);
+            StreamUtilBAD.writeFloat(stream, size);
         }
     }
 }

@@ -1,6 +1,9 @@
 package model;
 
-import util.StreamUtil;
+import util.FinalProtocol;
+import util.StreamUtilBAD;
+
+import java.nio.ByteBuffer;
 
 public class MoveAction {
     private model.Vec2Int target;
@@ -22,16 +25,16 @@ public class MoveAction {
         this.findClosestPosition = findClosestPosition;
         this.breakThrough = breakThrough;
     }
-    public static MoveAction readFrom(java.io.InputStream stream) throws java.io.IOException {
+    public static MoveAction readFrom(ByteBuffer byteBuffer) throws java.io.IOException {
         MoveAction result = new MoveAction();
-        result.target = model.Vec2Int.readFrom(stream);
-        result.findClosestPosition = StreamUtil.readBoolean(stream);
-        result.breakThrough = StreamUtil.readBoolean(stream);
+        result.target = model.Vec2Int.readFrom(byteBuffer);
+        result.findClosestPosition = FinalProtocol.decoderBooleanByteBuffer(byteBuffer);
+        result.breakThrough = FinalProtocol.decoderBooleanByteBuffer(byteBuffer);
         return result;
     }
     public void writeTo(java.io.OutputStream stream) throws java.io.IOException {
         target.writeTo(stream);
-        StreamUtil.writeBoolean(stream, findClosestPosition);
-        StreamUtil.writeBoolean(stream, breakThrough);
+        StreamUtilBAD.writeBoolean(stream, findClosestPosition);
+        StreamUtilBAD.writeBoolean(stream, breakThrough);
     }
 }

@@ -1,17 +1,21 @@
 package model;
 
-import util.StreamUtil;
+import util.FinalProtocol;
+import util.StreamUtilBAD;
+
+import java.io.DataInputStream;
+import java.nio.ByteBuffer;
 
 public abstract class ServerMessage {
     public abstract void writeTo(java.io.OutputStream stream) throws java.io.IOException;
-    public static ServerMessage readFrom(java.io.InputStream stream) throws java.io.IOException {
-        switch (StreamUtil.readInt(stream)) {
+    public static ServerMessage readFrom(ByteBuffer inputByteBuffer) throws java.io.IOException {
+        switch (inputByteBuffer.getInt()) {
             case GetAction.TAG:
-                return GetAction.readFrom(stream);
+                return GetAction.readFrom(inputByteBuffer);
             case Finish.TAG:
-                return Finish.readFrom(stream);
+                return Finish.readFrom(inputByteBuffer);
             case DebugUpdate.TAG:
-                return DebugUpdate.readFrom(stream);
+                return DebugUpdate.readFrom(inputByteBuffer);
             default:
                 throw new java.io.IOException("Unexpected tag value");
         }
@@ -30,30 +34,30 @@ public abstract class ServerMessage {
             this.playerView = playerView;
             this.debugAvailable = debugAvailable;
         }
-        public static GetAction readFrom(java.io.InputStream stream) throws java.io.IOException {
+        public static GetAction readFrom(ByteBuffer inputByteBuffer) throws java.io.IOException {
             GetAction result = new GetAction();
-            result.playerView = model.PlayerView.readFrom(stream);
-            result.debugAvailable = StreamUtil.readBoolean(stream);
+            result.playerView = model.PlayerView.readFrom(inputByteBuffer);
+            result.debugAvailable = FinalProtocol.decoderBooleanByteBuffer(inputByteBuffer);
             return result;
         }
         @Override
         public void writeTo(java.io.OutputStream stream) throws java.io.IOException {
-            StreamUtil.writeInt(stream, TAG);
+            StreamUtilBAD.writeInt(stream, TAG);
             playerView.writeTo(stream);
-            StreamUtil.writeBoolean(stream, debugAvailable);
+            StreamUtilBAD.writeBoolean(stream, debugAvailable);
         }
     }
 
     public static class Finish extends ServerMessage {
         public static final int TAG = 1;
         public Finish() {}
-        public static Finish readFrom(java.io.InputStream stream) throws java.io.IOException {
+        public static Finish readFrom(ByteBuffer inputByteBuffer) throws java.io.IOException {
             Finish result = new Finish();
             return result;
         }
         @Override
         public void writeTo(java.io.OutputStream stream) throws java.io.IOException {
-            StreamUtil.writeInt(stream, TAG);
+            StreamUtilBAD.writeInt(stream, TAG);
         }
     }
 
@@ -66,14 +70,14 @@ public abstract class ServerMessage {
         public DebugUpdate(model.PlayerView playerView) {
             this.playerView = playerView;
         }
-        public static DebugUpdate readFrom(java.io.InputStream stream) throws java.io.IOException {
+        public static DebugUpdate readFrom(ByteBuffer inputByteBuffer) throws java.io.IOException {
             DebugUpdate result = new DebugUpdate();
-            result.playerView = model.PlayerView.readFrom(stream);
+            result.playerView = model.PlayerView.readFrom(inputByteBuffer);
             return result;
         }
         @Override
         public void writeTo(java.io.OutputStream stream) throws java.io.IOException {
-            StreamUtil.writeInt(stream, TAG);
+            StreamUtilBAD.writeInt(stream, TAG);
             playerView.writeTo(stream);
         }
     }

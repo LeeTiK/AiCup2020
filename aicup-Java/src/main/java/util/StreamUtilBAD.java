@@ -8,7 +8,7 @@ import java.nio.ByteOrder;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
-public class StreamUtil {
+public class StreamUtilBAD {
     public static byte[] readBytes(InputStream stream, int byteCount) throws IOException {
         byte[] bytes = new byte[byteCount];
         int offset = 0;

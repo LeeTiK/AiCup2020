@@ -1,6 +1,9 @@
 package model;
 
-import util.StreamUtil;
+import util.FinalProtocol;
+import util.StreamUtilBAD;
+
+import java.nio.ByteBuffer;
 
 public class BuildProperties {
     private model.EntityType[] options;
@@ -14,11 +17,11 @@ public class BuildProperties {
         this.options = options;
         this.initHealth = initHealth;
     }
-    public static BuildProperties readFrom(java.io.InputStream stream) throws java.io.IOException {
+    public static BuildProperties readFrom(ByteBuffer inputByteBuffer) throws java.io.IOException {
         BuildProperties result = new BuildProperties();
-        result.options = new model.EntityType[StreamUtil.readInt(stream)];
+        result.options = new model.EntityType[inputByteBuffer.getInt()];
         for (int i = 0; i < result.options.length; i++) {
-            switch (StreamUtil.readInt(stream)) {
+            switch (inputByteBuffer.getInt()) {
             case 0:
                 result.options[i] = model.EntityType.WALL;
                 break;
@@ -53,23 +56,23 @@ public class BuildProperties {
                 throw new java.io.IOException("Unexpected tag value");
             }
         }
-        if (StreamUtil.readBoolean(stream)) {
-            result.initHealth = StreamUtil.readInt(stream);
+        if (FinalProtocol.decoderBooleanByteBuffer(inputByteBuffer)) {
+            result.initHealth = inputByteBuffer.getInt();
         } else {
             result.initHealth = null;
         }
         return result;
     }
     public void writeTo(java.io.OutputStream stream) throws java.io.IOException {
-        StreamUtil.writeInt(stream, options.length);
+        StreamUtilBAD.writeInt(stream, options.length);
         for (model.EntityType optionsElement : options) {
-            StreamUtil.writeInt(stream, optionsElement.tag);
+            StreamUtilBAD.writeInt(stream, optionsElement.tag);
         }
         if (initHealth == null) {
-            StreamUtil.writeBoolean(stream, false);
+            StreamUtilBAD.writeBoolean(stream, false);
         } else {
-            StreamUtil.writeBoolean(stream, true);
-            StreamUtil.writeInt(stream, initHealth);
+            StreamUtilBAD.writeBoolean(stream, true);
+            StreamUtilBAD.writeInt(stream, initHealth);
         }
     }
 }

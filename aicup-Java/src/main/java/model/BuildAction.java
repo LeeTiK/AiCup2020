@@ -1,6 +1,8 @@
 package model;
 
-import util.StreamUtil;
+import util.StreamUtilBAD;
+
+import java.nio.ByteBuffer;
 
 public class BuildAction {
     private model.EntityType entityType;
@@ -14,9 +16,9 @@ public class BuildAction {
         this.entityType = entityType;
         this.position = position;
     }
-    public static BuildAction readFrom(java.io.InputStream stream) throws java.io.IOException {
+    public static BuildAction readFrom(ByteBuffer inputByteBuffer) throws java.io.IOException {
         BuildAction result = new BuildAction();
-        switch (StreamUtil.readInt(stream)) {
+        switch (inputByteBuffer.getInt()) {
         case 0:
             result.entityType = model.EntityType.WALL;
             break;
@@ -50,11 +52,11 @@ public class BuildAction {
         default:
             throw new java.io.IOException("Unexpected tag value");
         }
-        result.position = model.Vec2Int.readFrom(stream);
+        result.position = model.Vec2Int.readFrom(inputByteBuffer);
         return result;
     }
     public void writeTo(java.io.OutputStream stream) throws java.io.IOException {
-        StreamUtil.writeInt(stream, entityType.tag);
+        StreamUtilBAD.writeInt(stream, entityType.tag);
         position.writeTo(stream);
     }
 }

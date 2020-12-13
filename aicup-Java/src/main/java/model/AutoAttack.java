@@ -1,6 +1,8 @@
 package model;
 
-import util.StreamUtil;
+import util.StreamUtilBAD;
+
+import java.nio.ByteBuffer;
 
 public class AutoAttack {
     private int pathfindRange;
@@ -14,12 +16,12 @@ public class AutoAttack {
         this.pathfindRange = pathfindRange;
         this.validTargets = validTargets;
     }
-    public static AutoAttack readFrom(java.io.InputStream stream) throws java.io.IOException {
+    public static AutoAttack readFrom(ByteBuffer inputByteBuffer) throws java.io.IOException {
         AutoAttack result = new AutoAttack();
-        result.pathfindRange = StreamUtil.readInt(stream);
-        result.validTargets = new model.EntityType[StreamUtil.readInt(stream)];
+        result.pathfindRange = inputByteBuffer.getInt();
+        result.validTargets = new model.EntityType[inputByteBuffer.getInt()];
         for (int i = 0; i < result.validTargets.length; i++) {
-            switch (StreamUtil.readInt(stream)) {
+            switch (inputByteBuffer.getInt()) {
             case 0:
                 result.validTargets[i] = model.EntityType.WALL;
                 break;
@@ -57,10 +59,10 @@ public class AutoAttack {
         return result;
     }
     public void writeTo(java.io.OutputStream stream) throws java.io.IOException {
-        StreamUtil.writeInt(stream, pathfindRange);
-        StreamUtil.writeInt(stream, validTargets.length);
+        StreamUtilBAD.writeInt(stream, pathfindRange);
+        StreamUtilBAD.writeInt(stream, validTargets.length);
         for (model.EntityType validTargetsElement : validTargets) {
-            StreamUtil.writeInt(stream, validTargetsElement.tag);
+            StreamUtilBAD.writeInt(stream, validTargetsElement.tag);
         }
     }
 }

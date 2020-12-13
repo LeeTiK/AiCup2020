@@ -32,10 +32,12 @@ public class MyStrategy {
       //  return new Action(new HashMap<>());
     }
     public void debugUpdate(PlayerView playerView, DebugInterface debugInterface) {
+
         debugInterface.send(new DebugCommand.Clear());
-        debugInterface.getState();
+       // debugInterface.getState();
 
         if (!Final.debugGraphic) return;
+       // if (!Final.debugGraphic) return;
 
         if (mGlobalManager!=null) {
             mGlobalManager.debugUpdate(playerView, debugInterface);

@@ -1,6 +1,8 @@
 package model;
 
-import util.StreamUtil;
+import util.StreamUtilBAD;
+
+import java.nio.ByteBuffer;
 
 public class RepairProperties {
     private model.EntityType[] validTargets;
@@ -14,11 +16,11 @@ public class RepairProperties {
         this.validTargets = validTargets;
         this.power = power;
     }
-    public static RepairProperties readFrom(java.io.InputStream stream) throws java.io.IOException {
+    public static RepairProperties readFrom(ByteBuffer inputByteBuffer) throws java.io.IOException {
         RepairProperties result = new RepairProperties();
-        result.validTargets = new model.EntityType[StreamUtil.readInt(stream)];
+        result.validTargets = new model.EntityType[inputByteBuffer.getInt()];
         for (int i = 0; i < result.validTargets.length; i++) {
-            switch (StreamUtil.readInt(stream)) {
+            switch (inputByteBuffer.getInt()) {
             case 0:
                 result.validTargets[i] = model.EntityType.WALL;
                 break;
@@ -53,14 +55,14 @@ public class RepairProperties {
                 throw new java.io.IOException("Unexpected tag value");
             }
         }
-        result.power = StreamUtil.readInt(stream);
+        result.power = inputByteBuffer.getInt();
         return result;
     }
     public void writeTo(java.io.OutputStream stream) throws java.io.IOException {
-        StreamUtil.writeInt(stream, validTargets.length);
+        StreamUtilBAD.writeInt(stream, validTargets.length);
         for (model.EntityType validTargetsElement : validTargets) {
-            StreamUtil.writeInt(stream, validTargetsElement.tag);
+            StreamUtilBAD.writeInt(stream, validTargetsElement.tag);
         }
-        StreamUtil.writeInt(stream, power);
+        StreamUtilBAD.writeInt(stream, power);
     }
 }

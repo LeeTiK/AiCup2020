@@ -1,15 +1,12 @@
 package strategy;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
+import java.nio.ByteBuffer;
 
 public class DebugInterface {
-    private InputStream inputStream;
-    private OutputStream outputStream;
+    private DataOutputStream outputStream;
 
-    public DebugInterface(InputStream inputStream, OutputStream outputStream) {
-        this.inputStream = inputStream;
+    public DebugInterface(ByteBuffer inputStream, DataOutputStream outputStream) {
         this.outputStream = outputStream;
     }
 
@@ -22,11 +19,23 @@ public class DebugInterface {
         }
     }
 
-    public model.DebugState getState() {
+    public void getStateWrite() {
         try {
             new model.ClientMessage.RequestDebugState().writeTo(outputStream);
             outputStream.flush();
-            return model.DebugState.readFrom(inputStream);
+
+          //  return model.DebugState.readFrom(mByteBuffer);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public model.DebugState getStateRead(ByteBuffer byteBuffer) {
+        try {
+          //  new model.ClientMessage.RequestDebugState().writeTo(outputStream);
+         //   outputStream.flush();
+
+            return model.DebugState.readFrom(byteBuffer);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

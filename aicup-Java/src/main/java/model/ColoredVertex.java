@@ -1,6 +1,9 @@
 package model;
 
-import util.StreamUtil;
+import util.FinalProtocol;
+import util.StreamUtilBAD;
+
+import java.nio.ByteBuffer;
 
 public class ColoredVertex {
     private model.Vec2Float worldPos;
@@ -18,22 +21,22 @@ public class ColoredVertex {
         this.screenOffset = screenOffset;
         this.color = color;
     }
-    public static ColoredVertex readFrom(java.io.InputStream stream) throws java.io.IOException {
+    public static ColoredVertex readFrom(ByteBuffer inputByteBuffer) throws java.io.IOException {
         ColoredVertex result = new ColoredVertex();
-        if (StreamUtil.readBoolean(stream)) {
-            result.worldPos = model.Vec2Float.readFrom(stream);
+        if (FinalProtocol.decoderBooleanByteBuffer(inputByteBuffer)) {
+            result.worldPos = model.Vec2Float.readFrom(inputByteBuffer);
         } else {
             result.worldPos = null;
         }
-        result.screenOffset = model.Vec2Float.readFrom(stream);
-        result.color = model.Color.readFrom(stream);
+        result.screenOffset = model.Vec2Float.readFrom(inputByteBuffer);
+        result.color = model.Color.readFrom(inputByteBuffer);
         return result;
     }
     public void writeTo(java.io.OutputStream stream) throws java.io.IOException {
         if (worldPos == null) {
-            StreamUtil.writeBoolean(stream, false);
+            StreamUtilBAD.writeBoolean(stream, false);
         } else {
-            StreamUtil.writeBoolean(stream, true);
+            StreamUtilBAD.writeBoolean(stream, true);
             worldPos.writeTo(stream);
         }
         screenOffset.writeTo(stream);

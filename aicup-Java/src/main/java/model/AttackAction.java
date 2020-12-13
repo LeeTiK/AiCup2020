@@ -1,6 +1,9 @@
 package model;
 
-import util.StreamUtil;
+import util.FinalProtocol;
+import util.StreamUtilBAD;
+
+import java.nio.ByteBuffer;
 
 public class AttackAction {
     private Integer target;
@@ -14,15 +17,15 @@ public class AttackAction {
         this.target = target;
         this.autoAttack = autoAttack;
     }
-    public static AttackAction readFrom(java.io.InputStream stream) throws java.io.IOException {
+    public static AttackAction readFrom(ByteBuffer inputByteBuffer) throws java.io.IOException {
         AttackAction result = new AttackAction();
-        if (StreamUtil.readBoolean(stream)) {
-            result.target = StreamUtil.readInt(stream);
+        if (FinalProtocol.decoderBooleanByteBuffer(inputByteBuffer)) {
+            result.target = inputByteBuffer.getInt();
         } else {
             result.target = null;
         }
-        if (StreamUtil.readBoolean(stream)) {
-            result.autoAttack = model.AutoAttack.readFrom(stream);
+        if (FinalProtocol.decoderBooleanByteBuffer(inputByteBuffer)) {
+            result.autoAttack = model.AutoAttack.readFrom(inputByteBuffer);
         } else {
             result.autoAttack = null;
         }
@@ -30,15 +33,15 @@ public class AttackAction {
     }
     public void writeTo(java.io.OutputStream stream) throws java.io.IOException {
         if (target == null) {
-            StreamUtil.writeBoolean(stream, false);
+            StreamUtilBAD.writeBoolean(stream, false);
         } else {
-            StreamUtil.writeBoolean(stream, true);
-            StreamUtil.writeInt(stream, target);
+            StreamUtilBAD.writeBoolean(stream, true);
+            StreamUtilBAD.writeInt(stream, target);
         }
         if (autoAttack == null) {
-            StreamUtil.writeBoolean(stream, false);
+            StreamUtilBAD.writeBoolean(stream, false);
         } else {
-            StreamUtil.writeBoolean(stream, true);
+            StreamUtilBAD.writeBoolean(stream, true);
             autoAttack.writeTo(stream);
         }
     }

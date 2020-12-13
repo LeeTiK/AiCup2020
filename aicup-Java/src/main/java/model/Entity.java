@@ -1,6 +1,9 @@
 package model;
 
-import util.StreamUtil;
+import util.FinalProtocol;
+import util.StreamUtilBAD;
+
+import java.nio.ByteBuffer;
 
 public class Entity {
     private int id;
@@ -30,15 +33,15 @@ public class Entity {
         this.health = health;
         this.active = active;
     }
-    public static Entity readFrom(java.io.InputStream stream) throws java.io.IOException {
+    public static Entity readFrom(ByteBuffer inputByteBuffer) throws java.io.IOException {
         Entity result = new Entity();
-        result.id = StreamUtil.readInt(stream);
-        if (StreamUtil.readBoolean(stream)) {
-            result.playerId = StreamUtil.readInt(stream);
+        result.id = inputByteBuffer.getInt();
+        if (FinalProtocol.decoderBooleanByteBuffer(inputByteBuffer)) {
+            result.playerId = inputByteBuffer.getInt();
         } else {
             result.playerId = null;
         }
-        switch (StreamUtil.readInt(stream)) {
+        switch (inputByteBuffer.getInt()) {
         case 0:
             result.entityType = model.EntityType.WALL;
             break;
@@ -72,22 +75,22 @@ public class Entity {
         default:
             throw new java.io.IOException("Unexpected tag value");
         }
-        result.position = model.Vec2Int.readFrom(stream);
-        result.health = StreamUtil.readInt(stream);
-        result.active = StreamUtil.readBoolean(stream);
+        result.position = model.Vec2Int.readFrom(inputByteBuffer);
+        result.health = inputByteBuffer.getInt();
+        result.active = FinalProtocol.decoderBooleanByteBuffer(inputByteBuffer);
         return result;
     }
     public void writeTo(java.io.OutputStream stream) throws java.io.IOException {
-        StreamUtil.writeInt(stream, id);
+        StreamUtilBAD.writeInt(stream, id);
         if (playerId == null) {
-            StreamUtil.writeBoolean(stream, false);
+            StreamUtilBAD.writeBoolean(stream, false);
         } else {
-            StreamUtil.writeBoolean(stream, true);
-            StreamUtil.writeInt(stream, playerId);
+            StreamUtilBAD.writeBoolean(stream, true);
+            StreamUtilBAD.writeInt(stream, playerId);
         }
-        StreamUtil.writeInt(stream, entityType.tag);
+        StreamUtilBAD.writeInt(stream, entityType.tag);
         position.writeTo(stream);
-        StreamUtil.writeInt(stream, health);
-        StreamUtil.writeBoolean(stream, active);
+        StreamUtilBAD.writeInt(stream, health);
+        StreamUtilBAD.writeBoolean(stream, active);
     }
 }

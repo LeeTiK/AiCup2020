@@ -1,11 +1,11 @@
 package model;
 
-import util.StreamUtil;
+import util.StreamUtilBAD;
 
 public abstract class DebugCommand {
     public abstract void writeTo(java.io.OutputStream stream) throws java.io.IOException;
     public static DebugCommand readFrom(java.io.InputStream stream) throws java.io.IOException {
-        switch (StreamUtil.readInt(stream)) {
+        switch (StreamUtilBAD.readInt(stream)) {
             case Add.TAG:
                 return Add.readFrom(stream);
             case Clear.TAG:
@@ -35,7 +35,7 @@ public abstract class DebugCommand {
         }
         @Override
         public void writeTo(java.io.OutputStream stream) throws java.io.IOException {
-            StreamUtil.writeInt(stream, TAG);
+            StreamUtilBAD.writeInt(stream, TAG);
             data.writeTo(stream);
         }
     }
@@ -49,7 +49,7 @@ public abstract class DebugCommand {
         }
         @Override
         public void writeTo(java.io.OutputStream stream) throws java.io.IOException {
-            StreamUtil.writeInt(stream, TAG);
+            StreamUtilBAD.writeInt(stream, TAG);
         }
     }
 
@@ -64,13 +64,13 @@ public abstract class DebugCommand {
         }
         public static SetAutoFlush readFrom(java.io.InputStream stream) throws java.io.IOException {
             SetAutoFlush result = new SetAutoFlush();
-            result.enable = StreamUtil.readBoolean(stream);
+            result.enable = StreamUtilBAD.readBoolean(stream);
             return result;
         }
         @Override
         public void writeTo(java.io.OutputStream stream) throws java.io.IOException {
-            StreamUtil.writeInt(stream, TAG);
-            StreamUtil.writeBoolean(stream, enable);
+            StreamUtilBAD.writeInt(stream, TAG);
+            StreamUtilBAD.writeBoolean(stream, enable);
         }
     }
 
@@ -83,7 +83,7 @@ public abstract class DebugCommand {
         }
         @Override
         public void writeTo(java.io.OutputStream stream) throws java.io.IOException {
-            StreamUtil.writeInt(stream, TAG);
+            StreamUtilBAD.writeInt(stream, TAG);
         }
     }
 }

@@ -1,6 +1,11 @@
 package model;
 
-import util.StreamUtil;
+import strategy.Final;
+import util.FinalProtocol;
+import util.StreamUtilBAD;
+
+import java.io.DataInputStream;
+import java.nio.ByteBuffer;
 
 public class PlayerView {
     private int myId;
@@ -42,16 +47,16 @@ public class PlayerView {
         this.players = players;
         this.entities = entities;
     }
-    public static PlayerView readFrom(java.io.InputStream stream) throws java.io.IOException {
+    public static PlayerView readFrom(ByteBuffer inputByteBuffer) throws java.io.IOException {
         PlayerView result = new PlayerView();
-        result.myId = StreamUtil.readInt(stream);
-        result.mapSize = StreamUtil.readInt(stream);
-        result.fogOfWar = StreamUtil.readBoolean(stream);
-        int entityPropertiesSize = StreamUtil.readInt(stream);
+        result.myId = inputByteBuffer.getInt();
+        result.mapSize = inputByteBuffer.getInt();
+        result.fogOfWar = FinalProtocol.decoderBooleanByteBuffer(inputByteBuffer);
+        int entityPropertiesSize = inputByteBuffer.getInt();
         result.entityProperties = new java.util.HashMap<>(entityPropertiesSize);
         for (int i = 0; i < entityPropertiesSize; i++) {
             model.EntityType entityPropertiesKey;
-            switch (StreamUtil.readInt(stream)) {
+            switch (inputByteBuffer.getInt()) {
             case 0:
                 entityPropertiesKey = model.EntityType.WALL;
                 break;
@@ -86,41 +91,43 @@ public class PlayerView {
                 throw new java.io.IOException("Unexpected tag value");
             }
             model.EntityProperties entityPropertiesValue;
-            entityPropertiesValue = model.EntityProperties.readFrom(stream);
+            entityPropertiesValue = model.EntityProperties.readFrom(inputByteBuffer);
             result.entityProperties.put(entityPropertiesKey, entityPropertiesValue);
         }
-        result.maxTickCount = StreamUtil.readInt(stream);
-        result.maxPathfindNodes = StreamUtil.readInt(stream);
-        result.currentTick = StreamUtil.readInt(stream);
-        result.players = new model.Player[StreamUtil.readInt(stream)];
+        result.maxTickCount = inputByteBuffer.getInt();
+        result.maxPathfindNodes = inputByteBuffer.getInt();
+        result.currentTick = inputByteBuffer.getInt();
+        result.players = new model.Player[inputByteBuffer.getInt()];
+        System.out.println("players size: " + result.players.length);
         for (int i = 0; i < result.players.length; i++) {
-            result.players[i] = model.Player.readFrom(stream);
+            result.players[i] = model.Player.readFrom(inputByteBuffer);
         }
-        result.entities = new model.Entity[StreamUtil.readInt(stream)];
+        result.entities = new model.Entity[inputByteBuffer.getInt()];
+        System.out.println("entities size: " + result.entities.length);
         for (int i = 0; i < result.entities.length; i++) {
-            result.entities[i] = model.Entity.readFrom(stream);
+            result.entities[i] = model.Entity.readFrom(inputByteBuffer);
         }
         return result;
     }
     public void writeTo(java.io.OutputStream stream) throws java.io.IOException {
-        StreamUtil.writeInt(stream, myId);
-        StreamUtil.writeInt(stream, mapSize);
-        StreamUtil.writeBoolean(stream, fogOfWar);
-        StreamUtil.writeInt(stream, entityProperties.size());
+        StreamUtilBAD.writeInt(stream, myId);
+        StreamUtilBAD.writeInt(stream, mapSize);
+        StreamUtilBAD.writeBoolean(stream, fogOfWar);
+        StreamUtilBAD.writeInt(stream, entityProperties.size());
         for (java.util.Map.Entry<model.EntityType, model.EntityProperties> entityPropertiesEntry : entityProperties.entrySet()) {
             model.EntityType entityPropertiesKey = entityPropertiesEntry.getKey();
             model.EntityProperties entityPropertiesValue = entityPropertiesEntry.getValue();
-            StreamUtil.writeInt(stream, entityPropertiesKey.tag);
+            StreamUtilBAD.writeInt(stream, entityPropertiesKey.tag);
             entityPropertiesValue.writeTo(stream);
         }
-        StreamUtil.writeInt(stream, maxTickCount);
-        StreamUtil.writeInt(stream, maxPathfindNodes);
-        StreamUtil.writeInt(stream, currentTick);
-        StreamUtil.writeInt(stream, players.length);
+        StreamUtilBAD.writeInt(stream, maxTickCount);
+        StreamUtilBAD.writeInt(stream, maxPathfindNodes);
+        StreamUtilBAD.writeInt(stream, currentTick);
+        StreamUtilBAD.writeInt(stream, players.length);
         for (model.Player playersElement : players) {
             playersElement.writeTo(stream);
         }
-        StreamUtil.writeInt(stream, entities.length);
+        StreamUtilBAD.writeInt(stream, entities.length);
         for (model.Entity entitiesElement : entities) {
             entitiesElement.writeTo(stream);
         }

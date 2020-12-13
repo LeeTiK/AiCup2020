@@ -1,6 +1,9 @@
 package model;
 
-import util.StreamUtil;
+import util.FinalProtocol;
+import util.StreamUtilBAD;
+
+import java.nio.ByteBuffer;
 
 public class AttackProperties {
     private int attackRange;
@@ -18,16 +21,16 @@ public class AttackProperties {
         this.damage = damage;
         this.collectResource = collectResource;
     }
-    public static AttackProperties readFrom(java.io.InputStream stream) throws java.io.IOException {
+    public static AttackProperties readFrom(ByteBuffer inputByteBuffer) throws java.io.IOException {
         AttackProperties result = new AttackProperties();
-        result.attackRange = StreamUtil.readInt(stream);
-        result.damage = StreamUtil.readInt(stream);
-        result.collectResource = StreamUtil.readBoolean(stream);
+        result.attackRange = inputByteBuffer.getInt();
+        result.damage = inputByteBuffer.getInt();
+        result.collectResource = FinalProtocol.decoderBooleanByteBuffer(inputByteBuffer);
         return result;
     }
     public void writeTo(java.io.OutputStream stream) throws java.io.IOException {
-        StreamUtil.writeInt(stream, attackRange);
-        StreamUtil.writeInt(stream, damage);
-        StreamUtil.writeBoolean(stream, collectResource);
+        StreamUtilBAD.writeInt(stream, attackRange);
+        StreamUtilBAD.writeInt(stream, damage);
+        StreamUtilBAD.writeBoolean(stream, collectResource);
     }
 }

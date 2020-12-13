@@ -1,6 +1,8 @@
 package model;
 
-import util.StreamUtil;
+import util.StreamUtilBAD;
+
+import java.nio.ByteBuffer;
 
 public class Vec2Float {
     private float x;
@@ -14,14 +16,14 @@ public class Vec2Float {
         this.x = x;
         this.y = y;
     }
-    public static Vec2Float readFrom(java.io.InputStream stream) throws java.io.IOException {
+    public static Vec2Float readFrom(ByteBuffer byteBuffer) throws java.io.IOException {
         Vec2Float result = new Vec2Float();
-        result.x = StreamUtil.readFloat(stream);
-        result.y = StreamUtil.readFloat(stream);
+        result.x = byteBuffer.getFloat();
+        result.y = byteBuffer.getFloat();
         return result;
     }
     public void writeTo(java.io.OutputStream stream) throws java.io.IOException {
-        StreamUtil.writeFloat(stream, x);
-        StreamUtil.writeFloat(stream, y);
+        StreamUtilBAD.writeFloat(stream, x);
+        StreamUtilBAD.writeFloat(stream, y);
     }
 }

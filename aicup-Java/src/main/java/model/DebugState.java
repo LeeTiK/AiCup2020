@@ -1,6 +1,9 @@
 package model;
 
-import util.StreamUtil;
+import util.FinalProtocol;
+import util.StreamUtilBAD;
+
+import java.nio.ByteBuffer;
 
 public class DebugState {
     private model.Vec2Int windowSize;
@@ -30,28 +33,29 @@ public class DebugState {
         this.camera = camera;
         this.playerIndex = playerIndex;
     }
-    public static DebugState readFrom(java.io.InputStream stream) throws java.io.IOException {
+    public static DebugState readFrom(ByteBuffer inputByteBuffer) throws java.io.IOException {
         DebugState result = new DebugState();
-        result.windowSize = model.Vec2Int.readFrom(stream);
-        result.mousePosWindow = model.Vec2Float.readFrom(stream);
-        result.mousePosWorld = model.Vec2Float.readFrom(stream);
-        result.pressedKeys = new String[StreamUtil.readInt(stream)];
+        //if (inputByteBuffer.remaining()==0) return result;
+        result.windowSize = model.Vec2Int.readFrom(inputByteBuffer);
+        result.mousePosWindow = model.Vec2Float.readFrom(inputByteBuffer);
+        result.mousePosWorld = model.Vec2Float.readFrom(inputByteBuffer);
+        result.pressedKeys = new String[inputByteBuffer.getInt()];
         for (int i = 0; i < result.pressedKeys.length; i++) {
-            result.pressedKeys[i] = StreamUtil.readString(stream);
+            result.pressedKeys[i] = FinalProtocol.decoderStringByteBufferUTF8(inputByteBuffer);
         }
-        result.camera = model.Camera.readFrom(stream);
-        result.playerIndex = StreamUtil.readInt(stream);
+        result.camera = model.Camera.readFrom(inputByteBuffer);
+        result.playerIndex = inputByteBuffer.getInt();
         return result;
     }
     public void writeTo(java.io.OutputStream stream) throws java.io.IOException {
         windowSize.writeTo(stream);
         mousePosWindow.writeTo(stream);
         mousePosWorld.writeTo(stream);
-        StreamUtil.writeInt(stream, pressedKeys.length);
+        StreamUtilBAD.writeInt(stream, pressedKeys.length);
         for (String pressedKeysElement : pressedKeys) {
-            StreamUtil.writeString(stream, pressedKeysElement);
+            StreamUtilBAD.writeString(stream, pressedKeysElement);
         }
         camera.writeTo(stream);
-        StreamUtil.writeInt(stream, playerIndex);
+        StreamUtilBAD.writeInt(stream, playerIndex);
     }
 }
