@@ -36,13 +36,35 @@ public class Runner {
         DebugInterface debugInterface = new DebugInterface(input, outputStream);
         while (true) {
 
-            input.clear();
-            while (inputStream.available()!=0)
+            if (input.remaining()==0 || input.limit()==1000000) {
+                input.clear();
+
+                int count;
+                int size = 0;
+                byte[] buffer = new byte[500000]; // or 4096, or more
+                while (inputStream.available()>0) {
+                    count = inputStream.read(buffer);
+                    System.out.println("size: " + count);
+                    input.put(buffer, 0, count);
+                }
+                input.flip();
+            }
+
+            if (input.remaining()>0)
+                System.out.println("input: " + input.remaining());
+          /*  int size =1;
+            if (input.remaining()==0) {
+                input.clear();
+                size = 0;
+            }
+
+            while (size==0 || input.remaining()==0)
             {
-                int size = inputStream.available();
-                System.out.println("sizeRead: " + size);
-                inputStream.read(bytesRead,0,size);
-                input.put(bytesRead,0,size);
+                int readSize = inputStream.available();
+                size+=readSize;
+                if (size>0)System.out.println("sizeRead: " + size);
+                inputStream.read(bytesRead,0,readSize);
+                input.put(bytesRead,0,readSize);
                 try {
                     Thread.sleep(10);
                 } catch (InterruptedException e) {
@@ -50,11 +72,12 @@ public class Runner {
                 }
             }
             input.flip();
-
-            if (input.remaining()>3) {
-                System.out.println("decode!!!!");
+            if (input.remaining()>0)System.out.println("input: " + input.remaining());*/
+            while (input.remaining()>3) {
+                System.out.println("decode!!!! " + "inputSt: " + input.remaining());
                 model.ServerMessage message = model.ServerMessage.readFrom(input);
-                System.out.println(message);
+
+                System.out.println("inputEnd: " + input.remaining() + "  " + message);
                 if (message instanceof model.ServerMessage.GetAction) {
                     model.ServerMessage.GetAction getActionMessage = (model.ServerMessage.GetAction) message;
                     new model.ClientMessage.ActionMessage(myStrategy.getAction(getActionMessage.getPlayerView(), getActionMessage.isDebugAvailable() ? debugInterface : null)).writeTo(outputStream);
@@ -63,10 +86,12 @@ public class Runner {
                     break;
                 } else if (message instanceof model.ServerMessage.DebugUpdate) {
                     model.ServerMessage.DebugUpdate debugUpdateMessage = (model.ServerMessage.DebugUpdate) message;
-                 //   myStrategy.debugUpdate(debugUpdateMessage.getPlayerView(), debugInterface);
+                    myStrategy.debugUpdate(debugUpdateMessage.getPlayerView(), debugInterface);
                    // debugInterface.send(new DebugCommand.Clear());
-                  //  debugInterface.getStateWrite();
-                   // debugInterface.getStateRead(input);
+                   // debugInterface.getStateWrite();
+                    if (input.remaining()>=0)
+                        System.out.println("input2: " + input.remaining());
+                    debugInterface.getStateRead(input);
                     new model.ClientMessage.DebugUpdateDone().writeTo(outputStream);
                     outputStream.flush();
                 } else {

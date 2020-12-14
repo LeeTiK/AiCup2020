@@ -35,7 +35,9 @@ public class DebugState {
     }
     public static DebugState readFrom(ByteBuffer inputByteBuffer) throws java.io.IOException {
         DebugState result = new DebugState();
-        //if (inputByteBuffer.remaining()==0) return result;
+        if (inputByteBuffer.remaining()>0)
+            System.out.println("input2: " + inputByteBuffer.remaining());
+        if (inputByteBuffer.remaining()==0) return result;
         result.windowSize = model.Vec2Int.readFrom(inputByteBuffer);
         result.mousePosWindow = model.Vec2Float.readFrom(inputByteBuffer);
         result.mousePosWorld = model.Vec2Float.readFrom(inputByteBuffer);
