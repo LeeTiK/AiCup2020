@@ -160,8 +160,8 @@ public class GlobalMap {
             {0, 0}, {0, 3},{0, 6},{0, 9},{0, 12},{0, 15},{0, 18}, {0, 21},
             {4, 0}, {7, 0},{10, 0},{13, 0}, {16, 0},{19, 0},{22, 0},{25, 0},
 
-            {11, 4},  {11, 8}, {11, 12}, {11, 16},
-            {4, 11}, {16, 11},
+        //    {11, 4},  {11, 8}, {11, 12}, {11, 16},
+        //    {4, 11}, {16, 11},
 
           //  {17, 4},  {17, 8}, {17, 12}, {17, 16},
            // {4, 17},  {8, 17}, {12, 17},
@@ -173,6 +173,19 @@ public class GlobalMap {
         //    {4, 25}, {8, 25}, //{12, 25}, //{16, 25},
 
           //  33, 4
+
+    };
+
+
+    final public static byte[][] housePositionV3 = new byte[][]{
+       //     {0, 0}, {0, 3},{0, 6},{0, 9},{0, 12},{0, 15},{0, 18}, {0, 21},
+      //      {4, 0}, {7, 0},{10, 0},{13, 0}, {16, 0},{19, 0},{22, 0},{25, 0},
+
+            {11, 4},  {11, 8}, {11, 12}, {11, 16},
+            {4, 11}, {16, 11},
+
+            {17, 4},  {17, 8}, {17, 12}, {17, 16},
+            {4, 17},  {8, 17}, {12, 17},
 
     };
 
@@ -195,6 +208,7 @@ public class GlobalMap {
 
     final public static byte[][] basePosition = new byte[][]{
               {5, 5}, {15, 5},{5, 15},{11, 5},{5, 11},{0, 15},{0, 18}, {0, 21},
+              {7, 5}, {5, 7},
     };
 
     public GlobalMap() {
@@ -1306,7 +1320,7 @@ public class GlobalMap {
         entity.setInitNextTickPosition(true);
     }
 
-    public ArrayList<Vec2Int> getPositionBuildHouseV2(EntityProperties entityProperties,MapPotField mapPotField) {
+    public ArrayList<Vec2Int> getPositionBuildHouseV2(EntityProperties entityProperties,MapPotField mapPotField, boolean baseCreate) {
         ArrayList<Vec2Int> arrayList = new ArrayList<>();
 
         for (int i=0; i<housePosition.length; i++)
@@ -1319,6 +1333,18 @@ public class GlobalMap {
             }
         }
 
+        if (baseCreate)
+        {
+            for (int i=0; i<housePositionV3.length; i++)
+            {
+                Vec2Int vec2Int = new Vec2Int(housePositionV3[i][0],housePositionV3[i][1]);
+
+
+                if (checkSafeСreationBuilding(vec2Int, entityProperties,mapPotField)){
+                    arrayList.add(vec2Int.add(1,1));
+                }
+            }
+
         if (arrayList.size()==0)
         {
             for (int i=0; i<housePositionV2.length; i++)
@@ -1330,6 +1356,7 @@ public class GlobalMap {
                     arrayList.add(vec2Int.add(1,1));
                 }
             }
+        }
         }
 
         return arrayList;

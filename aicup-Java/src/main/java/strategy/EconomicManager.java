@@ -330,7 +330,11 @@ public class EconomicManager {
                 && (myPlayer.getPopulationMax() < 180)
                 && (myPlayer.getCountBuildDontCreate(EntityType.HOUSE) < 3 || (myPlayer.getResource() > 300 && myPlayer.getCountBuildDontCreate(EntityType.HOUSE) < 4 && myPlayer.getPopulationMax() < 70))
         ) {
-            createHouseV2(builderUnitArrayList,globalManager,actionHashMap);
+            if ( (myPlayer.getEntityArrayList(EntityType.RANGED_BASE).size()>0 &&
+                    myPlayer.getEntityArrayList(EntityType.BUILDER_BASE).size()>0) ||
+                myPlayer.getEntityArrayList(EntityType.HOUSE).size() <4) {
+                createHouseV2(builderUnitArrayList, globalManager, actionHashMap);
+            }
         }
 
         if (myPlayer.getResource()>strategy.FinalConstant.getEntityProperties(EntityType.RANGED_BASE).getCost() && myPlayer.getEntityArrayList(EntityType.RANGED_BASE).size()<1 )
@@ -348,7 +352,7 @@ public class EconomicManager {
                 myPlayer.getEntityArrayList(EntityType.RANGED_BASE).size()>0 &&
                 myPlayer.getEntityArrayList(EntityType.BUILDER_BASE).size()>0 )
         {
-            createBase(builderUnitArrayList,globalManager,actionHashMap, EntityType.MELEE_BASE);
+          //  createBase(builderUnitArrayList,globalManager,actionHashMap, EntityType.MELEE_BASE);
         }
 /*
         if (myPlayer.getResource()>strategy.FinalConstant.getEntityProperties(EntityType.MELEE_BASE).getCost()*4 && myPlayer.getEntityArrayList(EntityType.BUILDER_BASE).size()<1 &&  myPlayer.getEntityArrayList(EntityType.RANGED_BASE).size()>0)
@@ -571,9 +575,11 @@ public class EconomicManager {
 
     private void createHouseV2(ArrayList<MyEntity>  builderUnitArrayList, GlobalManager globalManager, HashMap<Integer, EntityAction> actionHashMap ) {
 
-        ArrayList<Vec2Int> positionBuildHouse = globalManager.getGlobalMap().getPositionBuildHouseV2(FinalConstant.getEntityProperties(EntityType.HOUSE),globalManager.getMapPotField());
+        ArrayList<Vec2Int> positionBuildHouse = globalManager.getGlobalMap().getPositionBuildHouseV2(FinalConstant.getEntityProperties(EntityType.HOUSE),
+                globalManager.getMapPotField(),
+                globalManager.getGlobalStatistic().getMyPlayer().getEntityArrayList(EntityType.RANGED_BASE).size()>0);
 
-        if (positionBuildHouse.size()==0) {
+        if (positionBuildHouse.size()==0 && globalManager.getGlobalStatistic().getMyPlayer().getEntityArrayList(EntityType.RANGED_BASE).size()>0) {
             Final.DEBUG(TAG," BAD POSITION CREATE HOUSE");
             createHouse(builderUnitArrayList,globalManager,actionHashMap);
             return;

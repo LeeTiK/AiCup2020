@@ -1,14 +1,12 @@
 package strategy;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 
 public class DebugInterface {
-    private InputStream inputStream;
-    private OutputStream outputStream;
+    private BufferedInputStream inputStream;
+    private BufferedOutputStream outputStream;
 
-    public DebugInterface(InputStream inputStream, OutputStream outputStream) {
+    public DebugInterface(BufferedInputStream inputStream, BufferedOutputStream outputStream) {
         this.inputStream = inputStream;
         this.outputStream = outputStream;
     }
@@ -24,8 +22,10 @@ public class DebugInterface {
 
     public model.DebugState getState() {
         try {
+            System.out.println("size1: "  + inputStream.available());
             new model.ClientMessage.RequestDebugState().writeTo(outputStream);
             outputStream.flush();
+            System.out.println("size2: "  + inputStream.available());
             return model.DebugState.readFrom(inputStream);
         } catch (IOException e) {
             throw new RuntimeException(e);

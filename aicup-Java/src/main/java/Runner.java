@@ -9,8 +9,8 @@ import strategy.DebugInterface;
 import util.StreamUtil;
 
 public class Runner {
-    private final InputStream inputStream;
-    private final OutputStream outputStream;
+    private final BufferedInputStream inputStream;
+    private final BufferedOutputStream outputStream;
 
     Runner(String host, int port, String token) throws IOException {
         Socket socket = new Socket(host, port);
@@ -25,7 +25,17 @@ public class Runner {
         MyStrategy myStrategy = new MyStrategy();
         DebugInterface debugInterface = new DebugInterface(inputStream, outputStream);
         while (true) {
+            int size = 0;
+            while (size==0)
+            {
+                size += inputStream.available();
+            }
+
+            System.out.println("size: "  + inputStream.available());
+
             model.ServerMessage message = model.ServerMessage.readFrom(inputStream);
+            System.out.println("decoder: "  + message);
+
             if (message instanceof model.ServerMessage.GetAction) {
                 model.ServerMessage.GetAction getActionMessage = (model.ServerMessage.GetAction) message;
                 new model.ClientMessage.ActionMessage(myStrategy.getAction(getActionMessage.getPlayerView(), getActionMessage.isDebugAvailable() ? debugInterface : null)).writeTo(outputStream);

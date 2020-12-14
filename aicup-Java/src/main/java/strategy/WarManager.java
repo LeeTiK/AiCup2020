@@ -644,7 +644,6 @@ public class WarManager {
                             MoveAction m = new MoveAction(nextMove, true, false);
                             globalManager.getGlobalMap().setPositionNextTick(range.getPosition(), nextMove);
 
-
                             if (Final.debugGraphic) {
                                 if (Final.CHECK_SEARCH_PATH_RANGER) {
                                     for (int k = 0; k < searchAnswer.getPath().size(); k++) {
