@@ -5,12 +5,12 @@
     "mode": "Schematic",
     "camera": {
       "center": {
-        "x": 71.349045,
-        "y": 51.309837
+        "x": 27.681911,
+        "y": 39.189873
       },
       "rotation": 0.0,
       "attack": 1.5707964,
-      "distance": 47.504257,
+      "distance": 47.5041,
       "perspective": true
     }
   }

@@ -208,7 +208,7 @@ public class GlobalMap {
 
     final public static byte[][] basePosition = new byte[][]{
               {5, 5}, {15, 5},{5, 15},{11, 5},{5, 11},{0, 15},{0, 18}, {0, 21},
-              {7, 5}, {5, 7},
+              {7, 5}, {5, 7}, {15, 4},{4, 15},{4, 11}, {11, 4},
     };
 
     public GlobalMap() {

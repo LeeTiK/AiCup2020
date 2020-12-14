@@ -66,7 +66,7 @@ public class EconomicManager {
         for (int i = 0; i < myEntities.size(); i++) {
             if (myEntities.get(i).getUnitState() == EUnitState.REPAIR) countRepear++;
             if (myEntities.get(i).getUnitState() == EUnitState.BUILD) countBuilder++;
-          // Final.DEBUG(TAG, "BUILD_UNIT: " + myEntities.get(i).getId() + " " + myEntities.get(i).getUnitState());
+             Final.DEBUG(TAG, "BUILD_UNIT: " + myEntities.get(i).getId() + " " + myEntities.get(i).getUnitState());
         }
 
         Final.DEBUG(TAG, "BUILD CB:" + countBuilder + " CR: " + countRepear);
@@ -332,7 +332,9 @@ public class EconomicManager {
         ) {
             if ( (myPlayer.getEntityArrayList(EntityType.RANGED_BASE).size()>0 &&
                     myPlayer.getEntityArrayList(EntityType.BUILDER_BASE).size()>0) ||
-                myPlayer.getEntityArrayList(EntityType.HOUSE).size() <4) {
+                myPlayer.getEntityArrayList(EntityType.HOUSE).size() < 4) {
+             //   System.out.println("size HOME: " +  myPlayer.getEntityArrayList(EntityType.HOUSE).size());
+              //  System.out.println("size RANGED_BASE: " +  myPlayer.getEntityArrayList(EntityType.RANGED_BASE).size());
                 createHouseV2(builderUnitArrayList, globalManager, actionHashMap);
             }
         }
@@ -442,8 +444,8 @@ public class EconomicManager {
         ArrayList<Vec2Int> positionBuildBase = globalManager.getGlobalMap().getPositionBuildBase(FinalConstant.getEntityProperties(entityType),globalManager.getMapPotField());
 
         if (positionBuildBase.size()==0) {
-            Final.DEBUG(TAG," BAD POSITION CREATE HOUSE");
-            createHouse(builderUnitArrayList,globalManager,actionHashMap);
+            //Final.DEBUG(TAG," BAD POSITION CREATE HOUSE");
+           // createHouse(builderUnitArrayList,globalManager,actionHashMap);
             return;
         }
 

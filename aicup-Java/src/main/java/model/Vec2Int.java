@@ -102,7 +102,8 @@ public class Vec2Int {
     }
 
     public boolean equals(Object o) {
-        if (o instanceof Vec2Int) {
+        if (o == null) return false;
+        if (o.getClass() == Vec2Int.class) {
             Vec2Int v = (Vec2Int) o;
             return x == v.x && y == v.y;
         }

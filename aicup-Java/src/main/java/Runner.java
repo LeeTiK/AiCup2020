@@ -37,13 +37,13 @@ public class Runner {
             model.ServerMessage message = model.ServerMessage.readFrom(inputStream);
            // if (message.getClass()!= ServerMessage.DebugUpdate.class)System.out.println("decoder: "  + message);
 
-            if (message instanceof model.ServerMessage.GetAction) {
+            if (message.getClass() == model.ServerMessage.GetAction.class) {
                 model.ServerMessage.GetAction getActionMessage = (model.ServerMessage.GetAction) message;
                 new model.ClientMessage.ActionMessage(myStrategy.getAction(getActionMessage.getPlayerView(), getActionMessage.isDebugAvailable() ? debugInterface : null)).writeTo(outputStream);
                 outputStream.flush();
-            } else if (message instanceof model.ServerMessage.Finish) {
+            } else if (message.getClass() == model.ServerMessage.Finish.class) {
                 break;
-            } else if (message instanceof model.ServerMessage.DebugUpdate) {
+            } else if (message.getClass() == model.ServerMessage.DebugUpdate.class) {
                 model.ServerMessage.DebugUpdate debugUpdateMessage = (model.ServerMessage.DebugUpdate) message;
                 myStrategy.debugUpdate(debugUpdateMessage.getPlayerView(), debugInterface);
                 new model.ClientMessage.DebugUpdateDone().writeTo(outputStream);
