@@ -855,7 +855,22 @@ public class GlobalMap {
 
                     }
                     else {
-                        if (map[i][j].getEntityType() != entityType) continue;
+                        if (entityType==EntityType.NO_ATTACK_ENTITY)
+                        {
+                            if (map[i][j].getEntityType() != EntityType.BUILDER_UNIT &&
+                                    map[i][j].getEntityType() != EntityType.BUILDER_BASE &&
+                                    map[i][j].getEntityType() != EntityType.RANGED_BASE &&
+                                    map[i][j].getEntityType() != EntityType.MELEE_BASE &&
+                                    map[i][j].getEntityType() != EntityType.HOUSE
+                            ){
+                                int k=0;
+                                //System.out.println("EBLAN: " + map[i][j].getEntityType() );
+                                continue;
+                            }
+                        }
+                        else {
+                            if (map[i][j].getEntityType() != entityType) continue;
+                        }
                     }
                 }
 

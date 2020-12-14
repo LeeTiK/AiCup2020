@@ -207,7 +207,7 @@ public class WarManager {
             }
         }
 
-        if (!FinalConstant.isFogOfWar() && globalManager.getGlobalMap().getResourceMap()==0)
+        if (globalManager.getGlobalMap().getResourceMap()==0)
         {
             for (int i = 0; i < buildArrayList.size(); i++) {
 
@@ -721,7 +721,7 @@ public class WarManager {
             }
         }
 
-        if (!globalManager.getGlobalStatistic().isCheckEnemyUnits() && rangeArrayList.size()>3)
+        if (!globalManager.getGlobalStatistic().isCheckEnemyUnits() &&(FinalConstant.getCurrentTik()<240 || FinalConstant.getCurrentTik()>800))
         {
             for (int i = 0; i < rangeArrayList.size(); i++) {
                 //просто тест
@@ -752,7 +752,7 @@ public class WarManager {
             }
         }
 
-        if (!FinalConstant.isFogOfWar() && globalManager.getGlobalMap().getResourceMap()==0)
+        if (globalManager.getGlobalMap().getResourceMap()==0)
         {
             for (int i = 0; i < buildArrayList.size(); i++) {
                 MyEntity build = buildArrayList.get(i);
@@ -765,7 +765,7 @@ public class WarManager {
                 if (entityAction == null) entityAction = new EntityAction(null, null, null, null);
 
 
-                MyEntity enemy = globalManager.getGlobalMap().getNearestPlayer(build.getPosition(), myPlayer.getId(), -1);
+                MyEntity enemy = globalManager.getGlobalMap().getNearestPlayer(build.getPosition(), myPlayer.getId(), -1,EntityType.NO_ATTACK_ENTITY,false);
 
                 if (enemy!=null)
                 {
@@ -782,6 +782,25 @@ public class WarManager {
 
                     entityAction.setMoveAction(m);
                     actionHashMap.put(build.getId(), entityAction);
+                }
+                else {
+                    Vec2Int vec2Int = globalManager.getGlobalStatistic().getMinDisToPlayerFogOfWar(build.getPosition());
+
+                    if (vec2Int != null) {
+                        MyEntity entity = globalManager.getGlobalMap().getMoveMyUnit(build.getPosition());
+
+                        Final.DEBUG(TAG, "ID:" + build.getId() + " entity: " + entity);
+                        MoveAction m;
+                        if (entity == null) {
+                            m = new MoveAction(vec2Int, true, false);
+                        } else {
+                            m = new MoveAction(entity.getPosition(), true, false);
+                            entity.setRotation(true);
+                        }
+
+                        entityAction.setMoveAction(m);
+                        actionHashMap.put(build.getId(), entityAction);
+                    }
                 }
             }
         }

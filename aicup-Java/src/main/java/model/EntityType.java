@@ -13,6 +13,7 @@ public enum EntityType {
     RANGED_UNIT(7),
     RESOURCE(8),
     TURRET(9),
+    NO_ATTACK_ENTITY(0xFE),
     ATTACK_ENTITY(0xFD),
     ALL(0xFE),
     Empty(0xFF);
