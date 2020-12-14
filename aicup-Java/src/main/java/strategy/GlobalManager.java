@@ -152,7 +152,7 @@ public class GlobalManager {
 
         if (false)
         {
-            Vec2Int start = new Vec2Int(10,10);
+            Vec2Int start = Vec2Int.createVector(10,10);
             for (int i=0; i<GlobalMap.rangerTwoContourArray.length; i++)
             {
                 FinalGraphic.sendSquare(debugInterface, start.add(GlobalMap.rangerTwoContourArray[i][0],GlobalMap.rangerTwoContourArray[i][1]), 1, FinalGraphic.COLOR_BLACK);

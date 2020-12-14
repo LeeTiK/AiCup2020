@@ -436,7 +436,7 @@ public class MyPlayer extends Player {
         for (int i = 0; i < mUnitArrayList.size(); i++) {
             MyEntity unit = mUnitArrayList.get(i);
             if (unit.getMinDisToEnemy()==0xFFFF) {
-                MyEntity enemy = globalMap.getNearestPlayer(unit.getPosition(), getId(), -1);
+                MyEntity enemy = globalMap.getNearestPlayer(unit.getPosition(), getId(), -1,EntityType.ATTACK_ENTITY,false);
 
                 if (enemy != null) {
                     unit.setMinDisToEnemy((float) unit.getPosition().distance(enemy.getPosition()));
@@ -450,7 +450,7 @@ public class MyPlayer extends Player {
         for (int i = 0; i < mBuildingArrayList.size(); i++) {
             MyEntity unit = mBuildingArrayList.get(i);
             if (unit.getMinDisToEnemy()==0xFFFF) {
-                MyEntity enemy = globalMap.getNearestPlayer(unit.getPosition(), getId(), -1);
+                MyEntity enemy = globalMap.getNearestPlayer(unit.getPosition(), getId(), -1,EntityType.ATTACK_ENTITY,false);
 
                 if (enemy != null) {
                     unit.setMinDisToEnemy((float) unit.getPosition().distance(enemy.getPosition()));
@@ -556,7 +556,7 @@ public class MyPlayer extends Player {
             MyEntity building = mBuildingArrayList.get(i);
             if (building.getMinDisToEnemy()==0xFFFF) continue;
 
-            if (building.getMinDisToEnemy()<11+FinalConstant.getEntityProperties(building).getSize()){
+            if (building.getMinDisToEnemy()<18){
                 addEnemy(building.getEnemyMinDis(),building.getMinDisToEnemy());
             }
         }
@@ -566,7 +566,7 @@ public class MyPlayer extends Player {
             if (unit.getMinDisToEnemy()==0xFFFF) continue;
             if (unit.getEntityType()!=EntityType.BUILDER_UNIT) continue;
 
-            if (unit.getMinDisToEnemy()<14+FinalConstant.getEntityProperties(unit).getSize()){
+            if (unit.getMinDisToEnemy()<15){
                 addEnemy(unit.getEnemyMinDis(),unit.getMinDisToEnemy());
             }
         }

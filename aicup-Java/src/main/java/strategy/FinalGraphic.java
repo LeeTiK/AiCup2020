@@ -38,7 +38,7 @@ public class FinalGraphic {
     }
 
     static public void sendText(DebugInterface debugInterface, Vec2Float start, int size, String text) {
-        ColoredVertex coloredVertices1 = new ColoredVertex(start, new Vec2Int(0, 0).getVec2Float(), COLOR_BLACK);
+        ColoredVertex coloredVertices1 = new ColoredVertex(start, Vec2Int.createVector(0, 0).getVec2Float(), COLOR_BLACK);
 
         DebugData.PlacedText placedText = new DebugData.PlacedText(coloredVertices1, text, 0f, size);
 

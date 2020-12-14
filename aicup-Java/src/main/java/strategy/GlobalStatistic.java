@@ -3,6 +3,8 @@ package strategy;
 import model.Entity;
 import model.EntityType;
 import model.PlayerView;
+import model.Vec2Int;
+import pool.CacheVec2Int;
 
 import java.util.ArrayList;
 
@@ -15,6 +17,8 @@ public class GlobalStatistic {
 
     MyPlayer left;
     MyPlayer right;
+
+    boolean checkEnemyUnits;
 
     public GlobalStatistic() {
         mMyPlayers = new ArrayList<>();
@@ -29,13 +33,19 @@ public class GlobalStatistic {
 
         FinalConstant.currentTik = playerView.getCurrentTick();
 
+        checkEnemyUnits = false;
+
         updatePlayerInfo(playerView, globalManager);
+
+        Final.DEBUG(TAG,"checkEnemyUnits: " + isCheckEnemyUnits());
     }
 
     void initConstant(PlayerView playerView) {
         FinalConstant.mapSize = playerView.getMapSize();
 
         FinalConstant.myID = playerView.getMyId();
+
+        FinalConstant.fogOfWar = playerView.isFogOfWar();
 
         FinalConstant.mEntityPropertiesWALL = playerView.getEntityProperties().get(EntityType.WALL);
         FinalConstant.mEntityPropertiesHOUSE = playerView.getEntityProperties().get(EntityType.HOUSE);
@@ -89,7 +99,15 @@ public class GlobalStatistic {
 
             MyPlayer myPlayer = getPlayer(entity.getPlayerId());
 
-            if (myPlayer == null) continue;
+            if (entity.getPlayerId()!=FinalConstant.getMyID())
+            {
+                checkEnemyUnits = true;
+            }
+
+            if (myPlayer == null) {
+                Final.DEBUGERROR(" NOT PLAYER");
+                continue;
+            }
 
             EStatus eStatus = myPlayer.updateEntity(entity);
 
@@ -263,4 +281,44 @@ public class GlobalStatistic {
         return right;
     }
 
+    public Vec2Int getPositionPlayerBase(int idPlayer){
+        switch (idPlayer)
+        {
+            case 1:
+                return CacheVec2Int.getVec2Int(5,5);
+            case 2:
+                return CacheVec2Int.getVec2Int(74,74);
+            case 3:
+                return CacheVec2Int.getVec2Int(74,5);
+            case 4:
+                return CacheVec2Int.getVec2Int(5,74);
+        }
+
+        return CacheVec2Int.getVec2Int(5,5);
+    }
+
+    public boolean isCheckEnemyUnits() {
+        return checkEnemyUnits;
+    }
+
+    public Vec2Int getMinDisToPlayerFogOfWar(Vec2Int position) {
+        double minDis = 0xFFFFF;
+        Vec2Int current = null;
+
+        for (int i=1; i<=4; i++)
+        {
+            if (i==FinalConstant.getMyID()) continue;
+
+            Vec2Int vec2Int = getPositionPlayerBase(i);
+
+            double dis = position.distance(vec2Int);
+
+            if (dis < minDis) {
+                minDis = dis;
+                current = vec2Int;
+            }
+        }
+
+        return current;
+    }
 }

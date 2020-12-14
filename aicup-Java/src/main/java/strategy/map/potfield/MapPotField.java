@@ -24,7 +24,7 @@ public class MapPotField {
         mMapPotField = new Field[size][size];
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
-                mMapPotField[i][j] = new Field(new Vec2Int(i,j));
+                mMapPotField[i][j] = new Field(Vec2Int.createVector(i,j));
             }
         }
         mBiomResourceMap = new BiomResourceMap();
@@ -60,7 +60,7 @@ public class MapPotField {
                 // отмечаем свои владения
                 if (map[i][j].getPlayerId() == FinalConstant.getMyID()) {
 
-                    addPlayerArea(map[i][j], new Vec2Int(i, j), map);
+                    addPlayerArea(map[i][j], Vec2Int.createVector(i, j), map);
 
                     addSafare(map[i][j], map);
                 } else {
@@ -197,9 +197,6 @@ public class MapPotField {
 
                 if (!checkCoord(position.getX() + x, position.getY() + y)) continue;
 
-                if (x + position.getX() < 0 || x + position.getX() >= FinalConstant.getMapSize()) continue;
-                if (y + position.getY() < 0 || y + position.getY() >= FinalConstant.getMapSize()) continue;
-
                 switch (entity.getEntityType()) {
                     case MELEE_UNIT:
                         mMapPotField[x + position.getX()][y + position.getY()].addDangerContourMelee();
@@ -215,6 +212,29 @@ public class MapPotField {
             }
        // }
 
+
+        // добавляю клетки для от куда можно атаковать ренджам
+        for (int i = 0; i < GlobalMap.getRadiusUnit(EntityType.RANGED_UNIT).length; i++) {
+            int x = GlobalMap.getRadiusUnit(EntityType.RANGED_UNIT)[i][0];
+            int y = GlobalMap.getRadiusUnit(EntityType.RANGED_UNIT)[i][1];
+
+            if (!checkCoord(position.getX() + x, position.getY() + y)) continue;
+            if ( mMapPotField[x + position.getX()][y + position.getY()].getMyEntity().getEntityType()==EntityType.RESOURCE) continue;
+
+            switch (entity.getEntityType()) {
+                case MELEE_UNIT:
+                    mMapPotField[x + position.getX()][y + position.getY()].setAttackPositionRanger(true);
+                    break;
+                case RANGED_UNIT:
+                    mMapPotField[x + position.getX()][y + position.getY()].setAttackPositionRanger(true);
+                    break;
+                case TURRET:
+                    if (entity.isActive()) {
+                        mMapPotField[x + position.getX()][y + position.getY()].setAttackPositionRanger(true);
+                    }
+                    break;
+            }
+        }
     }
 
     private int resourceDirect(Field field) {
@@ -407,19 +427,19 @@ public class MapPotField {
                 for (int j = 0; j < size; j++) {
                     if (Final.DANGER_AREA) {
                         if (!getMapPotField()[i][j].checkDanger()) {
-                            FinalGraphic.sendSquare(debugInterface, new Vec2Int(i, j), 1, FinalGraphic.getColorDinamicRED(getMapPotField()[i][j].getSumDanger(), 10));
+                            FinalGraphic.sendSquare(debugInterface, Vec2Int.createVector(i, j), 1, FinalGraphic.getColorDinamicRED(getMapPotField()[i][j].getSumDanger(), 10));
                         }
                     }
 
                     if (Final.SAFETY_AREA) {
                         if (getMapPotField()[i][j].getSumSafaty() > 0) {
-                            FinalGraphic.sendSquare(debugInterface, new Vec2Int(i, j), 1, FinalGraphic.getColorDinamicBLUE(getMapPotField()[i][j].getSumSafaty(), 10));
+                            FinalGraphic.sendSquare(debugInterface, Vec2Int.createVector(i, j), 1, FinalGraphic.getColorDinamicBLUE(getMapPotField()[i][j].getSumSafaty(), 10));
                         }
                     }
 
                     if (Final.DANGER_CONTOUR_AREA) {
                         if (getMapPotField()[i][j].getSumDangerContour() > 0) {
-                            FinalGraphic.sendSquare(debugInterface, new Vec2Int(i, j), 1, FinalGraphic.getColorDinamicGREEN(getMapPotField()[i][j].getSumSafaty(), 10));
+                            FinalGraphic.sendSquare(debugInterface, Vec2Int.createVector(i, j), 1, FinalGraphic.getColorDinamicGREEN(getMapPotField()[i][j].getSumSafaty(), 10));
                         }
                     }
 
@@ -445,7 +465,7 @@ public class MapPotField {
                     if (Final.PLAYER_AREA_TWO) {
                         if (getMapPotField()[i][j].getPlayerAreaTwo()>0) {
                             // FinalGraphic.sendText(debugInterface,new Vec2Float(i+0.5f,j+0.5f),20,"("+getMapPotField()[i][j].getPlayerArea()+")");
-                            FinalGraphic.sendSquare(debugInterface, new Vec2Int(i, j), 1, FinalGraphic.getColorDinamicGREEN(getMapPotField()[i][j].getPlayerAreaTwo(), 30));
+                            FinalGraphic.sendSquare(debugInterface, Vec2Int.createVector(i, j), 1, FinalGraphic.getColorDinamicGREEN(getMapPotField()[i][j].getPlayerAreaTwo(), 30));
                         }
                     }
 
@@ -454,7 +474,21 @@ public class MapPotField {
                     if (Final.PLAYER_AREA) {
                         if (getMapPotField()[i][j].getPlayerArea()>0) {
                             // FinalGraphic.sendText(debugInterface,new Vec2Float(i+0.5f,j+0.5f),20,"("+getMapPotField()[i][j].getPlayerArea()+")");
-                            FinalGraphic.sendSquare(debugInterface, new Vec2Int(i, j), 1, FinalGraphic.getColorDinamicGREEN(getMapPotField()[i][j].getPlayerArea(), 30));
+                            FinalGraphic.sendSquare(debugInterface, Vec2Int.createVector(i, j), 1, FinalGraphic.getColorDinamicGREEN(getMapPotField()[i][j].getPlayerArea(), 30));
+                        }
+                    }
+
+                    if (Final.SAFETY_CONTOUR) {
+                        if (getMapPotField()[i][j].getSafetyContour()>1) {
+                            // FinalGraphic.sendText(debugInterface,new Vec2Float(i+0.5f,j+0.5f),20,"("+getMapPotField()[i][j].getPlayerArea()+")");
+                            FinalGraphic.sendSquare(debugInterface, Vec2Int.createVector(i, j), 1, FinalGraphic.COLOR_BLUE);
+                        }
+                    }
+
+                    if (Final.ATTACK_RANGE_REGION) {
+                        if (getMapPotField()[i][j].isAttackPositionRanger()) {
+                            // FinalGraphic.sendText(debugInterface,new Vec2Float(i+0.5f,j+0.5f),20,"("+getMapPotField()[i][j].getPlayerArea()+")");
+                            FinalGraphic.sendSquare(debugInterface, Vec2Int.createVector(i, j), 1, FinalGraphic.COLOR_RED);
                         }
                     }
 
@@ -483,7 +517,7 @@ public class MapPotField {
         }
 
 
-        // FinalGraphic.sendSquare(debugInterface,new Vec2Int(0,0),getAreaPlayer().width, FinalGraphic.COLOR_WHITE);
+        // FinalGraphic.sendSquare(debugInterface,Vec2Int.createVector(0,0),getAreaPlayer().width, FinalGraphic.COLOR_WHITE);
     }
 
     public Field[][] getMapPotField() {
@@ -593,7 +627,7 @@ public class MapPotField {
 
 
         if (leftPosition == null) {
-            Vec2Int max = new Vec2Int(0, 0);
+            Vec2Int max = Vec2Int.createVector(0, 0);
             if (getMapPotField() != null) {
                 for (int i = 0; i < size; i++) {
                     for (int j = 0; j < size; j++) {
@@ -601,7 +635,7 @@ public class MapPotField {
 
                         if (i < 30) {
                             if (j > max.getY()) {
-                                max = new Vec2Int(i, j);
+                                max = Vec2Int.createVector(i, j);
                                 leftPosition = max;
                             }
                         }
@@ -610,12 +644,12 @@ public class MapPotField {
             }
 
             if (leftPosition != null) {
-                leftPosition.setY(leftPosition.getY() - 5);
+                leftPosition = leftPosition.subtract(0,- 5);
             }
         }
 
         if (rightPosition == null) {
-            Vec2Int max = new Vec2Int(0, 0);
+            Vec2Int max = Vec2Int.createVector(0, 0);
             if (getMapPotField() != null) {
                 for (int i = 0; i < size; i++) {
                     for (int j = 0; j < size; j++) {
@@ -623,7 +657,7 @@ public class MapPotField {
 
                         if (j < 30) {
                             if (i > max.getX()) {
-                                max = new Vec2Int(i, j);
+                                max = Vec2Int.createVector(i, j);
                                 rightPosition = max;
                             }
                         }
@@ -631,7 +665,7 @@ public class MapPotField {
                 }
             }
             if (rightPosition != null) {
-                rightPosition.setX(rightPosition.getX() - 5);
+                rightPosition = rightPosition.subtract(0, - 5);
             }
         }
 
@@ -800,5 +834,9 @@ public class MapPotField {
         }
 
         return true;
+    }
+
+    public void changeBlockPositionAttack(Vec2Int endMove) {
+        getMapPotField()[endMove.getX()][endMove.getY()].setTargetAttackClosed(true);
     }
 }

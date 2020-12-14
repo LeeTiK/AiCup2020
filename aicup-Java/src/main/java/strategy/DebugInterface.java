@@ -22,10 +22,10 @@ public class DebugInterface {
 
     public model.DebugState getState() {
         try {
-            System.out.println("size1: "  + inputStream.available());
+           // System.out.println("size1: "  + inputStream.available());
             new model.ClientMessage.RequestDebugState().writeTo(outputStream);
             outputStream.flush();
-            System.out.println("size2: "  + inputStream.available());
+          //  System.out.println("size2: "  + inputStream.available());
             return model.DebugState.readFrom(inputStream);
         } catch (IOException e) {
             throw new RuntimeException(e);

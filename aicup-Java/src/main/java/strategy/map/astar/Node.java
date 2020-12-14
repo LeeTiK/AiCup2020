@@ -10,7 +10,7 @@ public class Node implements Comparable<Node> {
     public int H; // H：
 
     public Node(int x, int y) {
-        this.coord = new Vec2Int(x, y);
+        this.coord = Vec2Int.createVector(x, y);
     }
 
     public Node(Vec2Int vec2Int) {

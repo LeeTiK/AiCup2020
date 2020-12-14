@@ -21,6 +21,7 @@ public class MyEntity extends Entity {
     int countAttackingUnit;
 
     EntityAction mEntityAction;
+    boolean dangerMove;
     boolean rotation;
     boolean dodge;
     float minDisToEnemy;
@@ -45,6 +46,10 @@ public class MyEntity extends Entity {
     // специальные переменные для строителей
     float minDisToHouse;
     Vec2Int positionHouse;
+
+    boolean interfereMove;
+
+
 
     public MyEntity(Entity entity) {
         super(entity.getId(), entity.getPlayerId(), entity.getEntityType(), entity.getPosition(), entity.getHealth(), entity.isActive());
@@ -94,6 +99,8 @@ public class MyEntity extends Entity {
         rigthPosition = false;
         upPosition= false;
         downPosition= false;
+        interfereMove=false;
+        dangerMove = false;
     }
 
     public void update(Entity entity) {
@@ -314,5 +321,21 @@ public class MyEntity extends Entity {
             minDisToHouse = disToHouse;
             this.positionHouse = position;
         }
+    }
+
+    public void setInterfereMove(boolean interfereMove) {
+        this.interfereMove = interfereMove;
+    }
+
+    public boolean isInterfereMove() {
+        return interfereMove;
+    }
+
+    public void setDangerMove(boolean dangerMove) {
+        this.dangerMove = dangerMove;
+    }
+
+    public boolean isDangerMove() {
+        return dangerMove;
     }
 }

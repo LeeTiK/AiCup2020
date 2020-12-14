@@ -127,6 +127,7 @@ public class WarManager {
     private void attackUnit(MyPlayer myPlayer, GlobalManager globalManager, HashMap<Integer, EntityAction> actionHashMap) {
         ArrayList<MyEntity> rangeArrayList = myPlayer.getEntityArrayList(EntityType.RANGED_UNIT);
         ArrayList<MyEntity> meleeArrayList = myPlayer.getEntityArrayList(EntityType.MELEE_UNIT);
+        ArrayList<MyEntity> buildArrayList = myPlayer.getEntityArrayList(EntityType.BUILDER_UNIT);
 
         //сначала милишники , потом ренджеры
         for (int i = 0; i < meleeArrayList.size(); i++) {
@@ -203,6 +204,43 @@ public class WarManager {
                     actionHashMap.put(range.getId(), new EntityAction(null, null, a, null));
                     //  m = null;
                 }
+            }
+        }
+
+        if (!FinalConstant.isFogOfWar() && globalManager.getGlobalMap().getResourceMap()==0)
+        {
+            for (int i = 0; i < buildArrayList.size(); i++) {
+
+                DataAttack dataAttack = getTargetAttack(buildArrayList.get(i), globalManager);
+
+                buildArrayList.get(i).setDataAttack(dataAttack);
+                AttackAction a = null;
+
+                if (dataAttack != null) {
+
+                    if (dataAttack.getMyEntity() != null) {
+                        a = new AttackAction(
+                                null,
+                                new AutoAttack(
+                                        FinalConstant.getEntityPropertiesRANGED_UNIT().getSightRange(),
+                                        new EntityType[]{}
+                                )
+                        );
+                        buildArrayList.get(i).getEntityAction().setAttackAction(a);
+                        actionHashMap.put(buildArrayList.get(i).getId(), new EntityAction(null, null, a, null));
+                    } else {
+                        a = new AttackAction(
+                                dataAttack.getIdEntity(),
+                                new AutoAttack(
+                                        FinalConstant.getEntityPropertiesRANGED_UNIT().getSightRange(),
+                                        new EntityType[]{}
+                                )
+                        );
+                        buildArrayList.get(i).getEntityAction().setAttackAction(a);
+                        actionHashMap.put(buildArrayList.get(i).getId(), new EntityAction(null, null, a, null));
+                    }
+                }
+
             }
         }
     }
@@ -342,7 +380,6 @@ public class WarManager {
                             m = new MoveAction(nextMove, true, false);
                             globalManager.getGlobalMap().setPositionNextTick(range.getPosition(),nextMove);
 
-
                             if (Final.CHECK_SEARCH_PATH_RANGER)
                             {
                                 for (int k=0; k<searchAnswer.getPath().size(); k++)
@@ -350,6 +387,9 @@ public class WarManager {
                                     FinalGraphic.sendSquare(debugInterface,searchAnswer.getPath().get(k), 1, FinalGraphic.COLOR_BLACK);
                                 }
                             }
+
+                            globalManager.getMapPotField().changeBlockPositionAttack(searchAnswer.getEnd());
+
 
 
                             entityAction.setMoveAction(m);
@@ -464,6 +504,8 @@ public class WarManager {
         ArrayList<MyEntity> rangeArrayList = myPlayer.getEntityArrayList(EntityType.RANGED_UNIT);
         ArrayList<MyEntity> meleeArrayList = myPlayer.getEntityArrayList(EntityType.MELEE_UNIT);
         ArrayList<MyEntity> turretArrayList = myPlayer.getEntityArrayList(EntityType.TURRET);
+        ArrayList<MyEntity> buildArrayList = myPlayer.getEntityArrayList(EntityType.BUILDER_UNIT);
+
         ArrayList<MyEntity> enemyArrayList = myPlayer.getEnemyArrayList();
 
         Final.DEBUG(TAG, "TIK: " + FinalConstant.getCurrentTik() + " rangeArrayList SIZE: " + rangeArrayList.size());
@@ -484,6 +526,7 @@ public class WarManager {
             if (dodgeRanger(range,myPlayer,entityAction,globalManager))
             {
                 range.setUpdate(true);
+                range.setEnemyMinDis(null);
                 actionHashMap.put(range.getId(), entityAction);
                 continue;
             }
@@ -498,6 +541,7 @@ public class WarManager {
                         range.getEntityAction().setMoveAction(moveAction);
                         range.setUpdate(true);
                         range.setDodge(true);
+                        range.setEnemyMinDis(null);
                         actionHashMap.put(range.getId(), entityAction);
                         continue;
                     }
@@ -506,7 +550,7 @@ public class WarManager {
         }
 
         Final.DEBUG(TAG, "TIK: " + FinalConstant.getCurrentTik() + " enemyArrayList SIZE: " + enemyArrayList.size());
-        int sizeUnit = 2;
+        int sizeUnit = 1;
         // защищаем нашу базу
         for (int i=0; i<enemyArrayList.size(); i++)
         {
@@ -592,6 +636,7 @@ public class WarManager {
 
                 entityAction.setMoveAction(m);
                 range.setUpdate(true);
+                range.setDangerMove(true);
 
                 actionHashMap.put(range.getId(), entityAction);
                 continue;
@@ -629,13 +674,16 @@ public class WarManager {
             EntityAction entityAction = actionHashMap.get(range.getId());
             if (entityAction == null) entityAction = new EntityAction(null, null, null, null);
 
-            if (range.isUpdate()) continue;
+        //    if (range.isUpdate()) continue;
 
             MyEntity enemy = range.getEnemyMinDis();
 
+            if (range.isDangerMove()) continue;
+
+
             if (enemy!=null) {
 
-                if (enemy.getEntityType() == EntityType.RANGED_UNIT) {
+              // if (enemy.getEntityType() == EntityType.RANGED_UNIT) {
                     if (enemy.getPosition().distance(range.getPosition()) < 15) {
                         SearchAnswer searchAnswer = globalManager.getWaveSearchModule().searchPathRange(range.getPosition(), 15);
                         if (searchAnswer != null) {
@@ -643,6 +691,16 @@ public class WarManager {
 
                             MoveAction m = new MoveAction(nextMove, true, false);
                             globalManager.getGlobalMap().setPositionNextTick(range.getPosition(), nextMove);
+
+                            if (Final.CHECK_SEARCH_PATH_RANGER)
+                            {
+                                for (int k=0; k<searchAnswer.getPath().size(); k++)
+                                {
+                                    FinalGraphic.sendSquare(debugInterface,searchAnswer.getPath().get(k), 1, FinalGraphic.COLOR_BLACK);
+                                }
+                            }
+
+                            globalManager.getMapPotField().changeBlockPositionAttack(searchAnswer.getEnd());
 
                             if (Final.debugGraphic) {
                                 if (Final.CHECK_SEARCH_PATH_RANGER) {
@@ -659,6 +717,71 @@ public class WarManager {
                             continue;
                         }
                     }
+           //     }
+            }
+        }
+
+        if (!globalManager.getGlobalStatistic().isCheckEnemyUnits() && rangeArrayList.size()>3)
+        {
+            for (int i = 0; i < rangeArrayList.size(); i++) {
+                //просто тест
+                MyEntity range = rangeArrayList.get(i);
+
+                EntityAction entityAction = actionHashMap.get(range.getId());
+                if (entityAction == null) entityAction = new EntityAction(null, null, null, null);
+
+
+                Vec2Int vec2Int = globalManager.getGlobalStatistic().getMinDisToPlayerFogOfWar(range.getPosition());
+
+
+                if (vec2Int != null) {
+                    MyEntity entity = globalManager.getGlobalMap().getMoveMyUnit(range.getPosition());
+
+                    Final.DEBUG(TAG, "ID:" + range.getId() + " entity: " + entity);
+                    MoveAction m;
+                    if (entity == null) {
+                        m = new MoveAction(vec2Int, true, false);
+                    } else {
+                        m = new MoveAction(entity.getPosition(), true, false);
+                        entity.setRotation(true);
+                    }
+
+                    entityAction.setMoveAction(m);
+                    actionHashMap.put(range.getId(), entityAction);
+                }
+            }
+        }
+
+        if (!FinalConstant.isFogOfWar() && globalManager.getGlobalMap().getResourceMap()==0)
+        {
+            for (int i = 0; i < buildArrayList.size(); i++) {
+                MyEntity build = buildArrayList.get(i);
+
+                if (build.getUnitState() == EUnitState.REPAIR || build.getUnitState() == EUnitState.BUILD)
+                    continue;
+               // if (build.isUpdate()) continue;
+
+                EntityAction entityAction = actionHashMap.get(build.getId());
+                if (entityAction == null) entityAction = new EntityAction(null, null, null, null);
+
+
+                MyEntity enemy = globalManager.getGlobalMap().getNearestPlayer(build.getPosition(), myPlayer.getId(), -1);
+
+                if (enemy!=null)
+                {
+                    MyEntity entity = globalManager.getGlobalMap().getMoveMyUnit(build.getPosition());
+
+                    Final.DEBUG(TAG, "ID:" + build.getId() + " entity: " + entity);
+                    MoveAction m;
+                    if (entity == null) {
+                        m = new MoveAction(enemy.getPosition(), true, false);
+                    } else {
+                        m = new MoveAction(entity.getPosition(), true, false);
+                        entity.setRotation(true);
+                    }
+
+                    entityAction.setMoveAction(m);
+                    actionHashMap.put(build.getId(), entityAction);
                 }
             }
         }

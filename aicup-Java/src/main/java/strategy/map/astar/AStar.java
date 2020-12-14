@@ -77,7 +77,7 @@ public class AStar {
     private void addNeighborNodeInOpen(MapInfo mapInfo, Node current, int x, int y, int value) {
         if (canAddNodeToOpen(mapInfo, x, y)) {
             Node end = mapInfo.end;
-            Vec2Int coord = new Vec2Int(x, y);
+            Vec2Int coord = Vec2Int.createVector(x, y);
             int G = current.G + value;
             Node child = findNodeInOpen(coord);
             if (child == null) {

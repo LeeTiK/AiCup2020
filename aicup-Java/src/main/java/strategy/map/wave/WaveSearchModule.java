@@ -18,16 +18,6 @@ public class WaveSearchModule {
         this.mGlobalMap = globalMap;
     }
 
-    @Deprecated
-    public void initMap(MyEntity[][] maps) {
-        for (int x = 0; x < size; x++) {
-            for (int y = 0; y < size; y++) {
-                map[x][y] = new Field(new Vec2Int(x,y));
-                map[x][y].setMyEntity(maps[x][y]);
-            }
-        }
-    }
-
     public void updateMap(Field[][] maps) {
         size= maps.length;
         map = maps;
@@ -103,7 +93,7 @@ public class WaveSearchModule {
 
                     if (map[x][y].getCost()==cost)
                     {
-                        start = new Vec2Int(x,y);
+                        start = Vec2Int.createVector(x,y);
                         break;
                     }
                 }
@@ -150,10 +140,10 @@ public class WaveSearchModule {
            switch (result)
            {
                case SUCCES:
-                   nextSteps.add(new Vec2Int(x1,y1));
+                   nextSteps.add(Vec2Int.createVector(x1,y1));
                    return true;
                case PATH:
-                   nextSteps.add(new Vec2Int(x1,y1));
+                   nextSteps.add(Vec2Int.createVector(x1,y1));
                    break;
            }
         }
@@ -211,10 +201,10 @@ public class WaveSearchModule {
             switch (result)
             {
                 case SUCCES:
-                    nextSteps.add(new Vec2Int(x1,y1));
+                    nextSteps.add(Vec2Int.createVector(x1,y1));
                     return true;
                 case PATH:
-                    nextSteps.add(new Vec2Int(x1,y1));
+                    nextSteps.add(Vec2Int.createVector(x1,y1));
                     break;
             }
         }
@@ -288,7 +278,7 @@ public class WaveSearchModule {
 
                     if (map[x][y].getCost()==cost)
                     {
-                        start = new Vec2Int(x,y);
+                        start = Vec2Int.createVector(x,y);
                         if (cost>0) linkedList.add(start);
                         break;
                     }
@@ -321,19 +311,55 @@ public class WaveSearchModule {
             return EResultSearch.BLOCK;
         }
 
+
+        if (getMap()[x][y].isTargetAttackClosed()) {
+            getMap()[x][y].setCost(0xFFFF);
+            return EResultSearch.BLOCK;
+        }
+
+       /* if (getMap()[x][y].isAttackPositionRanger()) {
+            return EResultSearch.SUCCES;
+        }*/
+
         if (getMap()[x][y].getSumDanger()==1 && getMap()[x][y].getSumDangerContour()==0) {
             return EResultSearch.SUCCES;
         }
         else {
-            if (getMap()[x][y].getSumDanger()>1 || getMap()[x][y].getSumDangerContour()>1) {
+            if (getMap()[x][y].getSumDanger()>1 || getMap()[x][y].getSumDangerContour()>1
+                //    || getMap()[x][y].getSumDanger()==1 && getMap()[x][y].getSumDangerContour()>0
+            ) {
                 getMap()[x][y].setCost(0xFFFF);
                 return EResultSearch.BLOCK;
             }
+            else {
+                if (getMap()[x][y].isAttackPositionRanger() && getMap()[x][y].getSumDanger()==0 && getMap()[x][y].getSumDangerContour()<=1) {
+                    return EResultSearch.SUCCES;
+                }
+            }
         }
 
-        if (getGlobalMap().getMapNextTick()[x][y].getEntityType()!=EntityType.Empty) {
-            getMap()[x][y].setCost(0xFFFF);
-            return EResultSearch.BLOCK;
+        if (getGlobalMap().getMapNextTick()[x][y].getEntityType()!=EntityType.Empty
+        ) {
+            if (getGlobalMap().getMapNextTick()[x][y].getPlayerId()!=null)
+            {
+                if (getGlobalMap().getMapNextTick()[x][y].getPlayerId()!=FinalConstant.getMyID())
+                {
+                    getMap()[x][y].setCost(0xFFFF);
+                    return EResultSearch.BLOCK;
+                }
+                if (getGlobalMap().getMapNextTick()[x][y].getEntityType()!=EntityType.RANGED_UNIT &&
+                        getGlobalMap().getMapNextTick()[x][y].getEntityType()!=EntityType.BUILDER_UNIT &&
+                        getGlobalMap().getMapNextTick()[x][y].getEntityType()!=EntityType.MELEE_UNIT)
+                {
+                   // System.out.println("EBLAN:2 " +  getGlobalMap().getMapNextTick()[x][y].getEntityType() );
+                    getMap()[x][y].setCost(0xFFFF);
+                    return EResultSearch.BLOCK;
+                }
+            }
+            else {
+                getMap()[x][y].setCost(0xFFFF);
+                return EResultSearch.BLOCK;
+            }
         }
 
         return EResultSearch.PATH;

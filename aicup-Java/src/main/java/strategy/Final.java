@@ -7,6 +7,7 @@ public class Final {
 
     final static boolean TEST = false;
     final static boolean debug = false;
+    final static boolean debugERROR = true;
     final static boolean debugRelease = true;
     public final static boolean debugGraphic = false;
 
@@ -26,11 +27,13 @@ public class Final {
     public final static boolean SAFETY_AREA = false;
     public final static boolean DANGER_AND_SAFETY_AREA_TEXT = true;
     public final static boolean BIOM_RESOURCE = false;
+    public final static boolean SAFETY_CONTOUR = false;
+    public final static boolean ATTACK_RANGE_REGION = false;
 
     public final static boolean CHECK_SEARCH_WAVE_BUILDER = false;
     public final static boolean CHECK_SEARCH_WAVE_START_END = false;
 
-    public final static boolean CHECK_SEARCH_PATH_RANGER = false;
+    public final static boolean CHECK_SEARCH_PATH_RANGER = true;
 
     static public Player getMyPlayer(PlayerView playerView) {
         int myID = playerView.getMyId();
@@ -45,6 +48,12 @@ public class Final {
     public static void DEBUG(String TAG, String text) {
         if (debug) {
             System.out.println(TAG + " " + text);
+        }
+    }
+
+    public static void DEBUGERROR(String text) {
+        if (debugERROR) {
+            System.out.println("ERROR " + text);
         }
     }
 

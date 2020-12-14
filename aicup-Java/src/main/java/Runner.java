@@ -6,6 +6,8 @@ import java.io.InputStream;
 import java.io.BufferedOutputStream;
 
 import model.ServerMessage;
+import model.Vec2Int;
+import pool.CacheVec2Int;
 import strategy.DebugInterface;
 import util.StreamUtil;
 
@@ -59,7 +61,7 @@ public class Runner {
         int port = args.length < 2 ? 31001 : Integer.parseInt(args[1]);
         String token = args.length < 3 ? "0000000000000000" : args[2];
 
-       // Integer.
+        new CacheVec2Int(200,100);
 
         new Runner(host, port, token).run();
     }

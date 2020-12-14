@@ -6,6 +6,7 @@ import model.EntityType;
 
 public class FinalConstant {
 
+    public static boolean fogOfWar;
     static EntityProperties mEntityPropertiesWALL;
     static EntityProperties mEntityPropertiesHOUSE;
     static EntityProperties mEntityPropertiesBUILDER_BASE;
@@ -28,6 +29,10 @@ public class FinalConstant {
 
     public static int getCurrentTik() {
         return currentTik;
+    }
+
+    public static boolean isFogOfWar(){
+        return fogOfWar;
     }
 
 

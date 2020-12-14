@@ -27,24 +27,22 @@ public class StreamUtil {
     }
 
     public static boolean readBoolean(InputStream stream) throws IOException {
-       /* if (stream.read()==1) return true;
-        else return false;*/
-
         return stream.read()==1 ? true : false;
-     //  return ByteBuffer.wrap(readBytes(stream, 1)).get() != 0;
     }
 
     public static int readInt(InputStream stream) throws IOException {
         return stream.read() + (stream.read()<<8) +(stream.read()<<16) +(stream.read()<<24);
-
-     //   return ByteBuffer.wrap(readBytes(stream, Integer.BYTES)).order(ByteOrder.LITTLE_ENDIAN).getInt();
     }
 
     public static long readLong(InputStream stream) throws IOException {
+
+
         return ByteBuffer.wrap(readBytes(stream, Long.BYTES)).order(ByteOrder.LITTLE_ENDIAN).getLong();
     }
 
     public static float readFloat(InputStream stream) throws IOException {
+
+
         return ByteBuffer.wrap(readBytes(stream, Float.BYTES)).order(ByteOrder.LITTLE_ENDIAN).getFloat();
     }
 

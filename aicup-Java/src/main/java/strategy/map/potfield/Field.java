@@ -24,6 +24,9 @@ public class Field {
     int safetyMelee;
     int safetyTurret;
 
+    boolean attackPositionRanger;
+    boolean targetAttackClosed;
+
     int playerArea;
     int playerAreaTwo;
 
@@ -69,6 +72,7 @@ public class Field {
         district = -1;
         districtResource = -1;
         block = false;
+        attackPositionRanger = false;
     }
 
 
@@ -300,8 +304,24 @@ public class Field {
     }
 
     public void setSafetyContour(int safetyContour) {
-        if (safetyContour<safetyContour) {
+        if (this.safetyContour<safetyContour) {
             this.safetyContour = safetyContour;
         }
+    }
+
+    public boolean isAttackPositionRanger() {
+        return attackPositionRanger;
+    }
+
+    public void setAttackPositionRanger(boolean attackPositionRanger) {
+        this.attackPositionRanger = attackPositionRanger;
+    }
+
+    public boolean isTargetAttackClosed() {
+        return targetAttackClosed;
+    }
+
+    public void setTargetAttackClosed(boolean targetAttackClosed) {
+        this.targetAttackClosed = targetAttackClosed;
     }
 }

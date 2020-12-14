@@ -56,7 +56,7 @@ public class MyStrategy {
             BuildAction buildAction = null;
             if (properties.isCanMove()) {
                 moveAction = new MoveAction(
-                        new Vec2Int(playerView.getMapSize() - 1, playerView.getMapSize() - 1),
+                        Vec2Int.createVector(playerView.getMapSize() - 1, playerView.getMapSize() - 1),
                         true,
                         true);
             } else if (properties.getBuild() != null) {
@@ -71,7 +71,7 @@ public class MyStrategy {
                 if ((currentUnits + 1) * playerView.getEntityProperties().get(entityType).getPopulationUse() <= properties.getPopulationProvide()) {
                     buildAction = new BuildAction(
                             entityType,
-                            new Vec2Int(
+                            Vec2Int.createVector(
                                     entity.getPosition().getX() + properties.getSize(),
                                     entity.getPosition().getY() + properties.getSize() - 1
                             )

@@ -362,7 +362,7 @@ public class EconomicManager {
             if (b==null) {
                 if (builderUnitArrayList.get(i).getPosition().getX()<70 && builderUnitArrayList.get(i).getPosition().getY()<75) {
                     b = new BuildAction(
-                            EntityType.RANGED_BASE, new Vec2Int(
+                            EntityType.RANGED_BASE, Vec2Int.createVector(
                             entity.getPosition().getX() + 1,
                             entity.getPosition().getY()
                     )
@@ -387,7 +387,7 @@ public class EconomicManager {
             for (int j = 0; j < positionTurret.length; j++) {
                 if (positionTurret[j][0] == 0 && positionTurret[j][1] == 0) continue;
 
-                Vec2Int vec2Int = new Vec2Int(positionTurret[j][0], positionTurret[j][1]);
+                Vec2Int vec2Int = Vec2Int.createVector(positionTurret[j][0], positionTurret[j][1]);
 
                 if (globalManager.getGlobalMap().checkEmpty(vec2Int, 2)) {
 
@@ -506,7 +506,7 @@ public class EconomicManager {
         Vec2Int positionBuildHouse = globalManager.getGlobalMap().getPositionBuildHouse(FinalConstant.getEntityProperties(EntityType.HOUSE));
 
         if (positionBuildHouse == null) {
-            // positionBuildHouse = new Vec2Int();
+            // positionBuildHouse = Vec2Int.createVector();
             for (int i = 0; i < builderUnitArrayList.size(); i++) {
                 MyEntity entity = builderUnitArrayList.get(i);
 
@@ -515,13 +515,13 @@ public class EconomicManager {
                 if (entity.getPosition().getX() - 1 < 0 || entity.getPosition().getX() - 1 > 80 - 3) continue;
                 if (entity.getPosition().getY() < 0 || entity.getPosition().getY() > 80 - 3) continue;
                 BuildAction b = new BuildAction(
-                        EntityType.HOUSE, new Vec2Int(
+                        EntityType.HOUSE, Vec2Int.createVector(
                         entity.getPosition().getX() - 1,
                         entity.getPosition().getY()
                 )
                 );
 
-                MoveAction m = new MoveAction(new Vec2Int(79, 79), true, false);
+                MoveAction m = new MoveAction(Vec2Int.createVector(79, 79), true, false);
 
                 AttackAction a = null;
 
@@ -708,6 +708,23 @@ public class EconomicManager {
 
 
                 if (dis < 2) {
+                    MoveAction m = null;
+                    BuildAction b = null;
+                    AttackAction a = null;
+                    RepairAction r = null;
+
+                    r = new RepairAction(
+                            myEntityBuilding.getId()
+                    );
+                    //a = null;
+                    m = new MoveAction(vec2Int1, true, false);
+
+                    builderUnit.setDataTaskUnit(new DataTaskUnit(EUnitState.REPAIR));
+
+                    actionHashMap.put(builderUnit.getId(), new EntityAction(m, b, a, r));
+                }
+
+                if (dis < 10 && myEntityBuilding.getEntityType()==EntityType.RANGED_BASE) {
                     MoveAction m = null;
                     BuildAction b = null;
                     AttackAction a = null;
@@ -912,6 +929,5 @@ public class EconomicManager {
     private void updateInfo(GlobalStatistic globalStatistic) {
         MyPlayer player = globalStatistic.getMyPlayer();
         sizeGold = player.getResource();
-
     }
 }

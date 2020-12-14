@@ -270,7 +270,7 @@ public class GlobalMap {
             }
         }
 
-        return new AreaPlayer(new Vec2Int(0, 0), xMax + 4, yMax + 4);
+        return new AreaPlayer(Vec2Int.createVector(0, 0), xMax + 4, yMax + 4);
 
     }
 
@@ -548,7 +548,7 @@ public class GlobalMap {
             }
         }
 
-        if (vec2IntCurrent == null) return new Vec2Int(0, 0);
+        if (vec2IntCurrent == null) return Vec2Int.createVector(0, 0);
 
         return vec2IntCurrent;
 
@@ -563,7 +563,7 @@ public class GlobalMap {
 
         SearchAnswer searchAnswer = waveSearchModule.waveSearchNeedEntity(arrayList,50,EntityType.RESOURCE);
 
-        if (searchAnswer == null) return new Vec2Int(0, 0);
+        if (searchAnswer == null) return Vec2Int.createVector(0, 0);
 
         return searchAnswer.getStart();
 
@@ -609,8 +609,8 @@ public class GlobalMap {
     public Vec2Int getPositionBuildHouse(EntityProperties entityProperties) {
         int size = entityProperties.getSize();
 
-        Vec2Int vec2IntRight = new Vec2Int(0, 0);
-        Vec2Int vec2IntLeft = new Vec2Int(4, 0);
+        Vec2Int vec2IntRight = Vec2Int.createVector(0, 0);
+        Vec2Int vec2IntLeft = Vec2Int.createVector(4, 0);
         int iter = 6;
         while (!checkEmptyAndAround(vec2IntLeft, entityProperties) && !checkEmptyAndAround(vec2IntRight, entityProperties)) {
             vec2IntRight = vec2IntRight.add(0, size);
@@ -622,8 +622,8 @@ public class GlobalMap {
         if (checkEmptyAndAround(vec2IntLeft, entityProperties)) return vec2IntLeft;
         if (checkEmptyAndAround(vec2IntRight, entityProperties)) return vec2IntRight;
 
-        vec2IntRight = new Vec2Int(11, 4);
-        vec2IntLeft = new Vec2Int(4, 11);
+        vec2IntRight = Vec2Int.createVector(11, 4);
+        vec2IntLeft = Vec2Int.createVector(4, 11);
 
 
         iter = 1;
@@ -637,8 +637,8 @@ public class GlobalMap {
         if (checkEmptyAndAround(vec2IntLeft, entityProperties)) return vec2IntLeft;
         if (checkEmptyAndAround(vec2IntRight, entityProperties)) return vec2IntRight;
 
-        vec2IntRight = new Vec2Int(21, 4);
-        vec2IntLeft = new Vec2Int(4, 21);
+        vec2IntRight = Vec2Int.createVector(21, 4);
+        vec2IntLeft = Vec2Int.createVector(4, 21);
 
 
         iter = 3;
@@ -652,8 +652,8 @@ public class GlobalMap {
         if (checkEmptyAndAround(vec2IntLeft, entityProperties)) return vec2IntLeft;
         if (checkEmptyAndAround(vec2IntRight, entityProperties)) return vec2IntRight;
 
-        vec2IntRight = new Vec2Int(25, 4);
-        vec2IntLeft = new Vec2Int(4, 25);
+        vec2IntRight = Vec2Int.createVector(25, 4);
+        vec2IntLeft = Vec2Int.createVector(4, 25);
 
 
         iter = 3;
@@ -667,8 +667,8 @@ public class GlobalMap {
         if (checkEmptyAndAround(vec2IntLeft, entityProperties)) return vec2IntLeft;
         if (checkEmptyAndAround(vec2IntRight, entityProperties)) return vec2IntRight;
 
-        vec2IntRight = new Vec2Int(29, 4);
-        vec2IntLeft = new Vec2Int(4, 29);
+        vec2IntRight = Vec2Int.createVector(29, 4);
+        vec2IntLeft = Vec2Int.createVector(4, 29);
 
 
         iter = 5;
@@ -682,8 +682,8 @@ public class GlobalMap {
         if (checkEmptyAndAround(vec2IntLeft, entityProperties)) return vec2IntLeft;
         if (checkEmptyAndAround(vec2IntRight, entityProperties)) return vec2IntRight;
 
-        vec2IntRight = new Vec2Int(33, 4);
-        vec2IntLeft = new Vec2Int(4, 33);
+        vec2IntRight = Vec2Int.createVector(33, 4);
+        vec2IntLeft = Vec2Int.createVector(4, 33);
 
 
         iter = 6;
@@ -780,11 +780,11 @@ public class GlobalMap {
     }
 
     public Vec2Int getNearestPlayer(ArrayList<MyPlayer> arrayList) {
-        return new Vec2Int(0, 0);
+        return Vec2Int.createVector(0, 0);
     }
 
     public Vec2Int getNearestPlayer(int myID) {
-        Vec2Int vec2Int = new Vec2Int(0, 0);
+        Vec2Int vec2Int = Vec2Int.createVector(0, 0);
         double minDis = 0xFFFFF;
         Vec2Int currentPos = vec2Int;
 
@@ -849,6 +849,7 @@ public class GlobalMap {
                     {
                         if (map[i][j].getEntityType() != EntityType.RANGED_UNIT && map[i][j].getEntityType() != EntityType.TURRET && map[i][j].getEntityType() != EntityType.MELEE_UNIT){
                             int k=0;
+                            //System.out.println("EBLAN: " + map[i][j].getEntityType() );
                             continue;
                         }
 
@@ -876,13 +877,13 @@ public class GlobalMap {
             for (int i = 0; i < map.length; i++) {
                 for (int j = 0; j < map[i].length; j++) {
                     if (Final.COORDINATE) {
-                        FinalGraphic.sendText(debugInterface, new Vec2Int(i, j), 10, "(" + i + "," + j + ")");
+                        FinalGraphic.sendText(debugInterface, Vec2Int.createVector(i, j), 10, "(" + i + "," + j + ")");
                     }
                 }
             }
         }
 
-        // FinalGraphic.sendSquare(debugInterface,new Vec2Int(0,0),getAreaPlayer().width, FinalGraphic.COLOR_WHITE);
+        // FinalGraphic.sendSquare(debugInterface,Vec2Int.createVector(0,0),getAreaPlayer().width, FinalGraphic.COLOR_WHITE);
     }
 
     //проверка для отхода крестьян от опасности
@@ -1282,8 +1283,18 @@ public class GlobalMap {
 
     public void setPositionNextTick(Vec2Int position, Vec2Int positionTwo) {
         MyEntity entity = getMapNextTick()[position.getX()][position.getY()];
-        getMapNextTick()[position.getX()][position.getY()] = getMapNextTick()[positionTwo.getX()][positionTwo.getY()];
+        MyEntity entityTwo = getMapNextTick()[positionTwo.getX()][positionTwo.getY()];
+        if (entityTwo.getEntityType()!=EntityType.Empty && entityTwo.getEntityType()!=EntityType.RESOURCE)
+        {
+            entityTwo.setInterfereMove(true);
+        }
+        else {
+            getMapNextTick()[position.getX()][position.getY()] = entityTwo;
+        }
+
+       // if (!entity.isInterfereMove()) {
         getMapNextTick()[positionTwo.getX()][positionTwo.getY()] = entity;
+      //  }
     }
 
     public void checkNextPositionUnit(MyEntity entity) {
@@ -1297,9 +1308,9 @@ public class GlobalMap {
 
             if (!checkCoord(x,y)) continue;
 
-            Vec2Int vec2Int = new Vec2Int(x,y);
+            Vec2Int vec2Int = Vec2Int.createVector(x,y);
 
-            if (checkEmpty(new Vec2Int(x,y))){
+            if (checkEmpty(Vec2Int.createVector(x,y))){
                 entity.setPositionNextTick(vec2Int);
             }
             else {
@@ -1325,7 +1336,7 @@ public class GlobalMap {
 
         for (int i=0; i<housePosition.length; i++)
         {
-            Vec2Int vec2Int = new Vec2Int(housePosition[i][0],housePosition[i][1]);
+            Vec2Int vec2Int = Vec2Int.createVector(housePosition[i][0],housePosition[i][1]);
 
 
             if (checkSafeСreationBuilding(vec2Int, entityProperties,mapPotField)){
@@ -1337,7 +1348,7 @@ public class GlobalMap {
         {
             for (int i=0; i<housePositionV3.length; i++)
             {
-                Vec2Int vec2Int = new Vec2Int(housePositionV3[i][0],housePositionV3[i][1]);
+                Vec2Int vec2Int = Vec2Int.createVector(housePositionV3[i][0],housePositionV3[i][1]);
 
 
                 if (checkSafeСreationBuilding(vec2Int, entityProperties,mapPotField)){
@@ -1349,7 +1360,7 @@ public class GlobalMap {
         {
             for (int i=0; i<housePositionV2.length; i++)
             {
-                Vec2Int vec2Int = new Vec2Int(housePositionV2[i][0],housePositionV2[i][1]);
+                Vec2Int vec2Int = Vec2Int.createVector(housePositionV2[i][0],housePositionV2[i][1]);
 
 
                 if (checkSafeСreationBuilding(vec2Int, entityProperties,mapPotField)){
@@ -1367,7 +1378,7 @@ public class GlobalMap {
 
         for (int i=0; i<basePosition.length; i++)
         {
-            Vec2Int vec2Int = new Vec2Int(basePosition[i][0],basePosition[i][1]);
+            Vec2Int vec2Int = Vec2Int.createVector(basePosition[i][0],basePosition[i][1]);
 
 
             if (checkSafeСreationBuilding(vec2Int, entityProperties,mapPotField)){
