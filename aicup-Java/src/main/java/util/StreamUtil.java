@@ -27,11 +27,20 @@ public class StreamUtil {
     }
 
     public static boolean readBoolean(InputStream stream) throws IOException {
-        return ByteBuffer.wrap(readBytes(stream, 1)).get() != 0;
+        if (stream.read()==1) return true;
+        else return false;
+     //  return ByteBuffer.wrap(readBytes(stream, 1)).get() != 0;
     }
 
     public static int readInt(InputStream stream) throws IOException {
-        return ByteBuffer.wrap(readBytes(stream, Integer.BYTES)).order(ByteOrder.LITTLE_ENDIAN).getInt();
+        int a = stream.read();
+        a+=stream.read()<<8;
+        a+=stream.read()<<16;
+        a+=stream.read()<<24;
+
+        return a;
+
+       // return ByteBuffer.wrap(readBytes(stream, Integer.BYTES)).order(ByteOrder.LITTLE_ENDIAN).getInt();
     }
 
     public static long readLong(InputStream stream) throws IOException {
@@ -56,11 +65,16 @@ public class StreamUtil {
     }
 
     public static void writeBoolean(OutputStream stream, boolean value) throws IOException {
-        writeBytes(stream, new byte[] { (byte) (value ? 1 : 0) });
+        stream.write((byte) (value ? 1 : 0));
+       // writeBytes(stream, new byte[] { (byte) (value ? 1 : 0) });
     }
 
     public static void writeInt(OutputStream stream, int value) throws IOException {
-        writeBytes(stream, ByteBuffer.allocate(Integer.BYTES).order(ByteOrder.LITTLE_ENDIAN).putInt(value).array());
+        stream.write(value & 0xFF);
+        stream.write((value >> 8) & 0xFF);
+        stream.write((value >> 16) & 0xFF);
+        stream.write((value >> 24) & 0xFF);
+    //    writeBytes(stream, ByteBuffer.allocate(Integer.BYTES).order(ByteOrder.LITTLE_ENDIAN).putInt(value).array());
     }
 
     public static void writeLong(OutputStream stream, long value) throws IOException {

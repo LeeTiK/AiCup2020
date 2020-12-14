@@ -5,6 +5,7 @@ import java.net.Socket;
 import java.io.InputStream;
 import java.io.BufferedOutputStream;
 
+import model.ServerMessage;
 import strategy.DebugInterface;
 import util.StreamUtil;
 
@@ -25,16 +26,16 @@ public class Runner {
         MyStrategy myStrategy = new MyStrategy();
         DebugInterface debugInterface = new DebugInterface(inputStream, outputStream);
         while (true) {
-            int size = 0;
+          /*  int size = 0;
             while (size==0)
             {
                 size += inputStream.available();
             }
 
-            System.out.println("size: "  + inputStream.available());
+          //  System.out.println("size: "  + inputStream.available());*/
 
             model.ServerMessage message = model.ServerMessage.readFrom(inputStream);
-            System.out.println("decoder: "  + message);
+           // if (message.getClass()!= ServerMessage.DebugUpdate.class)System.out.println("decoder: "  + message);
 
             if (message instanceof model.ServerMessage.GetAction) {
                 model.ServerMessage.GetAction getActionMessage = (model.ServerMessage.GetAction) message;
@@ -57,6 +58,9 @@ public class Runner {
         String host = args.length < 1 ? "127.0.0.1" : args[0];
         int port = args.length < 2 ? 31001 : Integer.parseInt(args[1]);
         String token = args.length < 3 ? "0000000000000000" : args[2];
+
+       // Integer.
+
         new Runner(host, port, token).run();
     }
 }

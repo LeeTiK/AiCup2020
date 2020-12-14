@@ -6,7 +6,7 @@ import strategy.GlobalManager;
 public class MyStrategy {
     GlobalManager mGlobalManager;
 
-    final static boolean debugSimple = true;
+    final static boolean debugSimple = false;
 
     public Action getAction(PlayerView playerView, DebugInterface debugInterface) {
 
