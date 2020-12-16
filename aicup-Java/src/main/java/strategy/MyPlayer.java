@@ -385,11 +385,11 @@ public class MyPlayer extends Player {
             case BUILDER_BASE:
                 return FinalConstant.getEntityProperties(entityType).getCost();
             case BUILDER_UNIT:
-                return FinalConstant.getEntityProperties(entityType).getCost() + (getEntityArrayList(EntityType.BUILDER_UNIT) == null ? 0 : getEntityArrayList(EntityType.RANGED_UNIT).size());
+                return FinalConstant.getEntityProperties(entityType).getCost(); //+ (getEntityArrayList(EntityType.BUILDER_UNIT) == null ? 0 : getEntityArrayList(EntityType.BUILDER_UNIT).size()-1);
             case MELEE_BASE:
                 return FinalConstant.getEntityProperties(entityType).getCost();
             case MELEE_UNIT:
-                return FinalConstant.getEntityProperties(entityType).getCost() + (getEntityArrayList(EntityType.MELEE_UNIT) == null ? 0 : getEntityArrayList(EntityType.RANGED_UNIT).size());
+                return FinalConstant.getEntityProperties(entityType).getCost() + (getEntityArrayList(EntityType.MELEE_UNIT) == null ? 0 : getEntityArrayList(EntityType.MELEE_UNIT).size());
             case RANGED_BASE:
                 return FinalConstant.getEntityProperties(entityType).getCost();
             case RANGED_UNIT:
@@ -556,7 +556,7 @@ public class MyPlayer extends Player {
             MyEntity building = mBuildingArrayList.get(i);
             if (building.getMinDisToEnemy()==0xFFFF) continue;
 
-            if (building.getMinDisToEnemy()<18){
+            if (building.getMinDisToEnemy()<15){
                 addEnemy(building.getEnemyMinDis(),building.getMinDisToEnemy());
             }
         }
@@ -566,7 +566,7 @@ public class MyPlayer extends Player {
             if (unit.getMinDisToEnemy()==0xFFFF) continue;
             if (unit.getEntityType()!=EntityType.BUILDER_UNIT) continue;
 
-            if (unit.getMinDisToEnemy()<15){
+            if (unit.getMinDisToEnemy()<13){
                 addEnemy(unit.getEnemyMinDis(),unit.getMinDisToEnemy());
             }
         }
@@ -611,5 +611,9 @@ public class MyPlayer extends Player {
 
     public int getCountBuildDodge() {
         return countBuildDodge;
+    }
+
+    public int getCountAllBiuld() {
+        return countAllBiuld;
     }
 }

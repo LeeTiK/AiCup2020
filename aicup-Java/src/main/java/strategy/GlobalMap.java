@@ -184,8 +184,8 @@ public class GlobalMap {
             {11, 4},  {11, 8}, {11, 12}, {11, 16},
             {4, 11}, {16, 11},
 
-            {17, 4},  {17, 8}, {17, 12}, {17, 16},
-            {4, 17},  {8, 17}, {12, 17},
+            {17, 4},  {17, 8}, {17, 11}, {17, 16},
+            {4, 17},  {8, 17}, {11, 17},
 
     };
 
@@ -977,6 +977,11 @@ public class GlobalMap {
 
         if (sizeMax != arrayList.size()) return current;
 
+        if (arrayList.size()>0)
+        {
+            return position;
+        }
+
         return null;
     }
 
@@ -1044,13 +1049,11 @@ public class GlobalMap {
             if (!checkCoord(x,y)) continue;
 
             MyEntity entity = map[x][y];
-            if (((entity.getEntityType() == EntityType.RANGED_UNIT || entity.getEntityType() == EntityType.MELEE_UNIT) || !onlyUnit) &&
-
-                    (entity.getEntityType() != EntityType.Empty && entity.getEntityType() != EntityType.RESOURCE)
-            ) {
+            if ((entity.getEntityType() == EntityType.RANGED_UNIT || entity.getEntityType() == EntityType.MELEE_UNIT) || !onlyUnit)
+            {
                 if (entityType != EntityType.ALL && entity.getEntityType() != entityType) continue;
 
-                if (entity.getEntityType()==entityType && entityType==EntityType.RESOURCE) {
+                if (entity.getEntityType()==entityType) {
                     arrayList.add(entity);
                     continue;
                 }
@@ -1306,6 +1309,7 @@ public class GlobalMap {
         else {
             getMapNextTick()[position.getX()][position.getY()] = entityTwo;
         }
+        getMapNextTick()[position.getX()][position.getY()] = entityTwo;
 
        // if (!entity.isInterfereMove()) {
         getMapNextTick()[positionTwo.getX()][positionTwo.getY()] = entity;
@@ -1402,5 +1406,12 @@ public class GlobalMap {
         }
 
         return arrayList;
+    }
+
+    public boolean checkUnit(MyEntity[][] mapNextTick, Vec2Int newPosition) {
+        if (mapNextTick[newPosition.getX()][newPosition.getY()].getEntityType()==EntityType.BUILDER_UNIT ||
+                mapNextTick[newPosition.getX()][newPosition.getY()].getEntityType()==EntityType.RANGED_UNIT ||
+                mapNextTick[newPosition.getX()][newPosition.getY()].getEntityType()==EntityType.MELEE_UNIT) return true;
+        else return false;
     }
 }

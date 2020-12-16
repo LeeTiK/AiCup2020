@@ -95,7 +95,7 @@ public class FinalConstant {
             case BUILDER_BASE:
                 return getEntityPropertiesBUILDER_BASE();
             case BUILDER_UNIT:
-                return getEntityPropertiesRANGED_UNIT();
+                return getEntityPropertiesBUILDER_UNIT();
             case MELEE_BASE:
                 return getEntityPropertiesMELEE_BASE();
             case MELEE_UNIT:

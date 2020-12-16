@@ -24,8 +24,10 @@ public class GlobalManager {
     static WaveSearchModule waveSearchModule;
 
     long startTime;
+    long timeParsing;
 
-    long allTime = 0;
+    long timeAllStrategy = 0;
+    long timeParsingAll = 0;
 
 
     public GlobalManager() {
@@ -35,13 +37,22 @@ public class GlobalManager {
         mGlobalMap = new GlobalMap();
         waveSearchModule = new WaveSearchModule(mGlobalMap);
 
-        allTime = 0;
+        timeAllStrategy = 0;
+        timeParsing = 0;
 
         mMapPotField = new MapPotField(80);
     }
 
 
-    public Action update(PlayerView playerView, DebugInterface debugInterface) {
+    public Action update(PlayerView playerView, DebugInterface debugInterface, long timeStart) {
+        if (timeStart!=0)
+        {
+            timeParsingAll+=(System.nanoTime()-timeStart);
+        }
+        if (timeParsing!=0)
+        {
+            timeParsingAll+=(System.nanoTime()-timeParsing);
+        }
         startTime = System.nanoTime();
 
         HashMap<Integer, model.EntityAction> hashMap = new HashMap<>();
@@ -53,9 +64,11 @@ public class GlobalManager {
         mMapPotField.update(this);
         waveSearchModule.updateMap(mMapPotField.getMapPotField());
 
+
+        debugGraphic(playerView,debugInterface);
         ////////////////////////STATISTIC/////////////////////////////
 
-        Final.DEBUG("", "Tik: " + FinalConstant.getCurrentTik() + " resource: " + getGlobalMap().getResourceMap() + " ID:" + getGlobalStatistic().getMyPlayer().getId() + " Alltime: " + allTime / 1000000);
+        Final.DEBUG("", "Tik: " + FinalConstant.getCurrentTik() + " resource: " + getGlobalMap().getResourceMap() + " ID:" + getGlobalStatistic().getMyPlayer().getId() + " timeStrategy: " + timeAllStrategy / 1000000 + " timeParsing: " + timeParsingAll/1000000);
 
         if (Final.debugRelease) {
             if (FinalConstant.getCurrentTik() == 0) {
@@ -64,7 +77,7 @@ public class GlobalManager {
 
             if (FinalConstant.getCurrentTik() % 50 == 0) {
 
-                Final.DEBUGRelease("", "Tik: " + FinalConstant.getCurrentTik() + " resource: " + getGlobalMap().getResourceMap() + " Alltime: " + allTime / 1000000);
+                Final.DEBUGRelease("", "Tik: " + FinalConstant.getCurrentTik() + " resource: " + getGlobalMap().getResourceMap() + " timeStrategy: " + timeAllStrategy / 1000000 + " timeParsing: " + timeParsingAll/1000000);
                 logInfo();
             }
         }
@@ -85,7 +98,7 @@ public class GlobalManager {
 
         hashMap.putAll(mEconomicManager.update(playerView, this,debugInterface));
 
-        allTime += System.nanoTime() - startTime;
+        timeAllStrategy += System.nanoTime() - startTime;
 
         if (Final.debug)
         {
@@ -114,8 +127,65 @@ public class GlobalManager {
             }
         }
 
+        timeParsing = System.nanoTime();
+
 
         return new Action(hashMap);
+    }
+
+    private void debugGraphic(PlayerView playerView, DebugInterface debugInterface){
+        if (Final.debugGraphic)
+        {
+            mGlobalMap.debugUpdate(playerView, debugInterface);
+            mMapPotField.debugUpdate(playerView, debugInterface);
+
+            if (INFO_UNIT) {
+                MyPlayer myPlayer = mGlobalStatistic.getMyPlayer();
+
+                ArrayList<MyEntity> myEntities = myPlayer.getUnitArrayList();
+
+                for (int i = 0; i < myEntities.size(); i++) {
+                    Vec2Float vec2Float = myEntities.get(i).getPosition().getVec2Float();
+                    vec2Float.setY(vec2Float.getY()+ 0.45f);
+                    FinalGraphic.sendText(debugInterface, vec2Float, 11, myEntities.get(i).toString());
+                }
+            }
+
+            if (false)
+            {
+                Vec2Int start = Vec2Int.createVector(10,10);
+                for (int i=0; i<GlobalMap.rangerTwoContourArray.length; i++)
+                {
+                    FinalGraphic.sendSquare(debugInterface, start.add(GlobalMap.rangerTwoContourArray[i][0],GlobalMap.rangerTwoContourArray[i][1]), 1, FinalGraphic.COLOR_BLACK);
+                }
+            }
+
+
+            if (Final.CHECK_SEARCH_WAVE_BUILDER)
+            {
+                MyEntity builderPos = mGlobalStatistic.getMyPlayer().getBuilderBase();
+
+                Vec2Int vec2Int = builderPos.getPosition();
+
+                ArrayList<Vec2Int> arrayList = mGlobalMap.getCoordAround(vec2Int,5,true);
+
+                waveSearchModule.updateMap(mMapPotField.getMapPotField());
+
+                SearchAnswer searchAnswer = waveSearchModule.waveSearchNeedEntity(arrayList,50, EntityType.RESOURCE);
+
+                waveSearchModule.debugUpdate(playerView,debugInterface);
+
+                if (searchAnswer == null) {
+                    int k =0;
+                }
+                else {
+                    FinalGraphic.sendSquare(debugInterface, searchAnswer.getStart(), 1, FinalGraphic.COLOR_BLUE);
+                    FinalGraphic.sendSquare(debugInterface,searchAnswer.getEnd(), 1, FinalGraphic.COLOR_GREEN);
+                }
+
+            }
+        }
+
     }
 
     public EconomicManager getEconomicManager() {
@@ -135,54 +205,10 @@ public class GlobalManager {
     }
 
     public void debugUpdate(PlayerView playerView, DebugInterface debugInterface) {
-        mGlobalMap.debugUpdate(playerView, debugInterface);
-        mMapPotField.debugUpdate(playerView, debugInterface);
-
-        if (INFO_UNIT) {
-            MyPlayer myPlayer = mGlobalStatistic.getMyPlayer();
-
-            ArrayList<MyEntity> myEntities = myPlayer.getUnitArrayList();
-
-            for (int i = 0; i < myEntities.size(); i++) {
-                Vec2Float vec2Float = myEntities.get(i).getPosition().getVec2Float();
-                vec2Float.setY(vec2Float.getY()+ 0.45f);
-                FinalGraphic.sendText(debugInterface, vec2Float, 11, myEntities.get(i).toString());
-            }
-        }
-
-        if (false)
-        {
-            Vec2Int start = Vec2Int.createVector(10,10);
-            for (int i=0; i<GlobalMap.rangerTwoContourArray.length; i++)
-            {
-                FinalGraphic.sendSquare(debugInterface, start.add(GlobalMap.rangerTwoContourArray[i][0],GlobalMap.rangerTwoContourArray[i][1]), 1, FinalGraphic.COLOR_BLACK);
-            }
-        }
+       // mGlobalMap.debugUpdate(playerView, debugInterface);
+      //  mMapPotField.debugUpdate(playerView, debugInterface);
 
 
-        if (Final.CHECK_SEARCH_WAVE_BUILDER)
-        {
-            MyEntity builderPos = mGlobalStatistic.getMyPlayer().getBuilderBase();
-
-            Vec2Int vec2Int = builderPos.getPosition();
-
-            ArrayList<Vec2Int> arrayList = mGlobalMap.getCoordAround(vec2Int,5,true);
-
-            waveSearchModule.updateMap(mMapPotField.getMapPotField());
-
-            SearchAnswer searchAnswer = waveSearchModule.waveSearchNeedEntity(arrayList,50, EntityType.RESOURCE);
-
-            waveSearchModule.debugUpdate(playerView,debugInterface);
-
-            if (searchAnswer == null) {
-                int k =0;
-            }
-            else {
-                FinalGraphic.sendSquare(debugInterface, searchAnswer.getStart(), 1, FinalGraphic.COLOR_BLUE);
-                FinalGraphic.sendSquare(debugInterface,searchAnswer.getEnd(), 1, FinalGraphic.COLOR_GREEN);
-            }
-
-        }
     }
 
 

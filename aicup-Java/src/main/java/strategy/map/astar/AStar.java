@@ -1,164 +1,209 @@
 package strategy.map.astar;
 
-import model.Vec2Int;
+import java.util.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.PriorityQueue;
-import java.util.Queue;
-
+/**
+ * A Star Algorithm
+ *
+ * @author Marcelo Surriabre
+ * @version 2.1, 2017-02-23
+ */
 public class AStar {
-    public final static int BAR = 1;
-    public final static int PATH = 2;
-    public final static int DIRECT_VALUE = 10;
+    private static int DEFAULT_HV_COST = 1; // Horizontal - Vertical Cost
+    private int hvCost;
+    private int diagonalCost;
+    private Node[][] searchArea;
+    private PriorityQueue<Node> openList;
+    private Set<Node> closedSet;
+    private Node initialNode;
+    private Node finalNode;
 
-    Queue<Node> openList = new PriorityQueue<Node>();
-    List<Node> closeList = new ArrayList<Node>();
-
-
-    public Node start(MapInfo mapInfo) {
-        if (mapInfo == null) return null;
-        // clean
-        openList.clear();
-        closeList.clear();
-        // 开始搜索
-        openList.add(mapInfo.start);
-        return moveNodes(mapInfo);
+    public AStar(int size, Node initialNode, Node finalNode, int hvCost) {
+        this.hvCost = hvCost;
+        setInitialNode(initialNode);
+        setFinalNode(finalNode);
+        this.searchArea = new Node[size][size];
+        this.openList = new PriorityQueue<Node>(new Comparator<Node>() {
+            @Override
+            public int compare(Node node0, Node node1) {
+                return Integer.compare(node0.getF(), node1.getF());
+            }
+        });
+        setNodes();
+        this.closedSet = new HashSet<>();
     }
 
+    public AStar(int size, Node initialNode, Node finalNode) {
+        this(size, initialNode, finalNode, DEFAULT_HV_COST);
+    }
 
-    /**
-     * 移动当前结点
-     */
-    private Node moveNodes(MapInfo mapInfo) {
-        while (!openList.isEmpty()) {
-            Node current = openList.poll();
-            closeList.add(current);
-            addNeighborNodeInOpen(mapInfo, current);
-            if (isCoordInClose(mapInfo.end.coord)) {
-                return mapInfo.end;
+    private void setNodes() {
+        for (int i = 0; i < searchArea.length; i++) {
+            for (int j = 0; j < searchArea[0].length; j++) {
+                Node node = new Node(i, j);
+                node.calculateHeuristic(getFinalNode());
+                this.searchArea[i][j] = node;
             }
         }
-        return null;
     }
 
-    /**
-     * 在二维数组中绘制路径
-     */
-    private void drawPath(int[][] maps, Node end) {
-        if (end == null || maps == null) return;
-        System.out.println("Путь：" + end.G);
-        while (end != null) {
-            Vec2Int c = end.coord;
-            maps[c.getY()][c.getX()] = PATH;
-            end = end.parent;
+    public void setBlocks(int[][] blocksArray) {
+        for (int i = 0; i < blocksArray.length; i++) {
+            int row = blocksArray[i][0];
+            int col = blocksArray[i][1];
+            setBlock(row, col);
         }
     }
 
-    /**
-     * 添加所有邻结点到open表
-     */
-    private void addNeighborNodeInOpen(MapInfo mapInfo, Node current) {
-        int x = current.coord.getX();
-        int y = current.coord.getY();
-        // 左
-        addNeighborNodeInOpen(mapInfo, current, x - 1, y, DIRECT_VALUE);
-        // 上
-        addNeighborNodeInOpen(mapInfo, current, x, y - 1, DIRECT_VALUE);
-        // 右
-        addNeighborNodeInOpen(mapInfo, current, x + 1, y, DIRECT_VALUE);
-        // 下
-        addNeighborNodeInOpen(mapInfo, current, x, y + 1, DIRECT_VALUE);
+    public List<Node> findPath() {
+        openList.add(initialNode);
+        while (!isEmpty(openList)) {
+            Node currentNode = openList.poll();
+            closedSet.add(currentNode);
+            if (isFinalNode(currentNode)) {
+                return getPath(currentNode);
+            } else {
+                addAdjacentNodes(currentNode);
+            }
+        }
+        return new ArrayList<Node>();
     }
 
-    /**
-     * 添加一个邻结点到open表
-     */
-    private void addNeighborNodeInOpen(MapInfo mapInfo, Node current, int x, int y, int value) {
-        if (canAddNodeToOpen(mapInfo, x, y)) {
-            Node end = mapInfo.end;
-            Vec2Int coord = Vec2Int.createVector(x, y);
-            int G = current.G + value;
-            Node child = findNodeInOpen(coord);
-            if (child == null) {
-                int H = calcH(end.coord, coord);
-                if (isEndNode(end.coord, coord)) {
-                    child = end;
-                    child.parent = current;
-                    child.G = G;
-                    child.H = H;
-                } else {
-                    child = new Node(coord, current, G, H);
+    private List<Node> getPath(Node currentNode) {
+        List<Node> path = new ArrayList<Node>();
+        path.add(currentNode);
+        Node parent;
+        while ((parent = currentNode.getParent()) != null) {
+            path.add(0, parent);
+            currentNode = parent;
+        }
+        return path;
+    }
+
+    private void addAdjacentNodes(Node currentNode) {
+        addAdjacentUpperRow(currentNode);
+        addAdjacentMiddleRow(currentNode);
+        addAdjacentLowerRow(currentNode);
+    }
+
+    private void addAdjacentLowerRow(Node currentNode) {
+        int row = currentNode.getRow();
+        int col = currentNode.getCol();
+        int lowerRow = row + 1;
+        if (lowerRow < getSearchArea().length) {
+          /*  if (col - 1 >= 0) {
+                checkNode(currentNode, col - 1, lowerRow, getDiagonalCost()); // Comment this line if diagonal movements are not allowed
+            }
+            if (col + 1 < getSearchArea()[0].length) {
+                checkNode(currentNode, col + 1, lowerRow, getDiagonalCost()); // Comment this line if diagonal movements are not allowed
+            }*/
+            checkNode(currentNode, col, lowerRow, getHvCost());
+        }
+    }
+
+    private void addAdjacentMiddleRow(Node currentNode) {
+        int row = currentNode.getRow();
+        int col = currentNode.getCol();
+        int middleRow = row;
+        if (col - 1 >= 0) {
+            checkNode(currentNode, col - 1, middleRow, getHvCost());
+        }
+        if (col + 1 < getSearchArea()[0].length) {
+            checkNode(currentNode, col + 1, middleRow, getHvCost());
+        }
+    }
+
+    private void addAdjacentUpperRow(Node currentNode) {
+        int row = currentNode.getRow();
+        int col = currentNode.getCol();
+        int upperRow = row - 1;
+        if (upperRow >= 0) {
+         /*   if (col - 1 >= 0) {
+                checkNode(currentNode, col - 1, upperRow, getDiagonalCost()); // Comment this if diagonal movements are not allowed
+            }
+            if (col + 1 < getSearchArea()[0].length) {
+                checkNode(currentNode, col + 1, upperRow, getDiagonalCost()); // Comment this if diagonal movements are not allowed
+            }*/
+            checkNode(currentNode, col, upperRow, getHvCost());
+        }
+    }
+
+    private void checkNode(Node currentNode, int col, int row, int cost) {
+        Node adjacentNode = getSearchArea()[row][col];
+        if (!adjacentNode.isBlock() && !getClosedSet().contains(adjacentNode)) {
+            if (!getOpenList().contains(adjacentNode)) {
+                adjacentNode.setNodeData(currentNode, cost);
+                getOpenList().add(adjacentNode);
+            } else {
+                boolean changed = adjacentNode.checkBetterPath(currentNode, cost);
+                if (changed) {
+                    // Remove and Add the changed node, so that the PriorityQueue can sort again its
+                    // contents with the modified "finalCost" value of the modified node
+                    getOpenList().remove(adjacentNode);
+                    getOpenList().add(adjacentNode);
                 }
-                openList.add(child);
-            } else if (child.G > G) {
-                child.G = G;
-                child.parent = current;
-                openList.add(child);
             }
         }
     }
 
-    /**
-     * 从Open列表中查找结点
-     */
-    private Node findNodeInOpen(Vec2Int coord) {
-        if (coord == null || openList.isEmpty()) return null;
-        for (Node node : openList) {
-            if (node.coord.equals(coord)) {
-                return node;
-            }
-        }
-        return null;
+    private boolean isFinalNode(Node currentNode) {
+        return currentNode.equals(finalNode);
     }
 
-
-    /**
-     * 计算H的估值：“曼哈顿”法，坐标分别取差值相加
-     */
-    private int calcH(Vec2Int end, Vec2Int coord) {
-        return Math.abs(end.getX() - coord.getX())
-                + Math.abs(end.getY() - coord.getY());
+    private boolean isEmpty(PriorityQueue<Node> openList) {
+        return openList.size() == 0;
     }
 
-    /**
-     * 判断结点是否是最终结点
-     */
-    private boolean isEndNode(Vec2Int end, Vec2Int coord) {
-        return coord != null && end.equals(coord);
+    private void setBlock(int row, int col) {
+        this.searchArea[row][col].setBlock(true);
     }
 
-    /**
-     * 判断结点能否放入Open列表
-     */
-    private boolean canAddNodeToOpen(MapInfo mapInfo, int x, int y) {
-
-        if (x < 0 || x >= mapInfo.width || y < 0 || y >= mapInfo.hight) return false;
-
-        if (mapInfo.maps[y][x] == BAR) return false;
-
-        if (isCoordInClose(x, y)) return false;
-
-        return true;
+    public Node getInitialNode() {
+        return initialNode;
     }
 
-    /**
-     * 判断坐标是否在close表中
-     */
-    private boolean isCoordInClose(Vec2Int coord) {
-        return coord != null && isCoordInClose(coord.getX(), coord.getY());
+    public void setInitialNode(Node initialNode) {
+        this.initialNode = initialNode;
     }
 
-    /**
-     * 判断坐标是否在close表中
-     */
-    private boolean isCoordInClose(int x, int y) {
-        if (closeList.isEmpty()) return false;
-        for (Node node : closeList) {
-            if (node.coord.getX() == x && node.coord.getY() == y) {
-                return true;
-            }
-        }
-        return false;
+    public Node getFinalNode() {
+        return finalNode;
+    }
+
+    public void setFinalNode(Node finalNode) {
+        this.finalNode = finalNode;
+    }
+
+    public Node[][] getSearchArea() {
+        return searchArea;
+    }
+
+    public void setSearchArea(Node[][] searchArea) {
+        this.searchArea = searchArea;
+    }
+
+    public PriorityQueue<Node> getOpenList() {
+        return openList;
+    }
+
+    public void setOpenList(PriorityQueue<Node> openList) {
+        this.openList = openList;
+    }
+
+    public Set<Node> getClosedSet() {
+        return closedSet;
+    }
+
+    public void setClosedSet(Set<Node> closedSet) {
+        this.closedSet = closedSet;
+    }
+
+    public int getHvCost() {
+        return hvCost;
+    }
+
+    public void setHvCost(int hvCost) {
+        this.hvCost = hvCost;
     }
 }
+

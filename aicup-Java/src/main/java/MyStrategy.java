@@ -7,6 +7,11 @@ public class MyStrategy {
     GlobalManager mGlobalManager;
 
     final static boolean debugSimple = false;
+    static long timeStart;
+
+    public MyStrategy(){
+        timeStart = System.nanoTime();
+    }
 
     public Action getAction(PlayerView playerView, DebugInterface debugInterface) {
 
@@ -27,7 +32,9 @@ public class MyStrategy {
       //  playerView.get
 
        // mGlobalManager.update(playerView,debugInterface);
-        return mGlobalManager.update(playerView,debugInterface);
+        Action action = mGlobalManager.update(playerView,debugInterface, timeStart);
+        timeStart = 0;
+        return action;
 
       //  return new Action(new HashMap<>());
     }

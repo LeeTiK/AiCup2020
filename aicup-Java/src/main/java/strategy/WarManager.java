@@ -526,6 +526,8 @@ public class WarManager {
             if (dodgeRanger(range,myPlayer,entityAction,globalManager))
             {
                 range.setUpdate(true);
+                range.setDangerMove(true);
+                range.setDodge(true);
                 range.setEnemyMinDis(null);
                 actionHashMap.put(range.getId(), entityAction);
                 continue;
@@ -646,7 +648,6 @@ public class WarManager {
 
             MyEntity enemy = globalManager.getGlobalMap().getNearestPlayer(range.getPosition(), myPlayer.getId(), -1);
 
-
             if (enemy!=null)
             {
                 MyEntity entity = globalManager.getGlobalMap().getMoveMyUnit(range.getPosition());
@@ -674,31 +675,21 @@ public class WarManager {
             EntityAction entityAction = actionHashMap.get(range.getId());
             if (entityAction == null) entityAction = new EntityAction(null, null, null, null);
 
-        //    if (range.isUpdate()) continue;
+            if (range.isDodge()) continue;
+            if (range.isDangerMove()) continue;
 
             MyEntity enemy = range.getEnemyMinDis();
 
-            if (range.isDangerMove()) continue;
-
-
             if (enemy!=null) {
 
-              // if (enemy.getEntityType() == EntityType.RANGED_UNIT) {
-                    if (enemy.getPosition().distance(range.getPosition()) < 15) {
-                        SearchAnswer searchAnswer = globalManager.getWaveSearchModule().searchPathRange(range.getPosition(), 15);
+               if (enemy.getEntityType() == EntityType.RANGED_UNIT) {
+                    if (enemy.getPosition().distance(range.getPosition()) < 12) {
+                        SearchAnswer searchAnswer = globalManager.getWaveSearchModule().searchPathRange(range.getPosition(), 12);
                         if (searchAnswer != null) {
                             Vec2Int nextMove = searchAnswer.getPath().getLast();
 
                             MoveAction m = new MoveAction(nextMove, true, false);
                             globalManager.getGlobalMap().setPositionNextTick(range.getPosition(), nextMove);
-
-                            if (Final.CHECK_SEARCH_PATH_RANGER)
-                            {
-                                for (int k=0; k<searchAnswer.getPath().size(); k++)
-                                {
-                                    FinalGraphic.sendSquare(debugInterface,searchAnswer.getPath().get(k), 1, FinalGraphic.COLOR_BLACK);
-                                }
-                            }
 
                             globalManager.getMapPotField().changeBlockPositionAttack(searchAnswer.getEnd());
 
@@ -717,7 +708,7 @@ public class WarManager {
                             continue;
                         }
                     }
-           //     }
+                }
             }
         }
 
