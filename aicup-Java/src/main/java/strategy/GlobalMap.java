@@ -6,6 +6,8 @@ import strategy.map.wave.SearchAnswer;
 import strategy.map.wave.WaveSearchModule;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Set;
 
 import static strategy.GlobalManager.waveSearchModule;
 
@@ -14,7 +16,7 @@ public class GlobalMap {
     MyEntity[][] map = null;
     MyEntity[][] mapNextTick = null;
 
-    ArrayList<MyEntity> allEntity;
+    HashMap<Integer,MyEntity> allEntity;
 
     //массив в котором просишь подвинуться юниту если тебе очень нужно, он обязан это исполнить если это не
 
@@ -278,9 +280,9 @@ public class GlobalMap {
         clearMap();
 
         allEntity = globalStatistic.getMyEntityArrayList();
-
-        for (int i = 0; i < allEntity.size(); i++) {
-            MyEntity entity = allEntity.get(i);
+        Set<Integer> keys = allEntity.keySet();
+        for (int i = 0; i < keys.toArray().length; i++) {
+            MyEntity entity = allEntity.get(keys.toArray()[i]);
 
             if (entity.getEntityType() == EntityType.RESOURCE) {
                 resourceMap += entity.getHealth();
@@ -450,25 +452,28 @@ public class GlobalMap {
         double minDis = 0xFFFF;
         MyEntity current = null;
 
-        for (int i = 0; i < allEntity.size(); i++) {
-            if (allEntity.get(i).getEntityType() != entityType) continue;
+        Set<Integer> keys = allEntity.keySet();
+        for (int i = 0; i < keys.toArray().length; i++) {
+            MyEntity entity = allEntity.get(keys.toArray()[i]);
 
-            if (entityType==EntityType.RESOURCE && allEntity.get(i).getTargetEntity()!=null) continue;
+            if (entity.getEntityType() != entityType) continue;
+
+            if (entityType==EntityType.RESOURCE && entity.getTargetEntity()!=null) continue;
 
             if (mapPotField!=null)
             {
-                Vec2Int pos = allEntity.get(i).getPosition();
+                Vec2Int pos = entity.getPosition();
                 if (mapPotField.getMapPotField()[pos.getX()][pos.getY()].getSumDanger()>0) {
                     continue;
                 }
              }
 
-            ArrayList arrayList = getCoordAround(allEntity.get(i).getPosition(), 1, true, myID);
+            ArrayList arrayList = getCoordAround(entity.getPosition(), 1, true, myID);
             if (arrayList.size() == 0 && checkEmpty) continue;
 
-            double dis = position.distance(allEntity.get(i).getPosition());
+            double dis = position.distance(entity.getPosition());
             if (dis < minDis) {
-                current = allEntity.get(i);
+                current = entity;
                 minDis = dis;
             }
         }

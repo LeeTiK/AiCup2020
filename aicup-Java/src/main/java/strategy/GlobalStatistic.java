@@ -7,13 +7,15 @@ import model.Vec2Int;
 import pool.CacheVec2Int;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Set;
 
 public class GlobalStatistic {
 
     final static String TAG = "strategy.GlobalStatistic";
 
     ArrayList<MyPlayer> mMyPlayers;
-    ArrayList<MyEntity> mMyEntityArrayList;
+    HashMap<Integer,MyEntity> mMyEntityArrayList;
 
     MyPlayer left;
     MyPlayer right;
@@ -24,7 +26,7 @@ public class GlobalStatistic {
 
     public GlobalStatistic() {
         mMyPlayers = new ArrayList<>();
-        mMyEntityArrayList = new ArrayList<>();
+        mMyEntityArrayList = new HashMap<>();
         checkFirstEnemyUnits=false;
     }
 
@@ -87,9 +89,8 @@ public class GlobalStatistic {
             mMyPlayers.get(j).startUpdate();
         }
 
-        for (int i = 0; i < mMyEntityArrayList.size(); i++) {
-            mMyEntityArrayList.get(i).setUpdate(false);
-        }
+
+        startGlobalList();
 
 
         // добавление и обновление информации о юнитах
@@ -236,11 +237,19 @@ public class GlobalStatistic {
 
     }
 
+    private void startGlobalList(){
+        Set<Integer> keys = mMyEntityArrayList.keySet();
+        for (int i = 0; i < keys.toArray().length; i++) {
+            mMyEntityArrayList.get(keys.toArray()[i]).setUpdate(false);
+        }
+    }
+
     // финальная подчистка умерших объектов
     private void finishGlobalList() {
-        for (int i = 0; i < mMyEntityArrayList.size(); i++) {
-            if (!mMyEntityArrayList.get(i).isUpdate()) {
-                mMyEntityArrayList.remove(i);
+        Set<Integer> keys = mMyEntityArrayList.keySet();
+        for (int i = 0; i < keys.toArray().length; i++) {
+            if (!mMyEntityArrayList.get(keys.toArray()[i]).isUpdate()) {
+                mMyEntityArrayList.remove(keys.toArray()[i]);
                 i--;
             }
         }
@@ -248,16 +257,17 @@ public class GlobalStatistic {
 
     private MyEntity addGlobalEntityList(Entity entity) {
 
-        for (int i = 0; i < mMyEntityArrayList.size(); i++) {
-            if (mMyEntityArrayList.get(i).getId() == entity.getId()) {
-                mMyEntityArrayList.get(i).update(entity);
-                return mMyEntityArrayList.get(i);
-            }
+        MyEntity myEntity = mMyEntityArrayList.get(entity.getId());
+        if (myEntity == null) {
+
+            MyEntity entity1 = new MyEntity(entity);
+            mMyEntityArrayList.put(entity.getId(), new MyEntity(entity));
+            return entity1;
         }
-
-        mMyEntityArrayList.add(new MyEntity(entity));
-
-        return mMyEntityArrayList.get(mMyEntityArrayList.size() - 1);
+        else {
+            myEntity.update(entity);
+            return myEntity;
+        }
     }
 
     public MyPlayer getMyPlayer() {
@@ -277,7 +287,7 @@ public class GlobalStatistic {
     }
 
 
-    public ArrayList<MyEntity> getMyEntityArrayList() {
+    public HashMap<Integer,MyEntity> getMyEntityArrayList() {
         return mMyEntityArrayList;
     }
 
