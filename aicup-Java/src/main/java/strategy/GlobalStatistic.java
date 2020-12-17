@@ -20,9 +20,12 @@ public class GlobalStatistic {
 
     boolean checkEnemyUnits;
 
+    boolean checkFirstEnemyUnits;
+
     public GlobalStatistic() {
         mMyPlayers = new ArrayList<>();
         mMyEntityArrayList = new ArrayList<>();
+        checkFirstEnemyUnits=false;
     }
 
 
@@ -102,6 +105,11 @@ public class GlobalStatistic {
             if (entity.getPlayerId()!=FinalConstant.getMyID())
             {
                 checkEnemyUnits = true;
+                if (!checkFirstEnemyUnits)
+                {
+                    Final.DEBUG(TAG, "FIRST ENEMY UNITS");
+                }
+                checkFirstEnemyUnits = true;
             }
 
             if (myPlayer == null) {
@@ -139,7 +147,7 @@ public class GlobalStatistic {
 
                     if (entity.getEntityType()==EntityType.RANGED_UNIT && entity.getHealth()>5)
                     {
-                        Final.DEBUG(TAG, "BAD POSITION " + FinalConstant.getCurrentTik() + " Player ID: " + mMyPlayers.get(j).getId() + " ID: " + entity.getId() );
+                        Final.DEBUG(TAG, "BAD POSITION " + FinalConstant.getCurrentTik() + " Player ID: " + mMyPlayers.get(j).getId() + " ID: " + entity.getId() + " p: " + entity.getPosition().toString() );
                     }
 
                     if (entity.getEntityType()==EntityType.RANGED_UNIT && entity.getHealth()>5)
@@ -320,5 +328,9 @@ public class GlobalStatistic {
         }
 
         return current;
+    }
+
+    public boolean isCheckFirstEnemyUnits() {
+        return checkFirstEnemyUnits;
     }
 }

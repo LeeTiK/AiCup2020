@@ -239,6 +239,11 @@ public class MapPotField {
         }
     }
 
+    private void addSafetyContour(MyEntity entity, MyEntity[][] map){
+        if (entity.getEntityType() != EntityType.RANGED_UNIT)
+            return;
+    }
+
     private int resourceDirect(Field field) {
         if (field.getX() - 1 > 0) {
             if (mMapPotField[field.getX() - 1][field.getY()].getDistrictResource() != -1)
@@ -1007,16 +1012,16 @@ public class MapPotField {
 
     public boolean checkSafety(Vec2Int vec2Int, int width, int height) {
         int offset = 4;
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                if (!checkCoord(vec2Int.getX() + x, vec2Int.getY() + y)) return false;
+                if (mGlobalMap.getMap()[vec2Int.getX() + x][vec2Int.getY() + y].getEntityType() != EntityType.Empty ) return false;
+            }
+        }
+
         for (int x = -offset; x < width+offset; x++) {
             for (int y = -offset; y < height+offset; y++) {
-                if (!checkCoord(vec2Int.getX() + x, vec2Int.getY() + y)) return false;
-                if (mGlobalMap.getMap()[vec2Int.getX() + x][vec2Int.getY() + y].getEntityType() != EntityType.Empty &&
-                        x>=0 &&
-                        x<width &&
-                        y>=0 &&
-                        y < height) {
-                    return false;
-                }
+                if (!checkCoord(vec2Int.getX() + x, vec2Int.getY() + y)) continue;
                 if (mMapPotField[vec2Int.getX() + x][vec2Int.getY() + y].getSumDanger() > 0) return false;
                 if (mMapPotField[vec2Int.getX() + x][vec2Int.getY() + y].getSumDangerContour() > 0) return false;
             }

@@ -9,8 +9,8 @@ public class EconomicManager {
 
     public static final String TAG = "strategy.EconomicManager";
 
-    static final int MAX_BUILDER_UNIT = 55;
-    static final int MAX_BUILDER_UNIT_ALL_GAME = 55;
+    static int MAX_BUILDER_UNIT = 70;
+    static int MAX_BUILDER_UNIT_ALL_GAME = 70;
 
     // количество рабочих
     int sizeBuildUnit;
@@ -21,14 +21,37 @@ public class EconomicManager {
 
     DebugInterface debugInterface;
 
+    boolean init;
+    boolean init2;
+
 
 
     public EconomicManager() {
-
+        init = false;
+        init2=false;
     }
 
     public HashMap<Integer, EntityAction> update(PlayerView playerView, GlobalManager globalManager,DebugInterface debugInterface) {
         this.debugInterface = debugInterface;
+
+        if (!init) {
+            if (globalManager.getGlobalStatistic().getPlayers().size() == 2) {
+                MAX_BUILDER_UNIT = 70;
+            } else {
+                MAX_BUILDER_UNIT = 60;
+            }
+            MAX_BUILDER_UNIT_ALL_GAME = MAX_BUILDER_UNIT;
+            init = true;
+        }
+        if (FinalConstant.isFogOfWar() && !init2)
+        {
+            if (globalManager.getGlobalStatistic().getMyPlayer().getCountAllBiuld()==MAX_BUILDER_UNIT_ALL_GAME && !globalManager.getGlobalStatistic().isCheckFirstEnemyUnits())
+            {
+                MAX_BUILDER_UNIT+=5;
+                MAX_BUILDER_UNIT_ALL_GAME=MAX_BUILDER_UNIT;
+                init2 = true;
+            }
+        }
 
         HashMap<Integer, EntityAction> actionHashMap = new HashMap<>();
         GlobalStatistic globalStatistic = globalManager.getGlobalStatistic();
@@ -40,7 +63,6 @@ public class EconomicManager {
 
         //всё что связанно с новые зданиями
         buildBuilder(myPlayer, playerView, globalManager, actionHashMap);
-
 
         /* ДОБЫЧА ресурсов
         вызывается метод несколько, массив делится на 2 части
@@ -342,7 +364,7 @@ public class EconomicManager {
 
             ArrayList<MyEntity> resource = globalManager.getGlobalMap().getEntityMap(builderUnit.getPosition(),GlobalMap.aroundArray,FinalConstant.getMyID(),-1,false,EntityType.RESOURCE);
 
-            // увороты от милишников
+            // увороты от всех по ПП
             Vec2Int vec2IntDodge = globalManager.getMapPotField().getDangerPositionBuild(builderUnit,resource.size()>0);
 
             if (vec2IntDodge != null) {
@@ -384,7 +406,9 @@ public class EconomicManager {
         ) {
             if ( (myPlayer.getEntityArrayList(EntityType.RANGED_BASE).size()>0 &&
                     myPlayer.getEntityArrayList(EntityType.BUILDER_BASE).size()>0) ||
-                myPlayer.getEntityArrayList(EntityType.HOUSE).size() < 4) {
+                myPlayer.getEntityArrayList(EntityType.HOUSE).size() < 4 ||
+             myPlayer.getResource()>600) {
+
              //   System.out.println("size HOME: " +  myPlayer.getEntityArrayList(EntityType.HOUSE).size());
               //  System.out.println("size RANGED_BASE: " +  myPlayer.getEntityArrayList(EntityType.RANGED_BASE).size());
                 createHouseV2(builderUnitArrayList, globalManager, actionHashMap);
@@ -701,6 +725,8 @@ public class EconomicManager {
             MyEntity entity = builderUnitArrayList.get(j);
             RepairAction r = getNearbyBuildNeedHeal(entity.getPosition(), globalManager);
 
+            if (entity.isDodge()) continue;
+
             if (r == null) {
 
                 if (entity.getDataTaskUnit().getUnitState() == EUnitState.REPAIR || entity.getDataTaskUnit().getUnitState() == EUnitState.BUILD) {
@@ -714,6 +740,7 @@ public class EconomicManager {
 
             if (action == null) action = new EntityAction(null, null, null, null);
             action.setRepairAction(r);
+            action.setMoveAction(null);
 
             entity.setDataTaskUnit(new DataTaskUnit(EUnitState.REPAIR));
 
@@ -736,6 +763,8 @@ public class EconomicManager {
 
             for (int j = 0; j < builderUnitArrayList.size(); j++) {
                 builderUnit = builderUnitArrayList.get(j);
+
+              //  if (builderUnit.getDataTaskUnit().getUnitState()==EUnitState.REPAIR || builderUnit.getDataTaskUnit().getUnitState() == EUnitState.BUILD) continue;
 
                 Vec2Int vec2Int1 = globalManager.getGlobalMap().getMinPositionBuilding(builderUnit.getPosition(), myEntityBuilding.getPosition(), FinalConstant.getEntityProperties(myEntityBuilding.getEntityType()));
 
@@ -760,6 +789,12 @@ public class EconomicManager {
 
 
                 if (dis < 2) {
+                    EntityAction action = actionHashMap.get(builderUnit);
+
+                    if (action == null) action = new EntityAction(null, null, null, null);
+
+                    if (action.getRepairAction()!=null) continue;
+
                     MoveAction m = null;
                     BuildAction b = null;
                     AttackAction a = null;
@@ -777,6 +812,12 @@ public class EconomicManager {
                 }
 
                 if (dis < 4 && myEntityBuilding.getEntityType()==EntityType.RANGED_BASE) {
+                    EntityAction action = actionHashMap.get(builderUnit);
+
+                    if (action == null) action = new EntityAction(null, null, null, null);
+
+                    if (action.getRepairAction()!=null) continue;
+
                     MoveAction m = null;
                     BuildAction b = null;
                     AttackAction a = null;
@@ -906,7 +947,8 @@ public class EconomicManager {
         Final.DEBUG(TAG, "arrayList RANGED_BASE BASE: " + rangeBaseArrayList.size() + " resource: " + myPlayer.getResource());
         if (myPlayer.getResource() > myPlayer.getCost(EntityType.RANGED_UNIT) &&
                 (globalManager.getMapPotField().checkAttackBaseTwo(myPlayer.getId()) || FinalConstant.getCurrentTik() > 1)
-        && true) {
+        && true && globalManager.getGlobalStatistic().isCheckFirstEnemyUnits()
+        ) {
             for (int i = 0; i < rangeBaseArrayList.size(); i++) {
                 b = new BuildAction(
                         EntityType.RANGED_UNIT, globalManager.getGlobalMap().getPositionBuildUnit(rangeBaseArrayList.get(i))
@@ -948,7 +990,7 @@ public class EconomicManager {
 
     private boolean checkAttackBaseV2(MyPlayer myPlayer) {
         ArrayList<MyEntity> arrayList = myPlayer.getEnemyArrayList();
-        if (arrayList.size()*1.1>myPlayer.getEntityArrayList(EntityType.RANGED_UNIT).size() + myPlayer.getEntityArrayList(EntityType.MELEE_UNIT).size()) return true;
+        if (arrayList.size()*1.5>myPlayer.getEntityArrayList(EntityType.RANGED_UNIT).size() + myPlayer.getEntityArrayList(EntityType.MELEE_UNIT).size()) return true;
         else return false;
     }
 

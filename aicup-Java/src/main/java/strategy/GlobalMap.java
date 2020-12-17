@@ -1053,7 +1053,7 @@ public class GlobalMap {
             {
                 if (entityType != EntityType.ALL && entity.getEntityType() != entityType) continue;
 
-                if (entity.getEntityType()==entityType) {
+                if (entity.getEntityType()==entityType && (entityType==EntityType.RESOURCE || entityType==EntityType.Empty)) {
                     arrayList.add(entity);
                     continue;
                 }
