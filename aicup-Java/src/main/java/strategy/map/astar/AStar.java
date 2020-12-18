@@ -1,5 +1,12 @@
 package strategy.map.astar;
 
+import model.EntityType;
+import model.Vec2Int;
+import strategy.FinalConstant;
+import strategy.GlobalMap;
+import strategy.MyEntity;
+import strategy.map.potfield.MapPotField;
+
 import java.util.*;
 
 /**
@@ -18,31 +25,98 @@ public class AStar {
     private Node initialNode;
     private Node finalNode;
 
-    public AStar(int size, Node initialNode, Node finalNode, int hvCost) {
-        this.hvCost = hvCost;
-        setInitialNode(initialNode);
-        setFinalNode(finalNode);
+    List<Node> path = new ArrayList<Node>();
+
+    public AStar(int size)
+    {
+        this.hvCost = DEFAULT_HV_COST;
         this.searchArea = new Node[size][size];
+
+        for (int i = 0; i < searchArea.length; i++) {
+            for (int j = 0; j < searchArea[0].length; j++) {
+                this.searchArea[i][j] = new Node(i, j);;
+            }
+        }
+
         this.openList = new PriorityQueue<Node>(new Comparator<Node>() {
             @Override
             public int compare(Node node0, Node node1) {
                 return Integer.compare(node0.getF(), node1.getF());
             }
         });
-        setNodes();
+        //  setNodes();
         this.closedSet = new HashSet<>();
     }
 
-    public AStar(int size, Node initialNode, Node finalNode) {
-        this(size, initialNode, finalNode, DEFAULT_HV_COST);
+    public void initSearch(Vec2Int initialNode, Vec2Int finalNode){
+        setInitialNode(new Node(initialNode));
+        setFinalNode(new Node(finalNode));
+        setNodes();
+        openList.clear();
+        closedSet.clear();
+        path.clear();
+    }
+
+    public void updateMap(GlobalMap globalMap, MapPotField mapPotField){
+        for (int i = 0; i < searchArea.length; i++) {
+            for (int j = 0; j < searchArea[0].length; j++) {
+                this.searchArea[i][j].setBlock(false);
+            }
+        }
+
+        for (int i = 0; i < globalMap.getMap().length; i++) {
+            for (int j = 0; j < globalMap.getMap()[0].length; j++) {
+
+                Vec2Int vec2Int = Vec2Int.createVector(i,j);
+
+                if (globalMap.getMap(vec2Int).getEntityType()== EntityType.RESOURCE)
+                {
+                    this.searchArea[i][j].setH2(65);
+                }
+
+                if (
+                globalMap.getMap(vec2Int).getEntityType()== EntityType.MELEE_BASE ||
+                        globalMap.getMap(vec2Int).getEntityType()== EntityType.RANGED_BASE ||
+                        globalMap.getMap(vec2Int).getEntityType()== EntityType.BUILDER_BASE ||
+                        globalMap.getMap(vec2Int).getEntityType()== EntityType.TURRET ||
+                        globalMap.getMap(vec2Int).getEntityType()== EntityType.HOUSE ||
+                        globalMap.getMap(vec2Int).getEntityType()== EntityType.WALL
+                ) {
+                    if ( globalMap.getMap(vec2Int).getPlayerId() == FinalConstant.getMyID())
+                    {
+                        this.searchArea[i][j].setBlock(true);
+                    }
+                    else {
+                        this.searchArea[i][j].setH2(150);
+                    }
+                }
+
+                if (globalMap.getMap(vec2Int).getEntityType()== EntityType.BUILDER_UNIT){
+                    if (globalMap.getSpecialCheckBuilderTask(vec2Int))
+                    {
+                        this.searchArea[i][j].setBlock(true);
+                    }
+                }
+
+                if (globalMap.getMap(vec2Int).getEntityType()== EntityType.RANGED_UNIT||
+                        globalMap.getMap(vec2Int).getEntityType()== EntityType.MELEE_UNIT
+                ){
+                    if (globalMap.getMap(vec2Int).getPlayerId()==FinalConstant.getMyID())
+                    {
+                        if (mapPotField.getMapPotField()[vec2Int.getX()][vec2Int.getY()].getSumDanger()>0) {
+                            this.searchArea[i][j].setBlock(true);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private void setNodes() {
         for (int i = 0; i < searchArea.length; i++) {
             for (int j = 0; j < searchArea[0].length; j++) {
-                Node node = new Node(i, j);
-                node.calculateHeuristic(getFinalNode());
-                this.searchArea[i][j] = node;
+               // Node node = new Node(i, j);
+                this.searchArea[i][j].calculateHeuristic(getFinalNode());
             }
         }
     }
@@ -70,7 +144,6 @@ public class AStar {
     }
 
     private List<Node> getPath(Node currentNode) {
-        List<Node> path = new ArrayList<Node>();
         path.add(currentNode);
         Node parent;
         while ((parent = currentNode.getParent()) != null) {

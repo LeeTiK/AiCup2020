@@ -385,7 +385,7 @@ public class MyPlayer extends Player {
             case BUILDER_BASE:
                 return FinalConstant.getEntityProperties(entityType).getCost();
             case BUILDER_UNIT:
-                return FinalConstant.getEntityProperties(entityType).getCost(); //+ (getEntityArrayList(EntityType.BUILDER_UNIT) == null ? 0 : getEntityArrayList(EntityType.BUILDER_UNIT).size()-1);
+                return FinalConstant.getEntityProperties(entityType).getCost() + (getEntityArrayList(EntityType.BUILDER_UNIT) == null ? 0 : getEntityArrayList(EntityType.BUILDER_UNIT).size());
             case MELEE_BASE:
                 return FinalConstant.getEntityProperties(entityType).getCost();
             case MELEE_UNIT:
@@ -556,7 +556,7 @@ public class MyPlayer extends Player {
             MyEntity building = mBuildingArrayList.get(i);
             if (building.getMinDisToEnemy()==0xFFFF) continue;
 
-            if (building.getMinDisToEnemy()<15){
+            if (building.getMinDisToEnemy()<16){
                 addEnemy(building.getEnemyMinDis(),building.getMinDisToEnemy());
             }
         }

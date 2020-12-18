@@ -23,6 +23,8 @@ public class GlobalManager {
     MapPotField mMapPotField;
     static WaveSearchModule waveSearchModule;
 
+    MoveManager mMoveManager;
+
     long startTime;
     long timeParsing;
 
@@ -36,6 +38,8 @@ public class GlobalManager {
         mGlobalStatistic = new GlobalStatistic();
         mGlobalMap = new GlobalMap();
         waveSearchModule = new WaveSearchModule(mGlobalMap);
+
+        mMoveManager = new MoveManager();
 
         timeAllStrategy = 0;
         timeParsing = 0;
@@ -63,6 +67,8 @@ public class GlobalManager {
         mGlobalMap.update(getGlobalStatistic());
         mMapPotField.update(this);
         waveSearchModule.updateMap(mMapPotField.getMapPotField());
+
+        mMoveManager.update(mGlobalMap,mMapPotField,debugInterface);
 
 
         debugGraphic(playerView,debugInterface);
@@ -226,5 +232,9 @@ public class GlobalManager {
 
     public static WaveSearchModule getWaveSearchModule() {
         return waveSearchModule;
+    }
+
+    public MoveManager getMoveManager() {
+        return mMoveManager;
     }
 }

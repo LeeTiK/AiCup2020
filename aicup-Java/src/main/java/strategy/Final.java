@@ -34,6 +34,7 @@ public class Final {
     public final static boolean CHECK_SEARCH_WAVE_START_END = false;
 
     public final static boolean CHECK_SEARCH_PATH_RANGER = false;
+    public final static boolean CHECK_SEARCH_PATH_ASTAR = true;
 
     static public Player getMyPlayer(PlayerView playerView) {
         int myID = playerView.getMyId();

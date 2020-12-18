@@ -591,8 +591,6 @@ public class GlobalMap {
 
     }
 
-
-
     public Vec2Int getPositionBuildUnit(Entity building) {
         EntityProperties entityProperties = FinalConstant.getEntityProperties(building);
 
@@ -625,6 +623,38 @@ public class GlobalMap {
 
         return vec2Int;
 
+    }
+
+
+
+    public Vec2Int getPositionBuildUnitAttack(Entity building, ArrayList<MyEntity> enemyUnits) {
+        EntityProperties entityProperties = FinalConstant.getEntityProperties(building);
+
+        Vec2Int vec2Int = building.getPosition().copy();
+
+        ArrayList<Vec2Int> arrayList = getCoordAround(vec2Int,entityProperties.getSize(),true);
+
+        if (arrayList.size()==0) return Vec2Int.createVector(0,0);
+
+        if (enemyUnits.size()==0) return arrayList.get(0);
+
+        Vec2Int current = null;
+        double midDis = 0xFFFF;
+
+        for (int i=0; i<arrayList.size(); i++)
+        {
+            for (int j=0; j<enemyUnits.size(); j++)
+            {
+                double dis = arrayList.get(i).distance(enemyUnits.get(j).getPosition());
+                if (dis<midDis && dis>2)
+                {
+                    current = arrayList.get(i);
+                    midDis = dis;
+                }
+            }
+        }
+
+        return current;
     }
 
     // функция показывает точку для создания здания
@@ -1435,5 +1465,74 @@ public class GlobalMap {
                 mapNextTick[newPosition.getX()][newPosition.getY()].getEntityType()==EntityType.RANGED_UNIT ||
                 mapNextTick[newPosition.getX()][newPosition.getY()].getEntityType()==EntityType.MELEE_UNIT) return true;
         else return false;
+    }
+
+    public ArrayList<MyEntity> getAllEntityResource() {
+        return allEntityResource;
+    }
+
+    public ArrayList<MyEntity> getAllEntityUnits() {
+        return allEntityUnits;
+    }
+
+    public boolean getSpecialCheckBuilderTask(Vec2Int vector) {
+
+        byte[][] bytes = aroundArray;
+
+        for (int i=0; i<bytes.length; i++)
+        {
+            int x = vector.getX() + bytes[i][0];
+            int y = vector.getY() + bytes[i][1];
+
+            if (!checkCoord(x,y)) continue;
+
+            MyEntity entity = map[x][y];
+
+            if (entity.getEntityType()==EntityType.RESOURCE) {
+                return true;
+            }
+
+            switch (entity.getEntityType()){
+                case WALL:
+                case HOUSE:
+                case BUILDER_BASE:
+                case MELEE_BASE:
+                case RANGED_BASE:
+                case TURRET:
+                    if (entity.getHealth()<FinalConstant.getEntityProperties(entity).getMaxHealth()) return true;
+                    break;
+                case RESOURCE:
+                    return true;
+            }
+        }
+
+        return false;
+    }
+
+    public Vec2Int getPositionToResourceSpecial(Vec2Int position, Vec2Int positionResource){
+        int x = positionResource.getX();
+        int y = positionResource.getY();
+
+        byte[][] array = GlobalMap.aroundArray;
+
+        int count = 0;
+
+        Vec2Int current = null;
+        double minDis = 0xFFFF;
+
+        for (int i=0; i<array.length; i++) {
+            Vec2Int vec2Int = Vec2Int.createVector(x + array[i][0],y + array[i][1]);
+
+            if (!checkEmpty(mapNextTick,vec2Int)) continue;
+
+            double dis = position.distance(vec2Int);
+            if (dis<minDis)
+            {
+                minDis = dis;
+                current = vec2Int;
+            }
+        }
+
+        return current;
     }
 }

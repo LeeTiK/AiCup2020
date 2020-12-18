@@ -1,5 +1,7 @@
 package strategy.map.astar;
 
+import model.Vec2Int;
+
 /**
  * Node Class
  *
@@ -11,6 +13,7 @@ public class Node {
     private int g;
     private int f;
     private int h;
+    private int h2;
     private int row;
     private int col;
     private boolean isBlock;
@@ -20,6 +23,12 @@ public class Node {
         super();
         this.row = row;
         this.col = col;
+    }
+
+    public Node(Vec2Int vec2Int) {
+        super();
+        this.row = vec2Int.getX();
+        this.col = vec2Int.getY();
     }
 
     public void calculateHeuristic(Node finalNode) {
@@ -43,7 +52,7 @@ public class Node {
     }
 
     private void calculateFinalCost() {
-        int finalCost = getG() + getH();
+        int finalCost = getG() + getH() + getH2();
         setF(finalCost);
     }
 
@@ -95,6 +104,11 @@ public class Node {
     }
 
     public void setBlock(boolean isBlock) {
+
+        if (isBlock==false){
+            h2 = 0;
+        }
+
         this.isBlock = isBlock;
     }
 
@@ -112,5 +126,17 @@ public class Node {
 
     public void setCol(int col) {
         this.col = col;
+    }
+
+    public Vec2Int getVec2Int(){
+        return Vec2Int.createVector(row,col);
+    }
+
+    public void setH2(int h2) {
+        this.h2 = h2;
+    }
+
+    public int getH2() {
+        return h2;
     }
 }
