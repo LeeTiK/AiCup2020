@@ -421,7 +421,7 @@ public class EconomicManager {
             if ( (myPlayer.getEntityArrayList(EntityType.RANGED_BASE).size()>0 &&
                     myPlayer.getEntityArrayList(EntityType.BUILDER_BASE).size()>0) ||
                 myPlayer.getEntityArrayList(EntityType.HOUSE).size() < 4 ||
-             myPlayer.getResource()>600) {
+            ( myPlayer.getResource()>1000 && myPlayer.getEntityArrayList(EntityType.HOUSE).size() < 6)) {
 
              //   System.out.println("size HOME: " +  myPlayer.getEntityArrayList(EntityType.HOUSE).size());
               //  System.out.println("size RANGED_BASE: " +  myPlayer.getEntityArrayList(EntityType.RANGED_BASE).size());
@@ -739,6 +739,13 @@ public class EconomicManager {
         ArrayList<MyEntity> buildingArrayList = myPlayer.getBuildingArrayList();
         ArrayList<MyEntity> builderUnitArrayList = myPlayer.getEntityArrayList(EntityType.BUILDER_UNIT);
 
+
+      /*  for (int j = 0; j < builderUnitArrayList.size(); j++){
+            MyEntity entity = builderUnitArrayList.get(j);
+            entity.setUpdate(false);
+        }*/
+
+
         for (int j = 0; j < builderUnitArrayList.size(); j++) {
             MyEntity entity = builderUnitArrayList.get(j);
             RepairAction r = getNearbyBuildNeedHeal(entity.getPosition(), globalManager);
@@ -761,14 +768,15 @@ public class EconomicManager {
             action.setMoveAction(null);
 
             entity.setDataTaskUnit(new DataTaskUnit(EUnitState.REPAIR));
+            //  entity.setUpdate(true);
 
             actionHashMap.put(entity.getId(), action);
         }
 
-
         for (int i = 0; i < buildingArrayList.size(); i++) {
             MyEntity myEntityBuilding = buildingArrayList.get(i);
             EntityProperties entityProperties = FinalConstant.getEntityProperties(myEntityBuilding.getEntityType());
+
 
             if (myEntityBuilding.getHealth() >= entityProperties.getMaxHealth()) continue;
 
@@ -781,6 +789,8 @@ public class EconomicManager {
 
             for (int j = 0; j < builderUnitArrayList.size(); j++) {
                 builderUnit = builderUnitArrayList.get(j);
+
+               // if (builderUnit.isUpdate()) continue;
 
               //  if (builderUnit.getDataTaskUnit().getUnitState()==EUnitState.REPAIR || builderUnit.getDataTaskUnit().getUnitState() == EUnitState.BUILD) continue;
 
@@ -901,6 +911,8 @@ public class EconomicManager {
                 actionHashMap.put(currentUnitTwo.getId(), new EntityAction(m, b, a, r));
             }
         }
+
+
         return actionHashMap;
     }
 

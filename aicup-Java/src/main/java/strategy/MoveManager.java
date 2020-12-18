@@ -55,28 +55,27 @@ public class MoveManager {
         }
         else {
             // поиск Astar интересно
+            if (Final.A_STAR) {
 
-            mAStar.initSearch(entity.getPosition(),targetPosition);
-            List<Node> path = mAStar.findPath();
+                mAStar.initSearch(entity.getPosition(), targetPosition);
+                List<Node> path = mAStar.findPath();
 
-            if (path.size()>1)
-            {
+                if (path.size() > 1) {
 
-                if (Final.debugGraphic) {
-                    if (Final.CHECK_SEARCH_PATH_ASTAR) {
-                        for (int k = 0; k < path.size(); k++) {
-                            FinalGraphic.sendSquare(mDebugInterface, path.get(k).getVec2Int(), 1, FinalGraphic.COLOR_GREEN);
+                    if (Final.debugGraphic) {
+                        if (Final.CHECK_SEARCH_PATH_ASTAR) {
+                            for (int k = 0; k < path.size(); k++) {
+                                FinalGraphic.sendSquare(mDebugInterface, path.get(k).getVec2Int(), 1, FinalGraphic.COLOR_GREEN);
+                            }
                         }
                     }
+
+                    moveAction.setTarget(path.get(1).getVec2Int());
+                    return moveAction;
+                } else {
+                    Final.DEBUG("JOPKA: ", "" + entity.getPosition().toString() + " target: " + targetPosition.toString());
                 }
-
-                moveAction.setTarget(path.get(1).getVec2Int());
-                return moveAction;
             }
-            else {
-                Final.DEBUG("JOPKA: ","" + entity.getPosition().toString() + " target: " + targetPosition.toString());
-            }
-
         }
 
         moveAction.setTarget(targetPosition);

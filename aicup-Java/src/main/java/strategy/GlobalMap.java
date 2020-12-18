@@ -157,9 +157,21 @@ public class GlobalMap {
             {7, 1}, {7, 0},
     };
 
+    final public static byte[][] housePositionFogOfWar = new byte[][]{
+            {2, 2}, {6, 2}, {10, 2}, {14, 2}, {18, 2}, {22, 2}, {26, 2},
+                    {2, 22}, {2, 26},
+            {2, 6}, {6, 6}, {10, 6}, {14, 6}, {18, 6}, {22, 6}, {26, 6},
+            {2, 10}, {6, 10}, {10, 10}, {14, 10}, {18,10}, {22, 10}, {26, 10},
+            {2, 14}, {6, 14}, {10, 14}, {14, 14}, {18,14}, {22, 14}, {26, 14},
+            {2, 18}, {6, 18}, {10, 18}, {14, 18}, {18,18}, {22, 18}, {26, 18},
+            {2, 22}, {6, 22}, {10, 22}, {14, 22}, {18,22}, {22, 22}, {26, 22},
+    };
+
     final public static byte[][] housePosition = new byte[][]{
             {0, 0}, {0, 3},{0, 6},{0, 9},{0, 12},{0, 15},{0, 18}, {0, 21},
             {4, 0}, {7, 0},{10, 0},{13, 0}, {16, 0},{19, 0},{22, 0},{25, 0},
+           /* {1, 3},{1, 6},{1, 9},{1, 12},{1, 15},{1, 18}, {1, 21},
+            {4, 1}, {7, 1},{10, 1},{13, 1}, {16, 1},{19, 1},{22, 1},{25, 1},*/
 
         //    {11, 4},  {11, 8}, {11, 12}, {11, 16},
         //    {4, 11}, {16, 11},
@@ -210,6 +222,15 @@ public class GlobalMap {
     final public static byte[][] basePosition = new byte[][]{
               {5, 5}, {15, 5},{5, 15},{11, 5},{5, 11},{0, 15},{0, 18}, {0, 21},
               {7, 5}, {5, 7}, {15, 4},{4, 15},{4, 11}, {11, 4},
+    };
+
+    final public static byte[][] basePositionV2 = new byte[][]{
+            {2, 13}, {3, 13},{4, 13},{6, 13},{7, 13},{8, 13},{9, 13},{10, 13},{11, 13},{12, 13},{13, 13},{14, 13},{15, 13},{16, 13},
+            {13, 2}, {13, 3}, {13, 4}, {13, 6}, {13, 7}, {13, 8}, {13, 9}, {13, 10}, {13, 11}, {13, 12},{13, 13},{13, 14},{13, 15},
+            {2, 14}, {3, 14},{4, 14},{5, 14},{6, 14},{7, 14},{8, 14},{9, 14},{10, 14},{11, 14},{12, 14},{13, 14},{14, 14},{15, 14},{16, 14},
+            {14, 2}, {14, 3}, {14, 4}, {14, 5}, {14, 6}, {14, 7}, {14, 8}, {14, 9}, {14, 10}, {14, 11}, {14, 12},{14, 13},{14, 14},{14, 15},
+            {10, 10},{11, 2},{11, 3},{11, 4},{11, 6},{11, 7},{11, 8},{11, 9},{11, 10},
+            {0, 10},{0, 11},{0, 12},{0, 6},
     };
 
     public GlobalMap() {
@@ -1405,6 +1426,26 @@ public class GlobalMap {
     public ArrayList<Vec2Int> getPositionBuildHouseV2(EntityProperties entityProperties,MapPotField mapPotField, boolean baseCreate) {
         ArrayList<Vec2Int> arrayList = new ArrayList<>();
 
+        if (FinalConstant.isFogOfWar())
+        {
+
+            for (int i=0; i<housePositionFogOfWar.length; i++)
+            {
+                Vec2Int vec2Int = Vec2Int.createVector(housePositionFogOfWar[i][0],housePositionFogOfWar[i][1]);
+
+
+                if (checkSafeСreationBuilding(vec2Int, entityProperties,mapPotField)){
+                    if (baseCreate==false && checkPositionCreateBaseFogOfWar())
+                    {
+                        
+                    }
+                    arrayList.add(vec2Int.add(1,1));
+                }
+            }
+            
+            return arrayList;
+        }
+        
         for (int i=0; i<housePosition.length; i++)
         {
             Vec2Int vec2Int = Vec2Int.createVector(housePosition[i][0],housePosition[i][1]);
@@ -1444,8 +1485,28 @@ public class GlobalMap {
         return arrayList;
     }
 
+    private boolean checkPositionCreateBaseFogOfWar() {
+        return true;
+    }
+
     public ArrayList<Vec2Int> getPositionBuildBase(EntityProperties entityProperties,MapPotField mapPotField) {
         ArrayList<Vec2Int> arrayList = new ArrayList<>();
+
+
+        if (FinalConstant.isFogOfWar())
+        {
+            for (int i=0; i<basePositionV2.length; i++)
+            {
+                Vec2Int vec2Int = Vec2Int.createVector(basePositionV2[i][0],basePositionV2[i][1]);
+
+                if (checkSafeСreationBuilding(vec2Int, entityProperties,mapPotField)){
+                    arrayList.add(vec2Int.add(1,1));
+                }
+            }
+
+            return arrayList;
+        }
+
 
         for (int i=0; i<basePosition.length; i++)
         {

@@ -11,6 +11,8 @@ public class Final {
     final static boolean debugRelease = true;
     public final static boolean debugGraphic = false;
 
+
+    public final static boolean A_STAR = false;
     final static boolean OFF_WAR = false;
 
     // элементы игры
