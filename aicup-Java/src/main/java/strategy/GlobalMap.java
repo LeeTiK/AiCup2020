@@ -14,7 +14,8 @@ public class GlobalMap {
     MyEntity[][] map = null;
     MyEntity[][] mapNextTick = null;
 
-    ArrayList<MyEntity> allEntity;
+    ArrayList<MyEntity> allEntityUnits;
+    ArrayList<MyEntity> allEntityResource;
 
     //массив в котором просишь подвинуться юниту если тебе очень нужно, он обязан это исполнить если это не
 
@@ -277,14 +278,11 @@ public class GlobalMap {
     private void updateMap(GlobalStatistic globalStatistic) {
         clearMap();
 
-        allEntity = globalStatistic.getMyEntityArrayList();
+        allEntityUnits = globalStatistic.getMyEntityArrayList();
+        allEntityResource = globalStatistic.getResourceArrayList();
 
-        for (int i = 0; i < allEntity.size(); i++) {
-            MyEntity entity = allEntity.get(i);
-
-            if (entity.getEntityType() == EntityType.RESOURCE) {
-                resourceMap += entity.getHealth();
-            }
+        for (int i = 0; i < allEntityUnits.size(); i++) {
+            MyEntity entity = allEntityUnits.get(i);
 
             if (checkCoord(entity.getPosition())
             ) {
@@ -308,6 +306,19 @@ public class GlobalMap {
                         break;
                 }
 
+            }
+            //  playerView.getEntityProperties().get()
+        }
+
+        for (int i = 0; i < allEntityResource.size(); i++) {
+            MyEntity entity = allEntityResource.get(i);
+
+            resourceMap += entity.getHealth();
+
+            if (checkCoord(entity.getPosition())
+            ) {
+                map[entity.getPosition().getX()][entity.getPosition().getY()] = entity;
+                mapNextTick[entity.getPosition().getX()][entity.getPosition().getY()] = entity;
             }
             //  playerView.getEntityProperties().get()
         }
@@ -450,6 +461,16 @@ public class GlobalMap {
         double minDis = 0xFFFF;
         MyEntity current = null;
 
+        ArrayList<MyEntity> allEntity;
+
+        if (entityType==EntityType.RESOURCE)
+        {
+            allEntity = allEntityResource;
+        }
+        else {
+            allEntity = allEntityUnits;
+        }
+
         for (int i = 0; i < allEntity.size(); i++) {
             if (allEntity.get(i).getEntityType() != entityType) continue;
 
@@ -463,11 +484,12 @@ public class GlobalMap {
                 }
              }
 
-            ArrayList arrayList = getCoordAround(allEntity.get(i).getPosition(), 1, true, myID);
-            if (arrayList.size() == 0 && checkEmpty) continue;
-
             double dis = position.distance(allEntity.get(i).getPosition());
             if (dis < minDis) {
+
+                ArrayList arrayList = getCoordAround(allEntity.get(i).getPosition(), 1, true, myID);
+                if (arrayList.size() == 0 && checkEmpty) continue;
+
                 current = allEntity.get(i);
                 minDis = dis;
             }

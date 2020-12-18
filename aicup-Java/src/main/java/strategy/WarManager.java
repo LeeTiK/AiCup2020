@@ -655,9 +655,9 @@ public class WarManager {
                 Final.DEBUG(TAG, "ID:" + range.getId() + " entity: " + entity);
                 MoveAction m;
                 if (entity == null) {
-                    m = new MoveAction(enemy.getPosition(), true, false);
+                    m = new MoveAction(enemy.getPosition(), true, true);
                 } else {
-                    m = new MoveAction(entity.getPosition(), true, false);
+                    m = new MoveAction(entity.getPosition(), true, true);
                     entity.setRotation(true);
                 }
 
@@ -731,9 +731,9 @@ public class WarManager {
                     Final.DEBUG(TAG, "ID:" + range.getId() + " entity: " + entity);
                     MoveAction m;
                     if (entity == null) {
-                        m = new MoveAction(vec2Int, true, false);
+                        m = new MoveAction(vec2Int, true, true);
                     } else {
-                        m = new MoveAction(entity.getPosition(), true, false);
+                        m = new MoveAction(entity.getPosition(), true, true);
                         entity.setRotation(true);
                     }
 
@@ -743,10 +743,12 @@ public class WarManager {
             }
         }
 
-        if (globalManager.getGlobalMap().getResourceMap()==0)
+        if (globalManager.getGlobalMap().getResourceMap()<1000)
         {
             for (int i = 0; i < buildArrayList.size(); i++) {
                 MyEntity build = buildArrayList.get(i);
+
+                if (build.getTargetEntity()!=null) continue;
 
                 if (build.getUnitState() == EUnitState.REPAIR || build.getUnitState() == EUnitState.BUILD)
                     continue;

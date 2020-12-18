@@ -158,13 +158,21 @@ public class EconomicManager {
 
             ArrayList<MyEntity> resource;
 
-            resource = globalManager.getGlobalMap().getEntityMapResourceSpecial(builder.getPosition());
+          /*  resource = globalManager.getGlobalMap().getEntityMapResourceSpecial(builder.getPosition());
 
             if (resource.size()>0){
                 Final.DEBUG("ERROR",  "resource>0");
-            }
+            }*/
 
-            MyEntity resourceMidDis = globalManager.getGlobalMap().getNearest(builder.getPosition(), EntityType.RESOURCE,true, -1, globalManager.getMapPotField());
+
+            MyEntity resourceMidDis;
+
+            if (builder.getEnemyMinDis()!=null && builder.getEnemyMinDis().getTargetEntity()!=null) {
+                resourceMidDis =globalManager.getGlobalMap().getNearest(builder.getPosition(), EntityType.RESOURCE, true, -1, globalManager.getMapPotField());
+            }
+            else {
+                resourceMidDis = builder.getEnemyMinDis();
+            }
 
             if (resourceMidDis!=null)
             {
@@ -947,7 +955,8 @@ public class EconomicManager {
         Final.DEBUG(TAG, "arrayList RANGED_BASE BASE: " + rangeBaseArrayList.size() + " resource: " + myPlayer.getResource());
         if (myPlayer.getResource() > myPlayer.getCost(EntityType.RANGED_UNIT) &&
                 (globalManager.getMapPotField().checkAttackBaseTwo(myPlayer.getId()) || FinalConstant.getCurrentTik() > 1)
-        && true && globalManager.getGlobalStatistic().isCheckFirstEnemyUnits()
+        && true
+                //&& globalManager.getGlobalStatistic().isCheckFirstEnemyUnits()
         ) {
             for (int i = 0; i < rangeBaseArrayList.size(); i++) {
                 b = new BuildAction(

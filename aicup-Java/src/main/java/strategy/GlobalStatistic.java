@@ -7,6 +7,7 @@ import model.Vec2Int;
 import pool.CacheVec2Int;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 
 public class GlobalStatistic {
 
@@ -14,6 +15,7 @@ public class GlobalStatistic {
 
     ArrayList<MyPlayer> mMyPlayers;
     ArrayList<MyEntity> mMyEntityArrayList;
+    ArrayList<MyEntity> mResourceArrayList;
 
     MyPlayer left;
     MyPlayer right;
@@ -25,6 +27,7 @@ public class GlobalStatistic {
     public GlobalStatistic() {
         mMyPlayers = new ArrayList<>();
         mMyEntityArrayList = new ArrayList<>();
+        mResourceArrayList = new ArrayList<>();
         checkFirstEnemyUnits=false;
     }
 
@@ -91,9 +94,18 @@ public class GlobalStatistic {
             mMyEntityArrayList.get(i).setUpdate(false);
         }
 
+        //удаляем все ресурсы о которых знали
+        mResourceArrayList.clear();
+
 
         // добавление и обновление информации о юнитах
         for (int i = 0; i < playerView.getEntities().length; i++) {
+
+            if (playerView.getEntities()[i].getEntityType()==EntityType.RESOURCE)
+            {
+                mResourceArrayList.add(new MyEntity(playerView.getEntities()[i]));
+                continue;
+            }
 
             MyEntity entity = addGlobalEntityList(playerView.getEntities()[i]);
             //    mMyEntityArrayList.add(new strategy.MyEntity(playerView.getEntities()[i]));
@@ -260,6 +272,8 @@ public class GlobalStatistic {
         return mMyEntityArrayList.get(mMyEntityArrayList.size() - 1);
     }
 
+
+
     public MyPlayer getMyPlayer() {
         return getPlayer(FinalConstant.getMyID());
     }
@@ -332,5 +346,9 @@ public class GlobalStatistic {
 
     public boolean isCheckFirstEnemyUnits() {
         return checkFirstEnemyUnits;
+    }
+
+    public ArrayList<MyEntity> getResourceArrayList() {
+        return mResourceArrayList;
     }
 }

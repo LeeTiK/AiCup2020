@@ -515,7 +515,6 @@ public class MyPlayer extends Player {
         ArrayList<MyEntity> myEntityArrayList = new ArrayList<>();
 
 
-
         for (int i=0; i<builders.size(); i++)
         {
             MyEntity builder = builders.get(i);
@@ -533,6 +532,7 @@ public class MyPlayer extends Player {
                     builder.setEnemyMinDis(entity);
                 } else {
                     builder.setMinDisToEnemy(0xFFFF);
+                    builder.setEnemyMinDis(null);
                 }
             }
         }
