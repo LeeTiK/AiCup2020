@@ -286,7 +286,7 @@ public class WarManager {
                     MyEntity entity = globalManager.getGlobalMap().getMinDisToEntity(range.getPosition(), myPlayer, EntityType.BUILDER_UNIT);
 
                     if (entity != null) {
-                        MoveAction moveAction = globalManager.getMoveManager().getMoveActionPosition(range,entity.getPosition());
+                        MoveAction moveAction = globalManager.getMoveManager().getMoveActionPosition(range,entity.getPosition(),false);
                         entityAction.setMoveAction(moveAction);
                         range.getEntityAction().setMoveAction(moveAction);
                         range.setUpdate(true);
@@ -347,18 +347,21 @@ public class WarManager {
 
             if (enemy!=null)
             {
-                MyEntity entity = globalManager.getGlobalMap().getMoveMyUnit(melee.getPosition());
 
-                Final.DEBUG(TAG, "ID:" + melee.getId() + " entity: " + entity);
-                MoveAction m;
-                if (entity == null) {
-                    m = globalManager.getMoveManager().getMoveActionPosition(melee,enemy.getPosition());
-                         //   new MoveAction(enemy.getPosition(), true, false);
-                } else {
-                    m = globalManager.getMoveManager().getMoveActionPosition(melee,entity.getPosition());
-                         //   new MoveAction(entity.getPosition(), true, false);
-                    entity.setRotation(true);
+                Vec2Int positionEnemy = enemy.getPosition();
+
+                if (enemy.getEntityType()==EntityType.HOUSE ||
+                        enemy.getEntityType()==EntityType.MELEE_BASE ||
+                        enemy.getEntityType()==EntityType.RANGED_BASE ||
+                        enemy.getEntityType()==EntityType.BUILDER_BASE ||
+                        enemy.getEntityType()==EntityType.TURRET ||
+                        enemy.getEntityType()==EntityType.WALL
+                )
+                {
+                    positionEnemy = globalManager.getGlobalMap().getSpecialPositionAttackBuilding(melee,enemy);
                 }
+
+                MoveAction m =  globalManager.getMoveManager().getMoveActionPosition(melee,positionEnemy);
 
                 entityAction.setMoveAction(m);
                 actionHashMap.put(melee.getId(), entityAction);
@@ -401,18 +404,31 @@ public class WarManager {
 
             if (enemy!=null)
             {
-                MyEntity entity = globalManager.getGlobalMap().getMoveMyUnit(range.getPosition());
+              //  MyEntity entity = globalManager.getGlobalMap().getMoveMyUnit(range.getPosition());
 
-                Final.DEBUG(TAG, "ID:" + range.getId() + " entity: " + entity);
+             //   Final.DEBUG(TAG, "ID:" + range.getId() + " entity: " + entity);
+                Vec2Int positionEnemy = enemy.getPosition();
+
+                if (enemy.getEntityType()==EntityType.HOUSE ||
+                        enemy.getEntityType()==EntityType.MELEE_BASE ||
+                        enemy.getEntityType()==EntityType.RANGED_BASE ||
+                        enemy.getEntityType()==EntityType.BUILDER_BASE ||
+                        enemy.getEntityType()==EntityType.TURRET ||
+                        enemy.getEntityType()==EntityType.WALL
+                )
+                {
+                    positionEnemy = globalManager.getGlobalMap().getSpecialPositionAttackBuilding(range,enemy);
+                }
+
                 MoveAction m;
-                if (entity == null) {
-                    m = globalManager.getMoveManager().getMoveActionPosition(range,enemy.getPosition());
+               // if (entity == null) {
+                    m = globalManager.getMoveManager().getMoveActionPosition(range,positionEnemy);
                 //new MoveAction(enemy.getPosition(), true, true);
-                } else {
+              /*  } else {
                     m = globalManager.getMoveManager().getMoveActionPosition(range,entity.getPosition());
                             //new MoveAction(entity.getPosition(), true, true);
                     entity.setRotation(true);
-                }
+                }**/
 
                 range.setEnemyMinDis(enemy);
                 entityAction.setMoveAction(m);
@@ -437,6 +453,7 @@ public class WarManager {
 
                if (enemy.getEntityType() == EntityType.RANGED_UNIT) {
                     if (enemy.getPosition().distance(range.getPosition()) < 12) {
+
                         SearchAnswer searchAnswer = globalManager.getWaveSearchModule().searchPathRange(range.getPosition(), 12);
                         if (searchAnswer != null) {
                             Vec2Int nextMove = searchAnswer.getPath().getLast();
@@ -523,12 +540,29 @@ public class WarManager {
                     Final.DEBUG(TAG, "ID:" + build.getId() + " entity: " + entity);
                     MoveAction m;
                     if (entity == null) */
-                    MoveAction  m = globalManager.getMoveManager().getMoveActionPosition(build,enemy.getPosition());
+                   // MoveAction  m = globalManager.getMoveManager().getMoveActionPosition(build,enemy.getPosition());
                             //new MoveAction(enemy.getPosition(), true, false);
                    /* } else {
                         m = new MoveAction(entity.getPosition(), true, false);
                         entity.setRotation(true);
                     }*/
+
+
+                    Vec2Int positionEnemy = enemy.getPosition();
+
+                    if (enemy.getEntityType()==EntityType.HOUSE ||
+                            enemy.getEntityType()==EntityType.MELEE_BASE ||
+                            enemy.getEntityType()==EntityType.RANGED_BASE ||
+                            enemy.getEntityType()==EntityType.BUILDER_BASE ||
+                            enemy.getEntityType()==EntityType.TURRET ||
+                            enemy.getEntityType()==EntityType.WALL
+                    )
+                    {
+                        positionEnemy = globalManager.getGlobalMap().getSpecialPositionAttackBuilding(build,enemy);
+                    }
+
+                    MoveAction m =  globalManager.getMoveManager().getMoveActionPosition(build,positionEnemy);
+
 
                     entityAction.setMoveAction(m);
                     actionHashMap.put(build.getId(), entityAction);

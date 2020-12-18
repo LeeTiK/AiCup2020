@@ -18,7 +18,7 @@ public class Final {
 
     //////////DEBUG MAP GRAPHIC//////////////
 
-    public final static boolean COORDINATE = false;
+    public final static boolean COORDINATE = true;
     public final static boolean INFO_UNIT = false;
     public final static boolean PLAYER_AREA = false;
     public final static boolean PLAYER_AREA_TWO = false;

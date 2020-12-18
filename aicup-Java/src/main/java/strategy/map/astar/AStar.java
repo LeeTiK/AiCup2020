@@ -69,39 +69,36 @@ public class AStar {
 
                 Vec2Int vec2Int = Vec2Int.createVector(i,j);
 
-                if (globalMap.getMap(vec2Int).getEntityType()== EntityType.RESOURCE)
+                MyEntity entity = globalMap.getMap()[vec2Int.getX()][vec2Int.getY()];
+
+                if (entity.getEntityType()== EntityType.RESOURCE)
                 {
-                    this.searchArea[i][j].setH2(65);
+                    this.searchArea[i][j].setH2(70);
                 }
 
                 if (
-                globalMap.getMap(vec2Int).getEntityType()== EntityType.MELEE_BASE ||
-                        globalMap.getMap(vec2Int).getEntityType()== EntityType.RANGED_BASE ||
-                        globalMap.getMap(vec2Int).getEntityType()== EntityType.BUILDER_BASE ||
-                        globalMap.getMap(vec2Int).getEntityType()== EntityType.TURRET ||
-                        globalMap.getMap(vec2Int).getEntityType()== EntityType.HOUSE ||
-                        globalMap.getMap(vec2Int).getEntityType()== EntityType.WALL
+                        entity.getEntityType()== EntityType.MELEE_BASE ||
+                                entity.getEntityType()== EntityType.RANGED_BASE ||
+                                entity.getEntityType()== EntityType.BUILDER_BASE ||
+                                entity.getEntityType()== EntityType.TURRET ||
+                                entity.getEntityType()== EntityType.HOUSE ||
+                                entity.getEntityType()== EntityType.WALL
                 ) {
-                    if ( globalMap.getMap(vec2Int).getPlayerId() == FinalConstant.getMyID())
-                    {
-                        this.searchArea[i][j].setBlock(true);
-                    }
-                    else {
-                        this.searchArea[i][j].setH2(150);
-                    }
+                    this.searchArea[i][j].setBlock(true);
                 }
 
-                if (globalMap.getMap(vec2Int).getEntityType()== EntityType.BUILDER_UNIT){
+                if (entity.getEntityType()== EntityType.BUILDER_UNIT &&
+                        entity.getPlayerId()==FinalConstant.getMyID()){
                     if (globalMap.getSpecialCheckBuilderTask(vec2Int))
                     {
                         this.searchArea[i][j].setBlock(true);
                     }
                 }
 
-                if (globalMap.getMap(vec2Int).getEntityType()== EntityType.RANGED_UNIT||
-                        globalMap.getMap(vec2Int).getEntityType()== EntityType.MELEE_UNIT
+                if (entity.getEntityType()== EntityType.RANGED_UNIT||
+                        entity.getEntityType()== EntityType.MELEE_UNIT
                 ){
-                    if (globalMap.getMap(vec2Int).getPlayerId()==FinalConstant.getMyID())
+                    if (entity.getPlayerId()==FinalConstant.getMyID())
                     {
                         if (mapPotField.getMapPotField()[vec2Int.getX()][vec2Int.getY()].getSumDanger()>0) {
                             this.searchArea[i][j].setBlock(true);
@@ -130,6 +127,7 @@ public class AStar {
     }
 
     public List<Node> findPath() {
+        if (this.searchArea[finalNode.getVec2Int().getX()][finalNode.getVec2Int().getY()].isBlock()) return new ArrayList<Node>();
         openList.add(initialNode);
         while (!isEmpty(openList)) {
             Node currentNode = openList.poll();

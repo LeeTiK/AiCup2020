@@ -1535,4 +1535,26 @@ public class GlobalMap {
 
         return current;
     }
+
+    public Vec2Int getSpecialPositionAttackBuilding(MyEntity myUnit, MyEntity enemy) {
+        ArrayList<Vec2Int> arrayList = getCoordAround(enemy.getPosition(),FinalConstant.getEntityProperties(enemy).getSize(),true);
+
+        Vec2Int position = myUnit.getPosition();
+        Vec2Int current = null;
+        double minDis = 0xFFFF;
+
+
+        for (int i=0; i<arrayList.size(); i++) {
+            Vec2Int vec2Int = arrayList.get(i);
+           // if (!checkEmpty(map,vec2Int)) continue;
+
+            double dis = position.distance(vec2Int);
+            if (dis<minDis)
+            {
+                minDis = dis;
+                current = vec2Int;
+            }
+        }
+        return current;
+    }
 }

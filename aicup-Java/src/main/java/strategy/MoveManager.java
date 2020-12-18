@@ -30,15 +30,24 @@ public class MoveManager {
         mAStar.updateMap(mGlobalMap,mapPotField);
     }
 
-
     MoveAction getMoveActionPosition(MyEntity entity, Vec2Int targetPosition){
+        return getMoveActionPosition(entity,targetPosition,true);
+    }
+
+    MoveAction getMoveActionPosition(MyEntity entity, Vec2Int targetPosition, boolean astar){
 
         if (targetPosition==null) return null;
+        if (entity.getPosition().equals(targetPosition)) return null;
 
         MoveAction moveAction = new MoveAction();
         moveAction.setBreakThrough(true);
         moveAction.setFindClosestPosition(true);
 
+        if (!astar)
+        {
+            moveAction.setTarget(targetPosition);
+            return moveAction;
+        }
 
         if (entity.getPosition().distance(targetPosition)<1.5) {
             moveAction.setTarget(targetPosition);
@@ -63,6 +72,9 @@ public class MoveManager {
 
                 moveAction.setTarget(path.get(1).getVec2Int());
                 return moveAction;
+            }
+            else {
+                Final.DEBUG("JOPKA: ","" + entity.getPosition().toString() + " target: " + targetPosition.toString());
             }
 
         }
