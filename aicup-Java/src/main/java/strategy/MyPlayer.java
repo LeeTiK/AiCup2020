@@ -16,6 +16,8 @@ public class MyPlayer extends Player {
     ArrayList<MyEntity> mUnitArrayList;
     ArrayList<MyEntity> mBuildingArrayList;
 
+    ArrayList<MyEntity> mUnitDodgeArrayList;
+
     int populationCurrent = 0;
     int populationMax = 0;
 

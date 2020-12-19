@@ -73,7 +73,7 @@ public class AStar {
 
                 if (entity.getEntityType()== EntityType.RESOURCE)
                 {
-                    this.searchArea[i][j].setH2(70);
+                    this.searchArea[i][j].setH2(50);
                 }
 
                 if (

@@ -3,7 +3,6 @@ package strategy;
 import model.*;
 import strategy.map.potfield.MapPotField;
 import strategy.map.wave.SearchAnswer;
-import strategy.map.wave.WaveSearchModule;
 
 import java.util.ArrayList;
 
@@ -164,7 +163,8 @@ public class GlobalMap {
             {2, 10}, {6, 10}, {10, 10}, {14, 10}, {18,10}, {22, 10}, {26, 10},
             {2, 14}, {6, 14}, {10, 14}, {14, 14}, {18,14}, {22, 14}, {26, 14},
             {2, 18}, {6, 18}, {10, 18}, {14, 18}, {18,18}, {22, 18}, {26, 18},
-            {2, 22}, {6, 22}, {10, 22}, {14, 22}, {18,22}, {22, 22}, {26, 22},
+            {2, 22}, {6, 22}, {10, 22}, {14, 22}, {18,22}, {22, 22},
+            {2, 26}, {6, 26}, {10, 26}, {14, 26}, {18,26},
     };
 
     final public static byte[][] housePosition = new byte[][]{
@@ -231,6 +231,7 @@ public class GlobalMap {
             {14, 2}, {14, 3}, {14, 4}, {14, 5}, {14, 6}, {14, 7}, {14, 8}, {14, 9}, {14, 10}, {14, 11}, {14, 12},{14, 13},{14, 14},{14, 15},
             {10, 10},{11, 2},{11, 3},{11, 4},{11, 6},{11, 7},{11, 8},{11, 9},{11, 10},
             {0, 10},{0, 11},{0, 12},{0, 6},
+            {0, 15}, {15, 0}, {0, 0},
     };
 
     public GlobalMap() {
@@ -357,11 +358,16 @@ public class GlobalMap {
         }
     }
     public ArrayList<Vec2Int> getCoordAround(Vec2Int start, int size, boolean checkEmpty){
-        return getCoordAround(start,size,checkEmpty,-1);
+        return getCoordAround(start,size,checkEmpty,-1,-1,null);
     }
 
-    public ArrayList<Vec2Int> getCoordAround(Vec2Int start, int size, boolean checkEmpty, int myID) {
+    public ArrayList<Vec2Int> getCoordAround(Vec2Int start, int size, boolean checkEmpty, int ID){
+        return getCoordAround(start,size,checkEmpty,ID,-1,null);
+    }
+
+    public ArrayList<Vec2Int> getCoordAround(Vec2Int start, int size, boolean checkEmpty, int myID, int district, MapPotField mapPotField) {
         ArrayList<Vec2Int> arrayList = new ArrayList<>();
+
 
         Vec2Int vec2Int = start;
 
@@ -372,14 +378,19 @@ public class GlobalMap {
 
             boolean check = false;
 
-
-
             if (checkEmpty) {
                 if (checkEmpty(vec2Int1)) {
                     check = true;
                 }
                 else {
                     check = false;
+                }
+
+                if (mapPotField!=null)
+                {
+                    if (mapPotField.getMapPotField(vec2Int1).getDistrict()!=district) {
+                        check=false;
+                    }
                 }
             }
 
@@ -405,12 +416,22 @@ public class GlobalMap {
 
             if (!checkCoord(vec2Int1)) continue;
 
+            boolean check = false;
+
             if (checkEmpty) {
                 if (checkEmpty(vec2Int1)) {
-                    arrayList.add(vec2Int1);
+                    check = true;
                 }
-            } else {
-                arrayList.add(vec2Int1);
+                else {
+                    check = false;
+                }
+
+                if (mapPotField!=null)
+                {
+                    if (mapPotField.getMapPotField(vec2Int1).getDistrict()!=district) {
+                        check=false;
+                    }
+                }
             }
 
             if (myID!=-1)
@@ -421,6 +442,11 @@ public class GlobalMap {
                         return new ArrayList<>();
                     }
                 }
+            }
+
+            if (check)
+            {
+                arrayList.add(vec2Int1);
             }
         }
 
@@ -429,12 +455,22 @@ public class GlobalMap {
 
             if (!checkCoord(vec2Int1)) continue;
 
+            boolean check = false;
+
             if (checkEmpty) {
                 if (checkEmpty(vec2Int1)) {
-                    arrayList.add(vec2Int1);
+                    check = true;
                 }
-            } else {
-                arrayList.add(vec2Int1);
+                else {
+                    check = false;
+                }
+
+                if (mapPotField!=null)
+                {
+                    if (mapPotField.getMapPotField(vec2Int1).getDistrict()!=district) {
+                        check=false;
+                    }
+                }
             }
 
             if (myID!=-1)
@@ -445,6 +481,11 @@ public class GlobalMap {
                         return new ArrayList<>();
                     }
                 }
+            }
+
+            if (check)
+            {
+                arrayList.add(vec2Int1);
             }
         }
 
@@ -453,12 +494,22 @@ public class GlobalMap {
 
             if (!checkCoord(vec2Int1)) continue;
 
+            boolean check = false;
+
             if (checkEmpty) {
                 if (checkEmpty(vec2Int1)) {
-                    arrayList.add(vec2Int1);
+                    check = true;
                 }
-            } else {
-                arrayList.add(vec2Int1);
+                else {
+                    check = false;
+                }
+
+                if (mapPotField!=null)
+                {
+                    if (mapPotField.getMapPotField(vec2Int1).getDistrict()!=district) {
+                        check=false;
+                    }
+                }
             }
 
             if (myID!=-1)
@@ -469,6 +520,11 @@ public class GlobalMap {
                         return new ArrayList<>();
                     }
                 }
+            }
+
+            if (check)
+            {
+                arrayList.add(vec2Int1);
             }
         }
 
@@ -508,8 +564,18 @@ public class GlobalMap {
             double dis = position.distance(allEntity.get(i).getPosition());
             if (dis < minDis) {
 
-                ArrayList arrayList = getCoordAround(allEntity.get(i).getPosition(), 1, true, myID);
+                ArrayList<Vec2Int> arrayList = getCoordAround(allEntity.get(i).getPosition(), 1, true, myID, mapPotField.getMapPotField(position).getDistrict(),mapPotField);
                 if (arrayList.size() == 0 && checkEmpty) continue;
+
+                if (mapPotField!=null) {
+                    boolean check = false;
+                    for (int j = 0; j < arrayList.size(); j++) {
+                        if (mapPotField.getMapPotField()[arrayList.get(j).getX()][arrayList.get(j).getY()].getSumDanger()==0) {
+                            check = true;
+                        }
+                    }
+                    if (!check) continue;
+                }
 
                 current = allEntity.get(i);
                 minDis = dis;
@@ -912,7 +978,12 @@ public class GlobalMap {
 
                 if (enemyID != -1 && map[i][j].getPlayerId() != enemyID) continue;
 
-                if (update && map[i][j].isUpdate()) continue;
+                if (update) {
+                    if (map[i][j].isUpdate() || map[i][j].isDodge())
+                    {
+                        continue;
+                    }
+                }
 
                // if (map[i][j].getTargetEntity() != null) continue;
 
@@ -1374,19 +1445,35 @@ public class GlobalMap {
 
     public void setPositionNextTick(Vec2Int position, Vec2Int positionTwo) {
         MyEntity entity = getMapNextTick()[position.getX()][position.getY()];
+
+        if (entity.getEntityType()==EntityType.Empty){
+            Final.DEBUG("NEED_MOVE", "ERROR CURRENT EMPTY " + position.toString());
+            return;
+        }
+
         MyEntity entityTwo = getMapNextTick()[positionTwo.getX()][positionTwo.getY()];
+
+        if (entityTwo.getId()==entity.getId()){
+            Final.DEBUG("NEED_MOVE", "ERROR ID Entity " + position.toString());
+            return;
+        }
+
         if (entityTwo.getEntityType()!=EntityType.Empty && entityTwo.getEntityType()!=EntityType.RESOURCE)
         {
-            entityTwo.setInterfereMove(true);
+            entityTwo.setNeedMove(true);
+            getMapNextTick()[positionTwo.getX()][positionTwo.getY()] = entity;
         }
         else {
             getMapNextTick()[position.getX()][position.getY()] = entityTwo;
+            getMapNextTick()[positionTwo.getX()][positionTwo.getY()] = entity;
         }
+        /*
         getMapNextTick()[position.getX()][position.getY()] = entityTwo;
 
        // if (!entity.isInterfereMove()) {
         getMapNextTick()[positionTwo.getX()][positionTwo.getY()] = entity;
       //  }
+      */
     }
 
     public void checkNextPositionUnit(MyEntity entity) {

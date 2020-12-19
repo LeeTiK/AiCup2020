@@ -8,7 +8,7 @@ import strategy.map.wave.WaveSearchModule;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import static strategy.Final.INFO_UNIT;
+import static strategy.Final.*;
 
 public class GlobalManager {
     // менеджер отвечает за экономическую состовляющую
@@ -104,6 +104,12 @@ public class GlobalManager {
 
         hashMap.putAll(mEconomicManager.update(playerView, this,debugInterface));
 
+        // проверяем всех юнитов чтобы уступили дорогу
+        if (A_NEED_MOVE)
+        {
+            mMoveManager.checkNeedMoveUnit(playerView,this,hashMap);
+        }
+
         timeAllStrategy += System.nanoTime() - startTime;
 
         if (Final.debug)
@@ -144,6 +150,19 @@ public class GlobalManager {
         {
             mGlobalMap.debugUpdate(playerView, debugInterface);
             mMapPotField.debugUpdate(playerView, debugInterface);
+
+            if (HP_NO_ACTIVE)
+            {
+                MyPlayer myPlayer = mGlobalStatistic.getMyPlayer();
+
+                ArrayList<MyEntity> myEntities = myPlayer.getBuildingArrayList();
+
+                for (int i = 0; i < myEntities.size(); i++) {
+                    FinalGraphic.sendText(debugInterface, new Vec2Float(myEntities.get(i).getPosition().getX() * 1.0f, myEntities.get(i).getPosition().getY() * 1.0f + 0.2f), 11, "" +
+                            myEntities.get(i).getHealth());
+                }
+            }
+
 
             if (INFO_UNIT) {
                 MyPlayer myPlayer = mGlobalStatistic.getMyPlayer();
@@ -189,6 +208,32 @@ public class GlobalManager {
                     FinalGraphic.sendSquare(debugInterface,searchAnswer.getEnd(), 1, FinalGraphic.COLOR_GREEN);
                 }
 
+            }
+        }
+
+    }
+
+    private void debugGraphicV2(PlayerView playerView, DebugInterface debugInterface){
+        if (Final.debugGraphic)
+        {
+            if (NEXT_TIK_POSITION)
+            {
+                for (int i=0; i<getGlobalMap().getMapNextTick().length; i++)
+                {
+                    for (int j=0; j<getGlobalMap().getMapNextTick().length; j++)
+                    {
+                        MyEntity entity = getGlobalMap().getMapNextTick()[i][j];
+                        if (entity.getPlayerId()==null) continue;
+                        if (entity.getPlayerId()!=FinalConstant.getMyID()) continue;
+
+                        if (entity.getEntityType()==EntityType.BUILDER_UNIT || entity.getEntityType()==EntityType.RANGED_UNIT || entity.getEntityType()==EntityType.MELEE_UNIT)
+                        {
+                            FinalGraphic.sendSquare(debugInterface, Vec2Int.createVector(i,j), 1, FinalGraphic.COLOR_BLACK_TWO);
+                            FinalGraphic.sendText(debugInterface, new Vec2Float(entity.getPosition().getX() * 1.0f, entity.getPosition().getY() * 1.0f + 0.2f), 11, "" +
+                                    entity.getId());
+                        }
+                    }
+                }
             }
         }
 

@@ -7,8 +7,10 @@ public class FinalGraphic {
     final static public Color COLOR_RED = new Color(1.0f, 0.0f, 0.0f, 0.7f);
     final static public Color COLOR_BLUE = new Color(0.0f, 0.0f, 1.0f, 0.7f);
     final static public Color COLOR_GREEN = new Color(0.0f, 1.0f, 0.0f, 0.7f);
+    final static public Color COLOR_GREEN_TWO = new Color(0.0f, 1.0f, 0.0f, 0.2f);
     final static public Color COLOR_WHITE = new Color(1.0f, 1.0f, 1.0f, 0.7f);
     final static public Color COLOR_BLACK = new Color(0.0f, 0.0f, 0.0f, 0.7f);
+    final static public Color COLOR_BLACK_TWO = new Color(0.0f, 0.0f, 0.0f, 0.3f);
 
     static public void sendSquare(DebugInterface debugInterface, Vec2Int start, int size, Color color) {
 

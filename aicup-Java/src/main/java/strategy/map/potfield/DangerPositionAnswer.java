@@ -9,6 +9,8 @@ public class DangerPositionAnswer {
     Field currentContour = null;
     Field currentSafety = null;
     Field currentSafetyUnitPosition = null;
+    Field currentOnlySafety = null;
+    Field currentSafetyOnlyUnitPosition = null;
 
     int minDanger;
     int minCounterDanger;
@@ -18,6 +20,9 @@ public class DangerPositionAnswer {
     int maxCounterDanger;
     int maxEmptyPositionNoDager;
     int maxEmptyPositionSafety;
+
+    boolean currentCounterDanger;
+
 
     public DangerPositionAnswer(){
         clear();
@@ -30,7 +35,8 @@ public class DangerPositionAnswer {
         currentContour = null;
         currentSafety = null;
         currentSafetyUnitPosition = null;
-
+        currentOnlySafety = null;
+        currentSafetyOnlyUnitPosition = null;
 
         minDanger = 0xFFFF;
         minCounterDanger = 0xFFFF;
@@ -40,6 +46,8 @@ public class DangerPositionAnswer {
         maxCounterDanger = 0;
         maxEmptyPositionNoDager = 0;
         maxEmptyPositionSafety = 0;
+
+        currentCounterDanger = false;
     }
 
     /*@Override

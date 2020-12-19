@@ -388,7 +388,7 @@ public class WarManager {
             if (vec2IntDanger != null && !range.isDodge()) {
                 MoveAction m = globalManager.getMoveManager().getMoveActionPosition(range,vec2IntDanger);
                         //new MoveAction(vec2IntDanger, true, false);
-                globalManager.getGlobalMap().setPositionNextTick(range.getPosition(),vec2IntDanger);
+              //  globalManager.getGlobalMap().setPositionNextTick(range.getPosition(),vec2IntDanger);
 
                 entityAction.setMoveAction(m);
                 range.setUpdate(true);
@@ -460,7 +460,7 @@ public class WarManager {
 
                             MoveAction m = globalManager.getMoveManager().getMoveActionPosition(range,nextMove);
                                     //new MoveAction(nextMove, true, false);
-                            globalManager.getGlobalMap().setPositionNextTick(range.getPosition(), nextMove);
+                           // globalManager.getGlobalMap().setPositionNextTick(range.getPosition(), nextMove);
 
                             globalManager.getMapPotField().changeBlockPositionAttack(searchAnswer.getEnd());
 
@@ -601,7 +601,7 @@ public class WarManager {
             MoveAction   m = globalManager.getMoveManager().getMoveActionPosition(range,vec2IntDodge);
            // MoveAction m = new MoveAction(vec2IntDodge, true, false);
 
-            globalManager.getGlobalMap().setPositionNextTick(range.getPosition(),vec2IntDodge);
+            //globalManager.getGlobalMap().setPositionNextTick(range.getPosition(),vec2IntDodge);
 
             entityAction.setAttackAction(null);
 

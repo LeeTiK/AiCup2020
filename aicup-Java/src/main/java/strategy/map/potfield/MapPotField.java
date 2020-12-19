@@ -46,14 +46,22 @@ public class MapPotField {
 
         clearField(map);
 
-        int districtResource = 0;
+        int district= 0;
 
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
                 if (map[i][j].getEntityType() == EntityType.RESOURCE) {
                     if (mMapPotField[i][j].getDistrictResource()==-1)
                     {
-                      //  addResource(i,j);
+                     //   addResource(i,j);
+                    }
+                }
+
+                if (map[i][j].getEntityType() == EntityType.Empty) {
+                    if (mMapPotField[i][j].getDistrict()==-1)
+                    {
+                        addDistrict(i,j,district);
+                        district++;
                     }
                 }
 
@@ -105,6 +113,31 @@ public class MapPotField {
         recursiveResource(x,y+1);
 
         recursiveResource(x,y-1);
+    }
+
+    private void addDistrict(int x, int y, int district) {
+        if (mGlobalMap.getMap()[x][y].getEntityType()==EntityType.RESOURCE) return;
+        if (mMapPotField[x][y].getDistrict() != -1) return;
+
+        recursiveDistrict(x,y,district);
+    }
+
+    private void recursiveDistrict(int x,int y, int district){
+        if (!mGlobalMap.checkCoord(x,y)) return;
+
+        if (mGlobalMap.getMap()[x][y].getEntityType()==EntityType.RESOURCE) return;
+
+        if (mMapPotField[x][y].getDistrict()!=-1) return;
+
+        mMapPotField[x][y].setDistrict(district);
+
+        recursiveDistrict(x+1,y,district);
+
+        recursiveDistrict(x-1,y,district);
+
+        recursiveDistrict(x,y+1,district);
+
+        recursiveDistrict(x,y-1,district);
     }
 
     private void addSafare(MyEntity entity, MyEntity[][] map) {
@@ -499,6 +532,12 @@ public class MapPotField {
                         }
                     }
 
+                    if (Final.DISTRICT_REGION) {
+                        if (getMapPotField()[i][j].getDistrict()>=0) {
+                            FinalGraphic.sendText(debugInterface, new Vec2Float(i * 1.0f, j * 1.0f + 0.5f), 11, "" +
+                                    getMapPotField()[i][j].getDistrict());
+                        }
+                    }
 
                 }
             }
@@ -688,9 +727,7 @@ public class MapPotField {
 
     public Vec2Int getDangerAttackRanger(MyEntity entity) {
 
-        byte[][] bytes = new byte[][]{
-                {-1, 0}, {0, -1}, {0, 0},{0, 1}, {1, 0},
-        };
+        byte[][] bytes = bytesOne;
 
         Vec2Int position = entity.getPosition();
         Field current = null;
@@ -818,17 +855,34 @@ public class MapPotField {
         return current.getPosition();
     }
 
-    public Vec2Int getDangerPositionBuild(MyEntity entity, boolean resource) {
+    public Vec2Int getDangerPositionBuild(MyEntity entity, boolean resource, boolean needMove) {
 
-        DangerPositionAnswer dangerPositionAnswer = calculateDangerPosition(entity);
+        DangerPositionAnswer dangerPositionAnswer = calculateDangerPosition(entity,needMove);
+
+        if (needMove)
+        {
+            if (dangerPositionAnswer.currentOnlySafety != null) {
+                Final.DEBUG("NEED_MOVE", "pos: " + entity.getPosition().toString() + " currentOnlySafety " + dangerPositionAnswer.currentOnlySafety.toString());
+                return dangerPositionAnswer.currentOnlySafety.getPosition();
+            }
+            else {
+                if (dangerPositionAnswer.currentSafetyOnlyUnitPosition != null) {
+                    Final.DEBUG("NEED_MOVE", "pos: " + entity.getPosition().toString() + " currentSafetyOnlyUnitPosition " + dangerPositionAnswer.currentSafetyOnlyUnitPosition.toString());
+                    return dangerPositionAnswer.currentSafetyOnlyUnitPosition.getPosition();
+                }
+            }
+            Final.DEBUG("NEED_MOVE", "pos: " + entity.getPosition().toString() + " BAD POSITION ");
+
+            return null;
+        }
 
         // никакой опасности рядом нет!!!
         if (dangerPositionAnswer.minDanger == 0xFFFF && dangerPositionAnswer.maxCounterDanger==0) {
             return null;
         }
         else {
-             dangerPositionAnswer = calculateDangerPosition(entity);
-            if (dangerPositionAnswer.maxCounterDanger>0 && dangerPositionAnswer.minDanger== 0xFFFF)
+           //  dangerPositionAnswer = calculateDangerPosition(entity);
+            if (dangerPositionAnswer.maxCounterDanger>0 && dangerPositionAnswer.minDanger== 0xFFFF && !dangerPositionAnswer.currentCounterDanger)
             {
                 if (resource)
                 {
@@ -836,7 +890,7 @@ public class MapPotField {
                     return null;
                 }
                 else {
-                    if (dangerPositionAnswer.currentSafety!=null) {
+                    if (dangerPositionAnswer.currentSafety!=null || needMove) {
                         Final.DEBUG("TAG", "pos: " + entity.getPosition().toString() + " no danger: currentSafety " + dangerPositionAnswer.currentSafety.toString() );
                         return dangerPositionAnswer.currentSafety.getPosition();
                     }
@@ -850,32 +904,30 @@ public class MapPotField {
             }
             else {
           //      Vec2Int vec2Int = getDangerPositionBuild(entity,resource);
-                if (dangerPositionAnswer.currentSafety!=null) {
-                    Final.DEBUG("TAG", "pos: " + entity.getPosition().toString() + " currentSafety " + dangerPositionAnswer.currentSafety.toString());
-                    return dangerPositionAnswer.currentSafety.getPosition();
-                }
-                else {
-                    if (dangerPositionAnswer.currentNoDanger!=null) {
-                        Final.DEBUG("TAG", "pos: " + entity.getPosition().toString() + " currentNoDanger " + dangerPositionAnswer.currentNoDanger.toString());
-                        return dangerPositionAnswer.currentNoDanger.getPosition();
-                    }
-                    else {
-                        if (dangerPositionAnswer.currentSafetyUnitPosition!=null) {
-                            Final.DEBUG("TAG", "pos: " + entity.getPosition().toString() + " currentSafetyUnitPosition");
-                            return dangerPositionAnswer.currentSafetyUnitPosition.getPosition();
-                        }
-                        else {
-                            if (dangerPositionAnswer.currentNoDangerUnitPosition != null) {
-                                Final.DEBUG("TAG", "pos: " + entity.getPosition().toString() + " currentNoDangerUnitPosition");
-                                return dangerPositionAnswer.currentNoDangerUnitPosition.getPosition();
-                            } else {
-                                // проблема, геймовер(надо просить кого-то подвинуться)
 
-                                Final.DEBUG("TAG", "pos: " + entity.getPosition().toString() + " NO room to move");
+                    if (dangerPositionAnswer.currentSafety != null) {
+                        Final.DEBUG("TAG", "pos: " + entity.getPosition().toString() + " currentSafety " + dangerPositionAnswer.currentSafety.toString());
+                        return dangerPositionAnswer.currentSafety.getPosition();
+                    } else {
+                        if (dangerPositionAnswer.currentNoDanger != null) {
+                            Final.DEBUG("TAG", "pos: " + entity.getPosition().toString() + " currentNoDanger " + dangerPositionAnswer.currentNoDanger.toString());
+                            return dangerPositionAnswer.currentNoDanger.getPosition();
+                        } else {
+                            if (dangerPositionAnswer.currentSafetyUnitPosition != null) {
+                                Final.DEBUG("TAG", "pos: " + entity.getPosition().toString() + " currentSafetyUnitPosition");
+                                return dangerPositionAnswer.currentSafetyUnitPosition.getPosition();
+                            } else {
+                                if (dangerPositionAnswer.currentNoDangerUnitPosition != null) {
+                                    Final.DEBUG("TAG", "pos: " + entity.getPosition().toString() + " currentNoDangerUnitPosition");
+                                    return dangerPositionAnswer.currentNoDangerUnitPosition.getPosition();
+                                } else {
+                                    // проблема, геймовер(надо просить кого-то подвинуться)
+
+                                    Final.DEBUG("TAG", "pos: " + entity.getPosition().toString() + " NO room to move");
+                                }
                             }
                         }
                     }
-                }
             }
         }
 
@@ -883,18 +935,32 @@ public class MapPotField {
     }
 
 
-    public DangerPositionAnswer calculateDangerPosition(MyEntity entity)
+    byte[][] bytesOne = new byte[][]{
+            {0, -1},{0, 1}, {0, 0}, {1, 0},  {-1, 0},
+    };
+
+    byte[][] bytesNeedMove = new byte[][]{
+            {0, -1},{0, 1}, {1, 0},  {-1, 0},
+    };
+
+    public DangerPositionAnswer calculateDangerPosition(MyEntity entity,boolean needMove)
     {
         DangerPositionAnswer dangerPositionAnswer = new DangerPositionAnswer();
 
-        byte[][] bytes = new byte[][]{
-              {0, -1},{0, 1}, {0, 0}, {1, 0},  {-1, 0},
-        };
+        byte[][] bytes = bytesOne;
+        if (needMove)
+        {
+            bytes = bytesNeedMove;
+        }
 
         Vec2Int position = entity.getPosition();
 
         boolean unitPosition;
         boolean emptyPosition;
+
+        if (getMapPotField(position).getSumDangerContour()+getMapPotField(position).getSumDanger()>0) {
+            dangerPositionAnswer.currentCounterDanger = true;
+        }
 
         for (int i = 0; i < bytes.length; i++) {
             Vec2Int newPosition = position.add(bytes[i][0], bytes[i][1]);
@@ -992,6 +1058,18 @@ public class MapPotField {
                     }
                 }
             }
+
+
+            if (field.getSumDanger(entity.getEntityType()) == 0 && field.getSumDangerContour()==0)
+            {
+                if (unitPosition)
+                {
+                    dangerPositionAnswer.currentSafetyOnlyUnitPosition = field;
+                }
+                else {
+                    dangerPositionAnswer.currentOnlySafety = field;
+                }
+            }
         }
 
 
@@ -1032,5 +1110,9 @@ public class MapPotField {
 
     public void changeBlockPositionAttack(Vec2Int endMove) {
         getMapPotField()[endMove.getX()][endMove.getY()].setTargetAttackClosed(true);
+    }
+
+    public Field getMapPotField(Vec2Int position) {
+        return mMapPotField[position.getX()][position.getY()];
     }
 }

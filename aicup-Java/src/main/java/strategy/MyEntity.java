@@ -47,9 +47,9 @@ public class MyEntity extends Entity {
     float minDisToHouse;
     Vec2Int positionHouse;
 
-    boolean interfereMove;
+    boolean needMove;
 
-
+    int repairCounter = 0;
 
     public MyEntity(Entity entity) {
         super(entity.getId(), entity.getPlayerId(), entity.getEntityType(), entity.getPosition(), entity.getHealth(), entity.isActive());
@@ -99,8 +99,9 @@ public class MyEntity extends Entity {
         rigthPosition = false;
         upPosition= false;
         downPosition= false;
-        interfereMove=false;
+        needMove =false;
         dangerMove = false;
+        repairCounter=0;
     }
 
     public void update(Entity entity) {
@@ -323,12 +324,12 @@ public class MyEntity extends Entity {
         }
     }
 
-    public void setInterfereMove(boolean interfereMove) {
-        this.interfereMove = interfereMove;
+    public void setNeedMove(boolean needMove) {
+        this.needMove = needMove;
     }
 
-    public boolean isInterfereMove() {
-        return interfereMove;
+    public boolean isNeedMove() {
+        return needMove;
     }
 
     public void setDangerMove(boolean dangerMove) {
@@ -337,5 +338,14 @@ public class MyEntity extends Entity {
 
     public boolean isDangerMove() {
         return dangerMove;
+    }
+
+    public int getRepairCounter() {
+        return repairCounter;
+    }
+
+    public void addRepairCounter()
+    {
+        repairCounter++;
     }
 }
