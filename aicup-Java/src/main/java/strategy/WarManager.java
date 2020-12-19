@@ -615,7 +615,6 @@ public class WarManager {
                 range.getEntityAction().setMoveAction(m);
             }
 
-
             range.getEntityAction().setAttackAction(null);
             range.setDodge(true);
 

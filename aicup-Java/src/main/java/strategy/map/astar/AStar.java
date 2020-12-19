@@ -100,7 +100,9 @@ public class AStar {
                 ){
                     if (entity.getPlayerId()==FinalConstant.getMyID())
                     {
-                        if (mapPotField.getMapPotField()[vec2Int.getX()][vec2Int.getY()].getSumDanger()>0) {
+                        if (mapPotField.getMapPotField()[vec2Int.getX()][vec2Int.getY()].getSumDanger() +
+                                mapPotField.getMapPotField()[vec2Int.getX()][vec2Int.getY()].getSumDangerContour()
+                                >0 ) {
                             this.searchArea[i][j].setBlock(true);
                         }
                     }

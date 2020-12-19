@@ -6,14 +6,14 @@ import model.PlayerView;
 public class Final {
 
     final static boolean TEST = false;
-    final static boolean debug = true;
+    final static boolean debug = false;
     final static boolean debugERROR = true;
     final static boolean debugRelease = true;
     public final static boolean debugGraphic = true;
 
 
-    public final static boolean A_STAR = true;
-    public final static boolean A_NEED_MOVE = true;
+    public final static boolean A_STAR = false;
+    public final static boolean A_NEED_MOVE = false;
     final static boolean OFF_WAR = false;
 
     // элементы игры
@@ -22,7 +22,7 @@ public class Final {
     //////////DEBUG MAP GRAPHIC//////////////
 
     public final static boolean COORDINATE = true;
-    public final static boolean INFO_UNIT = false;
+    public final static boolean INFO_UNIT = true;
     public final static boolean PLAYER_AREA = false;
     public final static boolean PLAYER_AREA_TWO = false;
     public final static boolean DANGER_AREA = false;

@@ -139,8 +139,9 @@ public class GlobalManager {
             }
         }
 
-        timeParsing = System.nanoTime();
+        debugGraphicV2(playerView,debugInterface);
 
+        timeParsing = System.nanoTime();
 
         return new Action(hashMap);
     }
@@ -171,7 +172,7 @@ public class GlobalManager {
 
                 for (int i = 0; i < myEntities.size(); i++) {
                     Vec2Float vec2Float = myEntities.get(i).getPosition().getVec2Float();
-                    vec2Float.setY(vec2Float.getY()+ 0.45f);
+                    vec2Float.setY(vec2Float.getY()+ 0.20f);
                     FinalGraphic.sendText(debugInterface, vec2Float, 11, myEntities.get(i).toString());
                 }
             }
@@ -228,8 +229,9 @@ public class GlobalManager {
 
                         if (entity.getEntityType()==EntityType.BUILDER_UNIT || entity.getEntityType()==EntityType.RANGED_UNIT || entity.getEntityType()==EntityType.MELEE_UNIT)
                         {
-                            FinalGraphic.sendSquare(debugInterface, Vec2Int.createVector(i,j), 1, FinalGraphic.COLOR_BLACK_TWO);
-                            FinalGraphic.sendText(debugInterface, new Vec2Float(entity.getPosition().getX() * 1.0f, entity.getPosition().getY() * 1.0f + 0.2f), 11, "" +
+                            Vec2Int vec2Int = Vec2Int.createVector(i,j);
+                            FinalGraphic.sendSquare(debugInterface, vec2Int, 1, FinalGraphic.COLOR_BLACK_TWO);
+                            FinalGraphic.sendText(debugInterface, new Vec2Float(vec2Int.getX() * 1.0f, vec2Int.getY() * 1.0f + 0.2f), 11, "" +
                                     entity.getId());
                         }
                     }
