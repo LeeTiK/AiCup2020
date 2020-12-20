@@ -12,7 +12,7 @@ public class Final {
     public final static boolean debugGraphic = false;
 
 
-    public final static boolean A_STAR = false;
+    public static boolean A_STAR = false;
     public final static boolean A_NEED_MOVE = false;
     final static boolean OFF_WAR = false;
 
@@ -21,7 +21,7 @@ public class Final {
 
     //////////DEBUG MAP GRAPHIC//////////////
 
-    public final static boolean COORDINATE = true;
+    public final static boolean COORDINATE = false;
     public final static boolean INFO_UNIT = true;
     public final static boolean PLAYER_AREA = false;
     public final static boolean PLAYER_AREA_TWO = false;

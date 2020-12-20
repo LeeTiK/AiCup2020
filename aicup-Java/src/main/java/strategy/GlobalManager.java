@@ -64,6 +64,12 @@ public class GlobalManager {
 
 
         mGlobalStatistic.updateInfo(playerView, this);
+
+        if (FinalConstant.isFogOfWar() && mGlobalStatistic.getPlayers().size()==2)
+        {
+            A_STAR = true;
+        }
+
         mGlobalMap.update(getGlobalStatistic());
         mMapPotField.update(this);
         waveSearchModule.updateMap(mMapPotField.getMapPotField());

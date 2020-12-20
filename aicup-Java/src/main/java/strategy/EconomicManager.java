@@ -213,7 +213,7 @@ public class EconomicManager {
 
         return actionHashMap;
     }
-/*
+
     //убегания от противников
     private HashMap dodgeBuilder(MyPlayer myPlayer, PlayerView playerView, GlobalManager globalManager, HashMap<Integer, EntityAction> actionHashMap) {
         GlobalStatistic globalStatistic = globalManager.getGlobalStatistic();
@@ -239,7 +239,7 @@ public class EconomicManager {
 
             if (vec2IntDodgeMelee != null) {
                 m = new MoveAction(vec2IntDodgeMelee, true, true);
-                globalManager.getGlobalMap().setPositionNextTick(builderUnit.getPosition(),vec2IntDodgeMelee);
+               // globalManager.getGlobalMap().setPositionNextTick(builderUnit.getPosition(),vec2IntDodgeMelee);
 
                 entityAction.setAttackAction(null);
                 entityAction.setMoveAction(m);
@@ -261,7 +261,7 @@ public class EconomicManager {
                 m = new MoveAction(vec2IntDodgeRange, true, true);
                 entityAction.setAttackAction(null);
                 entityAction.setMoveAction(m);
-                globalManager.getGlobalMap().setPositionNextTick(builderUnit.getPosition(),vec2IntDodgeRange);
+                ///globalManager.getGlobalMap().setPositionNextTick(builderUnit.getPosition(),vec2IntDodgeRange);
 
                 builderUnit.getEntityAction().setAttackAction(null);
                 builderUnit.getEntityAction().setMoveAction(m);
@@ -291,7 +291,7 @@ public class EconomicManager {
 
               //  entityAction.setAttackAction(null);
                 entityAction.setMoveAction(m);
-                globalManager.getGlobalMap().setPositionNextTick(builderUnit.getPosition(),vec2IntDodgeRangeTwo);
+               // globalManager.getGlobalMap().setPositionNextTick(builderUnit.getPosition(),vec2IntDodgeRangeTwo);
 
                // builderUnit.getEntityAction().setAttackAction(null);
                 builderUnit.getEntityAction().setMoveAction(m);
@@ -358,12 +358,12 @@ public class EconomicManager {
                 }*
             }*/
 
-    /*
+
         }
 
         return actionHashMap;
     }
-*/
+
     //убегания от противниковV2
     private HashMap dodgeBuilderV2(MyPlayer myPlayer, PlayerView playerView, GlobalManager globalManager, HashMap<Integer, EntityAction> actionHashMap) {
         GlobalStatistic globalStatistic = globalManager.getGlobalStatistic();
@@ -465,7 +465,9 @@ public class EconomicManager {
             if ( (myPlayer.getEntityArrayList(EntityType.RANGED_BASE).size()>0 &&
                     myPlayer.getEntityArrayList(EntityType.BUILDER_BASE).size()>0) ||
                 myPlayer.getEntityArrayList(EntityType.HOUSE).size() < 5 ||
-            ( myPlayer.getResource()>1000 && myPlayer.getEntityArrayList(EntityType.HOUSE).size() < 7)) {
+            ( myPlayer.getResource()>1000 && myPlayer.getEntityArrayList(EntityType.HOUSE).size() < 7)
+            || (globalManager.getGlobalStatistic().getPlayers().size()==2 && myPlayer.getEntityArrayList(EntityType.HOUSE).size() < 6)
+            ) {
 
              //   System.out.println("size HOME: " +  myPlayer.getEntityArrayList(EntityType.HOUSE).size());
               //  System.out.println("size RANGED_BASE: " +  myPlayer.getEntityArrayList(EntityType.RANGED_BASE).size());
