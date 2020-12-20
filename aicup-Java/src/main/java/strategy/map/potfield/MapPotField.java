@@ -934,6 +934,77 @@ public class MapPotField {
         return null;
     }
 
+    public DodgePositionAnswer getDodgePositionBuild(MyEntity entity, boolean resource, boolean needMove) {
+
+        DodgePositionAnswer dodgePositionAnswer = calculateDodgePosition(entity,needMove);
+
+        if (needMove) return dodgePositionAnswer;
+
+        if (dodgePositionAnswer.maxDanger==0 && dodgePositionAnswer.getMaxCounterDanger()==0) return null;
+
+        if (dodgePositionAnswer.maxCounterDanger>0 && dodgePositionAnswer.maxDanger== 0 && !dodgePositionAnswer.currentSafety) {
+            if (resource) {
+                Final.DEBUG("TAG", "pos: " + entity.getPosition().toString() + " resource  ");
+                return null;
+            }
+        }
+
+        return dodgePositionAnswer;
+      /*  // никакой опасности рядом нет!!!
+        if (dodgePositionAnswer.maxDanger == 0 && dodgePositionAnswer.maxCounterDanger==0) {
+            return null;
+        }
+        else {
+            //  dangerPositionAnswer = calculateDangerPosition(entity);
+            if (dangerPositionAnswer.maxCounterDanger>0 && dangerPositionAnswer.minDanger== 0xFFFF && !dangerPositionAnswer.currentCounterDanger)
+            {
+                if (resource)
+                {
+                    Final.DEBUG("TAG", "pos: " + entity.getPosition().toString() + " resource  ");
+                    return null;
+                }
+                else {
+                    if (dangerPositionAnswer.currentSafety!=null || needMove) {
+                        Final.DEBUG("TAG", "pos: " + entity.getPosition().toString() + " no danger: currentSafety " + dangerPositionAnswer.currentSafety.toString() );
+                        return dangerPositionAnswer.currentSafety.getPosition();
+                    }
+                    else {
+                        if (dangerPositionAnswer.currentNoDanger!=null) {
+                            Final.DEBUG("TAG", "pos: " + entity.getPosition().toString() + " no danger: currentNodanger " + dangerPositionAnswer.currentNoDanger.toString() );
+                            return dangerPositionAnswer.currentNoDanger.getPosition();
+                        }
+                    }
+                }
+            }
+            else {
+                //      Vec2Int vec2Int = getDangerPositionBuild(entity,resource);
+
+                if (dangerPositionAnswer.currentSafety != null) {
+                    Final.DEBUG("TAG", "pos: " + entity.getPosition().toString() + " currentSafety " + dangerPositionAnswer.currentSafety.toString());
+                    return dangerPositionAnswer.currentSafety.getPosition();
+                } else {
+                    if (dangerPositionAnswer.currentNoDanger != null) {
+                        Final.DEBUG("TAG", "pos: " + entity.getPosition().toString() + " currentNoDanger " + dangerPositionAnswer.currentNoDanger.toString());
+                        return dangerPositionAnswer.currentNoDanger.getPosition();
+                    } else {
+                        if (dangerPositionAnswer.currentSafetyUnitPosition != null) {
+                            Final.DEBUG("TAG", "pos: " + entity.getPosition().toString() + " currentSafetyUnitPosition");
+                            return dangerPositionAnswer.currentSafetyUnitPosition.getPosition();
+                        } else {
+                            if (dangerPositionAnswer.currentNoDangerUnitPosition != null) {
+                                Final.DEBUG("TAG", "pos: " + entity.getPosition().toString() + " currentNoDangerUnitPosition");
+                                return dangerPositionAnswer.currentNoDangerUnitPosition.getPosition();
+                            } else {
+                                // проблема, геймовер(надо просить кого-то подвинуться)
+
+                                Final.DEBUG("TAG", "pos: " + entity.getPosition().toString() + " NO room to move");
+                            }
+                        }
+                    }
+                }
+            }
+        }*/
+    }
 
     byte[][] bytesOne = new byte[][]{
             {0, -1},{0, 1}, {0, 0}, {1, 0},  {-1, 0},
@@ -1075,6 +1146,95 @@ public class MapPotField {
 
         return dangerPositionAnswer;
     }
+
+    public DodgePositionAnswer calculateDodgePosition(MyEntity entity,boolean needMove)
+    {
+        DodgePositionAnswer dodgePositionAnswer = new DodgePositionAnswer();
+
+        byte[][] bytes = bytesOne;
+        if (needMove)
+        {
+            bytes = bytesNeedMove;
+        }
+
+        Vec2Int position = entity.getPosition();
+
+        boolean unitPosition;
+        boolean emptyPosition;
+
+        if (getMapPotField(position).getSumDangerContour()+getMapPotField(position).getSumDanger()>0) {
+            dodgePositionAnswer.currentSafety = true;
+        }
+
+        for (int i = 0; i < bytes.length; i++) {
+            Vec2Int newPosition = position.add(bytes[i][0], bytes[i][1]);
+
+            unitPosition =false;
+            emptyPosition=false;
+
+            if (!mGlobalMap.checkCoord(newPosition)) continue;
+            // if (mGlobalMap.getMap(newPosition).getEntityType()==EntityType.RESOURCE) continue;
+            if (mGlobalMap.checkUnit(mGlobalMap.getMapNextTick(),newPosition))
+            {
+                unitPosition = true;
+            }
+
+            if (mGlobalMap.checkEmpty(mGlobalMap.getMapNextTick(),newPosition))
+            {
+                emptyPosition = true;
+            }
+
+            if (newPosition.equals(position))
+            {
+                unitPosition = false;
+                emptyPosition = true;
+            }
+
+            Field field = mMapPotField[newPosition.getX()][newPosition.getY()];
+
+
+            if (field.getSumDanger(entity.getEntityType())>dodgePositionAnswer.maxDanger) {
+                dodgePositionAnswer.maxDanger = field.getSumDanger(entity.getEntityType());
+            }
+
+            if (field.getSumDangerContour()>dodgePositionAnswer.maxCounterDanger) {
+                dodgePositionAnswer.maxCounterDanger = field.getSumDangerContour();
+            }
+
+            if (!unitPosition && !emptyPosition) continue;
+
+
+            int sizeEmptyPosition =  mGlobalMap.getCoordAround(newPosition, 1, true).size();
+
+
+            if (field.getSumDanger(entity.getEntityType()) == 0 && field.getSumDangerContour()==0)
+            {
+                if (unitPosition)
+                {
+                    dodgePositionAnswer.getSafetyPositionUnitArrayList().add(field);
+                }
+                else {
+                    dodgePositionAnswer.getSafetyArrayList().add(field);
+                }
+            }
+
+            if (field.getSumDanger(entity.getEntityType()) == 0 && field.getSumDangerContour()>0)
+            {
+                if (unitPosition)
+                {
+                    dodgePositionAnswer.getSafetyCounterArrayList().add(field);
+                }
+                else {
+                    dodgePositionAnswer.getSafetyCounterArrayList().add(field);
+                }
+            }
+        }
+
+
+        return dodgePositionAnswer;
+    }
+
+
 
     public boolean checkPlayerArea(Vec2Int position) {
         return mMapPotField[position.getX()][position.getY()].getPlayerArea() > 0;

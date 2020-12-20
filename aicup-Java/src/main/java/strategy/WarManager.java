@@ -49,6 +49,21 @@ public class WarManager {
         myPlayer.initEnemyArrayListSlow();
 
 
+        if (Final.debugGraphic)
+        {
+            if (Final.ENEMY_ATTACK) {
+                ArrayList<MyEntity> enemyArrayList = myPlayer.getEnemyArrayList();
+                for (int i = 0; i < enemyArrayList.size(); i++) {
+                    MyEntity entity = enemyArrayList.get(i);
+
+                    Vec2Int vec2Int = entity.getPosition();
+                    FinalGraphic.sendSquare(debugInterface, vec2Int, 1, FinalGraphic.COLOR_RED);
+                    FinalGraphic.sendText(debugInterface, new Vec2Float(vec2Int.getX() * 1.0f, vec2Int.getY() * 1.0f + 0.2f), 11, "" +
+                            i);
+                }
+            }
+        }
+
        /* if (FinalConstant.getCurrentTik() < 210) {
             moveUnitOld(myPlayer, globalManager, actionHashMap, 1000);
         } else {
@@ -308,6 +323,8 @@ public class WarManager {
 
             for (int j=0; j<sizeUnit; j++) {
                 MyEntity myEntity = globalMap.getNearestPlayer(enemy.getPosition(), enemy.getPlayerId(), FinalConstant.getMyID(), EntityType.RANGED_UNIT, true);
+
+
 
                 if (myEntity != null) {
                     Final.DEBUG(TAG, "TIK: " + FinalConstant.getCurrentTik() + " myEntity defence: " + myEntity.getId());

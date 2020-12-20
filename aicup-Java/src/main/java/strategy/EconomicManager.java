@@ -1,6 +1,8 @@
 package strategy;
 
 import model.*;
+import strategy.map.potfield.DangerPositionAnswer;
+import strategy.map.potfield.DodgePositionAnswer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -54,7 +56,17 @@ public class EconomicManager {
         HashMap<Integer, EntityAction> actionHashMap = new HashMap<>();
         GlobalStatistic globalStatistic = globalManager.getGlobalStatistic();
         updateInfo(globalStatistic);
+
         MyPlayer myPlayer = globalManager.getGlobalStatistic().getMyPlayer();
+
+        ArrayList<MyEntity> builderUnitArrayList = myPlayer.getEntityArrayList(EntityType.BUILDER_UNIT);
+        for (int i = 0; i < builderUnitArrayList.size(); i++)
+        {
+            builderUnitArrayList.get(i).setUpdate(false);
+        }
+
+        //увороты
+        dodgeBuilderV2(myPlayer, playerView, globalManager, actionHashMap);
 
         //всё что связанно с починкой
         repairBuilder(myPlayer, playerView, globalManager, actionHashMap);
@@ -70,9 +82,6 @@ public class EconomicManager {
 
         //добыча ресурсов
         resurceBuilder(myPlayer, playerView, globalManager, actionHashMap);
-
-        //увороты
-        dodgeBuilderV2(myPlayer, playerView, globalManager, actionHashMap);
 
         // хил юнитов!
         healUnits(myPlayer, playerView, globalManager, actionHashMap);
@@ -112,6 +121,8 @@ public class EconomicManager {
             MyEntity entity = builderUnitArrayListOne.get(i);
 
             ArrayList<MyEntity> resource;
+
+            if (entity.isDodge()) continue;
 
             resource = globalManager.getGlobalMap().getEntityMapResourceSpecial(entity.getPosition());
 
@@ -161,7 +172,7 @@ public class EconomicManager {
             if (resource.size()>0){
                 Final.DEBUG("ERROR",  "resource>0");
             }*/
-
+            if (builder.isDodge()) continue;
 
             MyEntity resourceMidDis;
 
@@ -396,6 +407,46 @@ public class EconomicManager {
         return actionHashMap;
     }
 
+    //убегания от противниковV2
+    private HashMap dodgeBuilderV3(MyPlayer myPlayer, PlayerView playerView, GlobalManager globalManager, HashMap<Integer, EntityAction> actionHashMap) {
+        GlobalStatistic globalStatistic = globalManager.getGlobalStatistic();
+
+        ArrayList<MyEntity> builderUnitArrayList = myPlayer.getEntityArrayList(EntityType.BUILDER_UNIT);
+
+        for (int i = 0; i < builderUnitArrayList.size(); i++) {
+            MyEntity builderUnit = builderUnitArrayList.get(i);
+
+            MoveAction m = null;
+            BuildAction b = null;
+            AttackAction a = null;
+            RepairAction r = null;
+
+            EntityAction entityAction = actionHashMap.get(builderUnit.getId());
+            if (entityAction == null) entityAction = new EntityAction(null, null, null, null);
+
+            ArrayList<MyEntity> resource = globalManager.getGlobalMap().getEntityMap(builderUnit.getPosition(),GlobalMap.aroundArray,FinalConstant.getMyID(),-1,false,EntityType.RESOURCE);
+
+            // увороты от всех по ПП
+            DodgePositionAnswer dodgePositionAnswer = globalManager.getMapPotField().getDodgePositionBuild(builderUnit,resource.size()>0,false);
+
+            if (dodgePositionAnswer != null) {
+
+                builderUnit.setDodge(true);
+                builderUnit.setUpdate(true);
+                builderUnit.setDodgePositionAnswer(dodgePositionAnswer);
+
+                myPlayer.addCountBuildDodge();
+
+                myPlayer.getUnitDodgeArrayList().add(builderUnit);
+
+                actionHashMap.put(builderUnit.getId(), entityAction);
+            }
+        }
+
+        return actionHashMap;
+    }
+
+
     // новые постройки
     private HashMap buildBuilder(MyPlayer myPlayer, PlayerView playerView, GlobalManager globalManager, HashMap<Integer, EntityAction> actionHashMap) {
 
@@ -541,6 +592,8 @@ public class EconomicManager {
         {
             MyEntity builderUnit = builderUnitArrayList.get(i);
 
+            if (builderUnit.isDodge()) continue;
+
             if (builderUnit.getUnitState() == EUnitState.REPAIR || builderUnit.getUnitState() == EUnitState.BUILD)
                 continue;
 
@@ -681,6 +734,8 @@ public class EconomicManager {
         {
             MyEntity builderUnit = builderUnitArrayList.get(i);
 
+            if (builderUnit.isDodge()) continue;
+
             if (builderUnit.getUnitState() == EUnitState.REPAIR || builderUnit.getUnitState() == EUnitState.BUILD)
                 continue;
 
@@ -725,7 +780,6 @@ public class EconomicManager {
         }
 
     }
-
 
     // чиним здания и юнитов
     private HashMap repairBuilder(MyPlayer myPlayer, PlayerView playerView, GlobalManager globalManager, HashMap<Integer, EntityAction> actionHashMap) {
@@ -786,6 +840,8 @@ public class EconomicManager {
 
             for (int j = 0; j < builderUnitArrayList.size(); j++) {
                 builderUnit = builderUnitArrayList.get(j);
+
+                if (builderUnit.isDodge()) continue;
 
                 if (builderUnit.getDataTaskUnit().getUnitState()==EUnitState.REPAIR || builderUnit.getDataTaskUnit().getUnitState() == EUnitState.BUILD) continue;
 
@@ -1046,7 +1102,7 @@ public class EconomicManager {
 
     private boolean checkAttackBaseV2(MyPlayer myPlayer) {
         ArrayList<MyEntity> arrayList = myPlayer.getEnemyArrayList();
-        if (arrayList.size()*1.5>myPlayer.getEntityArrayList(EntityType.RANGED_UNIT).size() + myPlayer.getEntityArrayList(EntityType.MELEE_UNIT).size()) return true;
+        if (arrayList.size()*2.5>myPlayer.getEntityArrayList(EntityType.RANGED_UNIT).size() + myPlayer.getEntityArrayList(EntityType.MELEE_UNIT).size()) return true;
         else return false;
     }
 

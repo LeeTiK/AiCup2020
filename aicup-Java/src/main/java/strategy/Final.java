@@ -9,7 +9,7 @@ public class Final {
     final static boolean debug = false;
     final static boolean debugERROR = true;
     final static boolean debugRelease = true;
-    public final static boolean debugGraphic = true;
+    public final static boolean debugGraphic = false;
 
 
     public final static boolean A_STAR = false;
@@ -35,12 +35,14 @@ public class Final {
     public final static boolean DISTRICT_REGION = false;
     public final static boolean HP_NO_ACTIVE = false;
     public final static boolean NEXT_TIK_POSITION = true;
+    public final static boolean ENEMY_ATTACK = true;
+
 
     public final static boolean CHECK_SEARCH_WAVE_BUILDER = false;
     public final static boolean CHECK_SEARCH_WAVE_START_END = false;
 
     public final static boolean CHECK_SEARCH_PATH_RANGER = false;
-    public final static boolean CHECK_SEARCH_PATH_ASTAR = false;
+    public final static boolean CHECK_SEARCH_PATH_ASTAR = true;
 
     static public Player getMyPlayer(PlayerView playerView) {
         int myID = playerView.getMyId();

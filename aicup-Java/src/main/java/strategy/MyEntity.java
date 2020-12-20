@@ -4,6 +4,7 @@ import model.Entity;
 import model.EntityAction;
 import model.EntityType;
 import model.Vec2Int;
+import strategy.map.potfield.DodgePositionAnswer;
 
 public class MyEntity extends Entity {
 
@@ -50,6 +51,8 @@ public class MyEntity extends Entity {
     boolean needMove;
 
     int repairCounter = 0;
+
+    DodgePositionAnswer mDodgePositionAnswer;
 
     public MyEntity(Entity entity) {
         super(entity.getId(), entity.getPlayerId(), entity.getEntityType(), entity.getPosition(), entity.getHealth(), entity.isActive());
@@ -102,6 +105,7 @@ public class MyEntity extends Entity {
         needMove =false;
         dangerMove = false;
         repairCounter=0;
+        mDodgePositionAnswer=null;
     }
 
     public void update(Entity entity) {
@@ -221,15 +225,15 @@ public class MyEntity extends Entity {
     public String toString() {
         String str = "" + getId() + " ";
         str += getPosition().toString();
-        if (oldTwoTikPosition != null) str += oldTwoTikPosition.toString();
+     //   if (oldTwoTikPosition != null) str += oldTwoTikPosition.toString();
         if (getEntityAction().getMoveAction() != null) {
-            str += " M: " + getEntityAction().getMoveAction().getTarget().toString();
+            str += " M:" + getEntityAction().getMoveAction().getTarget().toString();
         }
         if (getEntityAction().getAttackAction() != null) {
-            str += " A: T";
+            str += " A:T";
         }
-        str += " " + isMove();
-        str += " " + isRotation();
+        str += " " + isDodge();
+        str += " " + isNeedMove();
         return str;
     }
 
@@ -347,5 +351,13 @@ public class MyEntity extends Entity {
     public void addRepairCounter()
     {
         repairCounter++;
+    }
+
+    public void setDodgePositionAnswer(DodgePositionAnswer dodgePositionAnswer) {
+        mDodgePositionAnswer = dodgePositionAnswer;
+    }
+
+    public DodgePositionAnswer getDodgePositionAnswer() {
+        return mDodgePositionAnswer;
     }
 }

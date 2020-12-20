@@ -244,7 +244,6 @@ public class GlobalMap {
             mapNextTick = new MyEntity[FinalConstant.getMapSize()][FinalConstant.getMapSize()];
         }
 
-
         updateMap(globalStatistic);
 
         mAreaPlayer = getPlayerArea(FinalConstant.getMyID());
@@ -306,29 +305,7 @@ public class GlobalMap {
         for (int i = 0; i < allEntityUnits.size(); i++) {
             MyEntity entity = allEntityUnits.get(i);
 
-            if (checkCoord(entity.getPosition())
-            ) {
-                map[entity.getPosition().getX()][entity.getPosition().getY()] = entity;
-                mapNextTick[entity.getPosition().getX()][entity.getPosition().getY()] = entity;
-
-                switch (entity.getEntityType()) {
-
-                    case HOUSE:
-                    case BUILDER_BASE:
-                    case MELEE_BASE:
-                    case RANGED_BASE:
-                    case TURRET:
-                        EntityProperties entityProperties = FinalConstant.getEntityProperties(entity.getEntityType());
-                        for (int j = 0; j < entityProperties.getSize(); j++) {
-                            for (int k = 0; k < entityProperties.getSize(); k++) {
-                                map[entity.getPosition().getX() + j][entity.getPosition().getY() + k] = entity;
-                                mapNextTick[entity.getPosition().getX() + j][entity.getPosition().getY() + k] = entity;
-                            }
-                        }
-                        break;
-                }
-
-            }
+            addEntity(entity);
             //  playerView.getEntityProperties().get()
         }
 
@@ -343,6 +320,60 @@ public class GlobalMap {
                 mapNextTick[entity.getPosition().getX()][entity.getPosition().getY()] = entity;
             }
             //  playerView.getEntityProperties().get()
+        }
+
+        if (FinalConstant.isFogOfWar())
+        {
+            updateMapFogOfWar(globalStatistic);
+        }
+    }
+
+    private void addEntity(MyEntity entity){
+        if (checkCoord(entity.getPosition())
+        ) {
+            map[entity.getPosition().getX()][entity.getPosition().getY()] = entity;
+            mapNextTick[entity.getPosition().getX()][entity.getPosition().getY()] = entity;
+
+            switch (entity.getEntityType()) {
+
+                case HOUSE:
+                case BUILDER_BASE:
+                case MELEE_BASE:
+                case RANGED_BASE:
+                case TURRET:
+                    EntityProperties entityProperties = FinalConstant.getEntityProperties(entity.getEntityType());
+                    for (int j = 0; j < entityProperties.getSize(); j++) {
+                        for (int k = 0; k < entityProperties.getSize(); k++) {
+                            map[entity.getPosition().getX() + j][entity.getPosition().getY() + k] = entity;
+                            mapNextTick[entity.getPosition().getX() + j][entity.getPosition().getY() + k] = entity;
+                        }
+                    }
+                    break;
+            }
+
+        }
+    }
+
+    private void updateMapFogOfWar(GlobalStatistic globalStatistic) {
+        if (globalStatistic.getPlayers().size()==2)
+        {
+            if (FinalConstant.getCurrentTik()<500)
+            {
+                MyEntity entity = new MyEntity(10000, globalStatistic.getLeftPlyer().getId(), EntityType.BUILDER_BASE, Vec2Int.createVector(70,70), 100, true);
+                addEntity(entity);
+            }
+        }
+
+        if (globalStatistic.getPlayers().size()==4)
+        {
+            if (FinalConstant.getCurrentTik()<500)
+            {
+                MyEntity entity = new MyEntity(10000, globalStatistic.getLeftPlyer().getId(), EntityType.BUILDER_BASE, Vec2Int.createVector(5,70), 100, true);
+                addEntity(entity);
+
+                MyEntity entity1 = new MyEntity(10001, globalStatistic.getRightPlyer().getId(), EntityType.BUILDER_BASE, Vec2Int.createVector(70,5), 100, true);
+                addEntity(entity1);
+            }
         }
     }
 
@@ -1443,25 +1474,34 @@ public class GlobalMap {
     }
 
 
-    public void setPositionNextTick(Vec2Int position, Vec2Int positionTwo) {
+    public MyEntity setPositionNextTick(MyEntity myEntity, Vec2Int position, Vec2Int positionTwo) {
         MyEntity entity = getMapNextTick()[position.getX()][position.getY()];
 
         if (entity.getEntityType()==EntityType.Empty){
             Final.DEBUG("NEED_MOVE", "ERROR CURRENT EMPTY " + position.toString());
-            return;
+            return null;
         }
 
         MyEntity entityTwo = getMapNextTick()[positionTwo.getX()][positionTwo.getY()];
 
         if (entityTwo.getId()==entity.getId()){
-            Final.DEBUG("NEED_MOVE", "ERROR ID Entity " + position.toString());
-            return;
+            Final.DEBUG("NEED_MOVE", "ERROR ID Entity two position" + position.toString());
+            return null;
+        }
+
+        if (myEntity.getId()!=entity.getId())
+        {
+            Final.DEBUG("NEED_MOVE", "ERROR ID Entity one position " + position.toString() + " ID: " + entity.getId() );
+            return setPositionNextTick(myEntity,positionTwo);
         }
 
         if (entityTwo.getEntityType()!=EntityType.Empty && entityTwo.getEntityType()!=EntityType.RESOURCE)
         {
-            entityTwo.setNeedMove(true);
+            if (entityTwo.getEntityType()==EntityType.BUILDER_UNIT){
+                entityTwo.setNeedMove(true);
+            }
             getMapNextTick()[positionTwo.getX()][positionTwo.getY()] = entity;
+            return entityTwo;
         }
         else {
             getMapNextTick()[position.getX()][position.getY()] = entityTwo;
@@ -1474,6 +1514,38 @@ public class GlobalMap {
         getMapNextTick()[positionTwo.getX()][positionTwo.getY()] = entity;
       //  }
       */
+        return null;
+    }
+
+    public MyEntity setPositionNextTick(MyEntity entity, Vec2Int positionTwo) {
+
+
+        MyEntity entityTwo = getMapNextTick()[positionTwo.getX()][positionTwo.getY()];
+
+        if (entityTwo.getId()==entity.getId()){
+            Final.DEBUG("NEED_MOVE", "V2 ERROR ID Entity " + positionTwo.toString());
+            return null;
+        }
+
+        if (entityTwo.getEntityType()!=EntityType.Empty){
+            Final.DEBUG("NEED_MOVE", "V2 ERROR NO EMPTY " + entityTwo.toString());
+            return null;
+        }
+
+
+        if (entityTwo.getEntityType()!=EntityType.Empty && entityTwo.getEntityType()!=EntityType.RESOURCE)
+        {
+            if (entityTwo.getEntityType()==EntityType.BUILDER_UNIT){
+                entityTwo.setNeedMove(true);
+            }
+            getMapNextTick()[positionTwo.getX()][positionTwo.getY()] = entity;
+            return entityTwo;
+        }
+        else {
+            getMapNextTick()[positionTwo.getX()][positionTwo.getY()] = entity;
+        }
+
+        return null;
     }
 
     public void checkNextPositionUnit(MyEntity entity) {

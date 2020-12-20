@@ -107,7 +107,7 @@ public class GlobalManager {
         // проверяем всех юнитов чтобы уступили дорогу
         if (A_NEED_MOVE)
         {
-            mMoveManager.checkNeedMoveUnit(playerView,this,hashMap);
+            mMoveManager.calculateDodgeUnits(playerView,this,hashMap);
         }
 
         timeAllStrategy += System.nanoTime() - startTime;
@@ -161,19 +161,6 @@ public class GlobalManager {
                 for (int i = 0; i < myEntities.size(); i++) {
                     FinalGraphic.sendText(debugInterface, new Vec2Float(myEntities.get(i).getPosition().getX() * 1.0f, myEntities.get(i).getPosition().getY() * 1.0f + 0.2f), 11, "" +
                             myEntities.get(i).getHealth());
-                }
-            }
-
-
-            if (INFO_UNIT) {
-                MyPlayer myPlayer = mGlobalStatistic.getMyPlayer();
-
-                ArrayList<MyEntity> myEntities = myPlayer.getUnitArrayList();
-
-                for (int i = 0; i < myEntities.size(); i++) {
-                    Vec2Float vec2Float = myEntities.get(i).getPosition().getVec2Float();
-                    vec2Float.setY(vec2Float.getY()+ 0.20f);
-                    FinalGraphic.sendText(debugInterface, vec2Float, 11, myEntities.get(i).toString());
                 }
             }
 
@@ -231,10 +218,23 @@ public class GlobalManager {
                         {
                             Vec2Int vec2Int = Vec2Int.createVector(i,j);
                             FinalGraphic.sendSquare(debugInterface, vec2Int, 1, FinalGraphic.COLOR_BLACK_TWO);
-                            FinalGraphic.sendText(debugInterface, new Vec2Float(vec2Int.getX() * 1.0f, vec2Int.getY() * 1.0f + 0.2f), 11, "" +
+                            FinalGraphic.sendText(debugInterface, new Vec2Float(vec2Int.getX() * 1.0f+0.5f, vec2Int.getY() * 1.0f + 0.4f), 11, "" +
                                     entity.getId());
                         }
                     }
+                }
+            }
+
+
+            if (INFO_UNIT) {
+                MyPlayer myPlayer = mGlobalStatistic.getMyPlayer();
+
+                ArrayList<MyEntity> myEntities = myPlayer.getUnitArrayList();
+
+                for (int i = 0; i < myEntities.size(); i++) {
+                    Vec2Float vec2Float = myEntities.get(i).getPosition().getVec2Float();
+                    vec2Float.setY(vec2Float.getY()+ 0.20f);
+                    FinalGraphic.sendText(debugInterface, vec2Float, 11, myEntities.get(i).toString());
                 }
             }
         }

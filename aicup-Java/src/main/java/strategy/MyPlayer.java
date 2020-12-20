@@ -66,6 +66,7 @@ public class MyPlayer extends Player {
         mUnitArrayList = new ArrayList<>();
         mBuildingArrayList = new ArrayList<>();
         mEnemyArrayList = new ArrayList<>();
+        mUnitDodgeArrayList = new ArrayList<>();
         resourceAllGame = 0;
         resourceOldTik = 0;
     }
@@ -88,6 +89,7 @@ public class MyPlayer extends Player {
         }
 
         mEnemyArrayList.clear();
+        mUnitDodgeArrayList.clear();
     }
 
     public EStatus updateEntity(MyEntity entity) {
@@ -617,5 +619,9 @@ public class MyPlayer extends Player {
 
     public int getCountAllBiuld() {
         return countAllBiuld;
+    }
+
+    public ArrayList<MyEntity> getUnitDodgeArrayList() {
+        return mUnitDodgeArrayList;
     }
 }
