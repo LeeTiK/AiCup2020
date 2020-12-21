@@ -440,7 +440,7 @@ public class MyPlayer extends Player {
         for (int i = 0; i < mUnitArrayList.size(); i++) {
             MyEntity unit = mUnitArrayList.get(i);
             if (unit.getMinDisToEnemy()==0xFFFF) {
-                MyEntity enemy = globalMap.getNearestPlayer(unit.getPosition(), getId(), -1,EntityType.ATTACK_ENTITY,false);
+                MyEntity enemy = globalMap.getNearestPlayer(unit.getPosition(), getId(), -1,EntityType.ATTACK_ENTITY,false,false);
 
                 if (enemy != null) {
                     unit.setMinDisToEnemy((float) unit.getPosition().distance(enemy.getPosition()));
@@ -454,7 +454,7 @@ public class MyPlayer extends Player {
         for (int i = 0; i < mBuildingArrayList.size(); i++) {
             MyEntity unit = mBuildingArrayList.get(i);
             if (unit.getMinDisToEnemy()==0xFFFF) {
-                MyEntity enemy = globalMap.getNearestPlayer(unit.getPosition(), getId(), -1,EntityType.ATTACK_ENTITY,false);
+                MyEntity enemy = globalMap.getNearestPlayer(unit.getPosition(), getId(), -1,EntityType.ATTACK_ENTITY,false,false);
 
                 if (enemy != null) {
                     unit.setMinDisToEnemy((float) unit.getPosition().distance(enemy.getPosition()));

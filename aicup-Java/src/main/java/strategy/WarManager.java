@@ -11,6 +11,7 @@ public class WarManager {
     public static final String TAG = "strategy.WarManager";
 
     public static final boolean HEAL_RANGER = true;
+    public static final int counterAttack = 2;
 
     DebugInterface debugInterface;
     //группы юнитов
@@ -322,9 +323,7 @@ public class WarManager {
             MyEntity enemy = enemyArrayList.get(i);
 
             for (int j=0; j<sizeUnit; j++) {
-                MyEntity myEntity = globalMap.getNearestPlayer(enemy.getPosition(), enemy.getPlayerId(), FinalConstant.getMyID(), EntityType.RANGED_UNIT, true);
-
-
+                MyEntity myEntity = globalMap.getNearestPlayer(enemy.getPosition(), enemy.getPlayerId(), FinalConstant.getMyID(), EntityType.RANGED_UNIT, true,false);
 
                 if (myEntity != null) {
                     Final.DEBUG(TAG, "TIK: " + FinalConstant.getCurrentTik() + " myEntity defence: " + myEntity.getId());
@@ -417,7 +416,7 @@ public class WarManager {
 
             if (range.isUpdate()) continue;
 
-            MyEntity enemy = globalManager.getGlobalMap().getNearestPlayer(range.getPosition(), myPlayer.getId(), -1);
+            MyEntity enemy = globalManager.getGlobalMap().getNearestPlayer(range.getPosition(), myPlayer.getId(), -1,true);
 
             if (enemy!=null)
             {
@@ -448,6 +447,7 @@ public class WarManager {
                 }**/
 
                 range.setEnemyMinDis(enemy);
+                enemy.addCountAttackingUnit();
                 entityAction.setMoveAction(m);
                 actionHashMap.put(range.getId(), entityAction);
             }
@@ -548,7 +548,7 @@ public class WarManager {
                 if (entityAction == null) entityAction = new EntityAction(null, null, null, null);
 
 
-                MyEntity enemy = globalManager.getGlobalMap().getNearestPlayer(build.getPosition(), myPlayer.getId(), -1,EntityType.NO_ATTACK_ENTITY,false);
+                MyEntity enemy = globalManager.getGlobalMap().getNearestPlayer(build.getPosition(), myPlayer.getId(), -1,EntityType.NO_ATTACK_ENTITY,false,false);
 
                 if (enemy!=null)
                 {

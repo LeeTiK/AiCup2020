@@ -2,6 +2,7 @@ package strategy.map.astar;
 
 import model.EntityType;
 import model.Vec2Int;
+import strategy.Final;
 import strategy.FinalConstant;
 import strategy.GlobalMap;
 import strategy.MyEntity;
@@ -89,7 +90,7 @@ public class AStar {
 
                 if (entity.getEntityType()== EntityType.BUILDER_UNIT &&
                         entity.getPlayerId()==FinalConstant.getMyID()){
-                    if (globalMap.getSpecialCheckBuilderTask(vec2Int))
+                    if (Final.A_STAR_BLOCK_ALL_BUILD_UNIT || globalMap.getSpecialCheckBuilderTask(vec2Int))
                     {
                         this.searchArea[i][j].setBlock(true);
                     }

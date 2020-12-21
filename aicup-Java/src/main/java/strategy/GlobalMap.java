@@ -978,22 +978,26 @@ public class GlobalMap {
     }
 
     public MyEntity getNearestPlayer(Vec2Int vec2Int, int myID){
-        return getNearestPlayer(vec2Int,myID,-1,null,false);
+        return getNearestPlayer(vec2Int,myID,-1,null,false,false);
     }
 
     public MyEntity getNearestPlayer(Vec2Int vec2Int, int myID, int enemyID){
-        return getNearestPlayer(vec2Int,myID,enemyID,null,false);
+        return getNearestPlayer(vec2Int,myID,enemyID,null,false,false);
+    }
+
+    public MyEntity getNearestPlayer(Vec2Int vec2Int, int myID, int enemyID,boolean counterAttack){
+        return getNearestPlayer(vec2Int,myID,enemyID,null,false,counterAttack);
     }
 
     public MyEntity getNearestPlayer(Vec2Int vec2Int, int myID,  EntityType entityType){
-        return getNearestPlayer(vec2Int,myID,-1,entityType,false);
+        return getNearestPlayer(vec2Int,myID,-1,entityType,false,false);
     }
 
     public MyEntity getMyUnitPlayer(Vec2Int vec2Int, EntityType entityType){
-        return getNearestPlayer(vec2Int,-1,FinalConstant.getMyID(),entityType,false);
+        return getNearestPlayer(vec2Int,-1,FinalConstant.getMyID(),entityType,false,false);
     }
 
-    public MyEntity getNearestPlayer(Vec2Int vec2Int, int myID, int enemyID, EntityType entityType, boolean update) {
+    public MyEntity getNearestPlayer(Vec2Int vec2Int, int myID, int enemyID, EntityType entityType, boolean update, boolean counterAttack) {
         double minDis = 0xFFFFF;
         MyEntity current = null;
 
@@ -1045,6 +1049,25 @@ public class GlobalMap {
                         }
                         else {
                             if (map[i][j].getEntityType() != entityType) continue;
+                        }
+                    }
+                }
+
+                if (counterAttack)
+                {
+                    if (map[i][j].getEntityType()==EntityType.RANGED_UNIT || map[i][j].getEntityType()==EntityType.BUILDER_UNIT)
+                    {
+                        if (map[i][j].getCountAttackingUnit()>=WarManager.counterAttack)
+                        {
+                            continue;
+                        }
+                    }
+
+                    if (map[i][j].getEntityType()==EntityType.MELEE_UNIT)
+                    {
+                        if (map[i][j].getCountAttackingUnit()>=WarManager.counterAttack*2)
+                        {
+                            continue;
                         }
                     }
                 }

@@ -23,6 +23,8 @@ public class FinalConstant {
 
     static public int mapSize;
 
+
+
     public static int getMyID() {
         return myID;
     }

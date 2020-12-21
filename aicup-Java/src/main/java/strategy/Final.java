@@ -13,6 +13,7 @@ public class Final {
 
 
     public static boolean A_STAR = false;
+    public static boolean A_STAR_BLOCK_ALL_BUILD_UNIT = false;
     public final static boolean A_NEED_MOVE = false;
     final static boolean OFF_WAR = false;
 

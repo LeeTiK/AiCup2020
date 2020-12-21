@@ -446,7 +446,6 @@ public class EconomicManager {
         return actionHashMap;
     }
 
-
     // новые постройки
     private HashMap buildBuilder(MyPlayer myPlayer, PlayerView playerView, GlobalManager globalManager, HashMap<Integer, EntityAction> actionHashMap) {
 
@@ -466,7 +465,7 @@ public class EconomicManager {
                     myPlayer.getEntityArrayList(EntityType.BUILDER_BASE).size()>0) ||
                 myPlayer.getEntityArrayList(EntityType.HOUSE).size() < 5 ||
             ( myPlayer.getResource()>1000 && myPlayer.getEntityArrayList(EntityType.HOUSE).size() < 7)
-            || (globalManager.getGlobalStatistic().getPlayers().size()==2 && myPlayer.getEntityArrayList(EntityType.HOUSE).size() < 6)
+            || (globalManager.getGlobalStatistic().getPlayers().size()==2 && myPlayer.getEntityArrayList(EntityType.HOUSE).size() < 7)
             ) {
 
              //   System.out.println("size HOME: " +  myPlayer.getEntityArrayList(EntityType.HOUSE).size());

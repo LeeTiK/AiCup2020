@@ -841,7 +841,7 @@ public class MapPotField {
             if (mMapPotField[entity.getPosition().getX()][entity.getPosition().getY()].getSumDanger()==0) return entity.getPosition();
         }
 
-        if (minDanger==1 && current.getSumDangerContour()>0 && current.getSumDangerContour()-current.getSafetyContour()+1>0)
+        if (minDanger==1 && current.getSumDangerContour()>0 && current.getSumDangerContour()-current.getSafetyContour()+6>0)
         {
             Field field = mMapPotField[position.getX()][position.getY()];
 
