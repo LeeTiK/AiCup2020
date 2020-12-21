@@ -17,6 +17,7 @@ public class Node {
     private int row;
     private int col;
     private boolean isBlock;
+    private boolean isBlockAttackUnit;
     private Node parent;
 
     public Node(int row, int col) {
@@ -138,5 +139,13 @@ public class Node {
 
     public int getH2() {
         return h2;
+    }
+
+    public void setBlockAttackUnit(boolean blockAttackUnit) {
+        isBlockAttackUnit = blockAttackUnit;
+    }
+
+    public boolean isBlockAttackUnit() {
+        return isBlockAttackUnit;
     }
 }

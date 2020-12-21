@@ -26,6 +26,8 @@ public class AStar {
     private Node initialNode;
     private Node finalNode;
 
+    EntityType mEntityTypeFindPath;
+
     List<Node> path = new ArrayList<Node>();
 
     public AStar(int size)
@@ -102,7 +104,8 @@ public class AStar {
                     if (entity.getPlayerId()==FinalConstant.getMyID())
                     {
                         if (mapPotField.getMapPotField()[vec2Int.getX()][vec2Int.getY()].getSumDanger() +
-                                mapPotField.getMapPotField()[vec2Int.getX()][vec2Int.getY()].getSumDangerContour()
+                                mapPotField.getMapPotField()[vec2Int.getX()][vec2Int.getY()].getSumDangerContour() +
+                                mapPotField.getMapPotField()[vec2Int.getX()][vec2Int.getY()].getSafetyContour()
                                 >0 ) {
                             this.searchArea[i][j].setBlock(true);
                         }
@@ -129,8 +132,10 @@ public class AStar {
         }
     }
 
-    public List<Node> findPath() {
+    public List<Node> findPath(EntityType entityType) {
         if (this.searchArea[finalNode.getVec2Int().getX()][finalNode.getVec2Int().getY()].isBlock()) return new ArrayList<Node>();
+        this.mEntityTypeFindPath = entityType;
+
         openList.add(initialNode);
         while (!isEmpty(openList)) {
             Node currentNode = openList.poll();

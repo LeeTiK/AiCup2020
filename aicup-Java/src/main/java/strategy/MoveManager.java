@@ -49,7 +49,7 @@ public class MoveManager {
             return moveAction;
         }
 
-        if (entity.getPosition().distance(targetPosition)<1.5) {
+        if (entity.getPosition().distance(targetPosition)<1.1) {
             moveAction.setTarget(targetPosition);
             getGlobalMap().setPositionNextTick(entity, entity.getPosition(),targetPosition);
             entity.getEntityAction().setMoveAction(moveAction);
@@ -59,7 +59,7 @@ public class MoveManager {
             if (Final.A_STAR) {
 
                 mAStar.initSearch(entity.getPosition(), targetPosition);
-                List<Node> path = mAStar.findPath();
+                List<Node> path = mAStar.findPath(entity.getEntityType());
 
                 if (path.size() > 1) {
 

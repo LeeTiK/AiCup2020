@@ -65,7 +65,7 @@ public class GlobalManager {
 
         mGlobalStatistic.updateInfo(playerView, this);
 
-        if (FinalConstant.isFogOfWar() && mGlobalStatistic.getPlayers().size()==2)
+        if (FinalConstant.isFogOfWar())
         {
             A_STAR = true;
         }
@@ -109,6 +109,8 @@ public class GlobalManager {
         hashMap.putAll(mWarManager.update(playerView, this,debugInterface));
 
         hashMap.putAll(mEconomicManager.update(playerView, this,debugInterface));
+
+        mWarManager.updateWarBuilder(this,hashMap);
 
         // проверяем всех юнитов чтобы уступили дорогу
         if (A_NEED_MOVE)

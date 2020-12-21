@@ -21,6 +21,11 @@ public class EconomicManager {
     // количество жилых мест
     int countMaxUnit;
 
+    int createHouse;
+    int createBase;
+
+    int nextResource;
+
     DebugInterface debugInterface;
 
     boolean init;
@@ -59,17 +64,29 @@ public class EconomicManager {
 
         MyPlayer myPlayer = globalManager.getGlobalStatistic().getMyPlayer();
 
-        ArrayList<MyEntity> builderUnitArrayList = myPlayer.getEntityArrayList(EntityType.BUILDER_UNIT);
-        for (int i = 0; i < builderUnitArrayList.size(); i++)
-        {
-            builderUnitArrayList.get(i).setUpdate(false);
-        }
+
+
 
         //увороты
         dodgeBuilderV2(myPlayer, playerView, globalManager, actionHashMap);
 
         //всё что связанно с починкой
         repairBuilder(myPlayer, playerView, globalManager, actionHashMap);
+
+
+        createHouse = 0;
+
+        ArrayList<MyEntity> builderUnitArrayList = myPlayer.getEntityArrayList(EntityType.BUILDER_UNIT);
+        for (int i = 0; i < builderUnitArrayList.size(); i++)
+        {
+            MyEntity builder =  builderUnitArrayList.get(i);
+            builder.setUpdate(false);
+
+            if (builder.getUnitState()==EUnitState.BUILD)
+            {
+                createHouse++;
+            }
+        }
 
         //всё что связанно с новые зданиями
         buildBuilder(myPlayer, playerView, globalManager, actionHashMap);
@@ -129,6 +146,7 @@ public class EconomicManager {
             if (resource.size() > 0)
             {
                 if (entity.getUnitState() == EUnitState.RESURCE || entity.getUnitState() == EUnitState.EMPTY) {
+                    entity.setDataTaskUnit(new DataTaskUnit(EUnitState.RESURCE));
                     MoveAction m = null;
                     BuildAction b = null;
                     AttackAction a = null;
@@ -207,6 +225,9 @@ public class EconomicManager {
                     resourceMidDis.setTargetEntity(builder);
                     continue;
                 }
+            }
+            else {
+                builder.getDataTaskUnit().clear();
             }
         }
 
@@ -456,7 +477,7 @@ public class EconomicManager {
 
         //boolean checkCreate = false;
 
-        if (myPlayer.getResource() > myPlayer.getCost(EntityType.HOUSE) - 5 &&
+        if ((myPlayer.getResource() - createHouse * myPlayer.getCost(EntityType.HOUSE)) > myPlayer.getCost(EntityType.HOUSE) - 5 &&
                 ((myPlayer.getPopulationCurrent() * 1.2 >= myPlayer.getPopulationMax() && myPlayer.getResource() > myPlayer.getCost(EntityType.HOUSE) * 2) || myPlayer.getPopulationMax() < 80)
                 && (myPlayer.getPopulationMax() < 180)
                 && (myPlayer.getCountBuildDontCreate(EntityType.HOUSE) < 3 || (myPlayer.getResource() > 300 && myPlayer.getCountBuildDontCreate(EntityType.HOUSE) < 5 && myPlayer.getPopulationMax() < 70))
@@ -787,7 +808,6 @@ public class EconomicManager {
         ArrayList<MyEntity> buildingArrayList = myPlayer.getBuildingArrayList();
         ArrayList<MyEntity> builderUnitArrayList = myPlayer.getEntityArrayList(EntityType.BUILDER_UNIT);
 
-
       /*  for (int j = 0; j < builderUnitArrayList.size(); j++){
             MyEntity entity = builderUnitArrayList.get(j);
             entity.setUpdate(false);
@@ -796,11 +816,11 @@ public class EconomicManager {
 
         for (int j = 0; j < builderUnitArrayList.size(); j++) {
             MyEntity entity = builderUnitArrayList.get(j);
-            RepairAction r = getNearbyBuildNeedHeal(entity.getPosition(), globalManager);
+            MyEntity entityRepair = getNearbyBuildNeedHeal(entity.getPosition(), globalManager);
 
             if (entity.isDodge()) continue;
 
-            if (r == null) {
+            if (entityRepair == null) {
 
                 if (entity.getDataTaskUnit().getUnitState() == EUnitState.REPAIR || entity.getDataTaskUnit().getUnitState() == EUnitState.BUILD) {
                     entity.getDataTaskUnit().clear();
@@ -812,8 +832,10 @@ public class EconomicManager {
             EntityAction action = actionHashMap.get(entity);
 
             if (action == null) action = new EntityAction(null, null, null, null);
-            action.setRepairAction(r);
+            action.setRepairAction(new RepairAction(entityRepair.getId()));
             action.setMoveAction(null);
+
+            entityRepair.addRepairCounter();
 
             entity.setDataTaskUnit(new DataTaskUnit(EUnitState.REPAIR));
             //  entity.setUpdate(true);
@@ -877,7 +899,7 @@ public class EconomicManager {
 
                     actionHashMap.put(builderUnit.getId(), new EntityAction(m, b, a, r));
 
-                    countBuildersRepair++;
+                   // countBuildersRepair++;
                 } else {
                     if (dis < 4 && myEntityBuilding.getEntityType() == EntityType.RANGED_BASE) {
                         EntityAction action = actionHashMap.get(builderUnit);
@@ -911,7 +933,6 @@ public class EconomicManager {
 
                 if (myEntityBuilding.getRepairCounter()>2 && (myEntityBuilding.getEntityType()!=EntityType.RANGED_BASE || myEntityBuilding.isActive())) continue;
 
-
                 if (dis < minDisTwo) {
                     if (dis < minDis) {
                         if (currentUnit != null) {
@@ -940,6 +961,9 @@ public class EconomicManager {
 
             if (myEntityBuilding.getRepairCounter()>2 && (myEntityBuilding.getEntityType()!=EntityType.RANGED_BASE || myEntityBuilding.isActive())) {
                 currentUnit =null;
+                currentUnitTwo = null;
+            }
+            if (myEntityBuilding.getRepairCounter()==2 && (myEntityBuilding.getEntityType()!=EntityType.RANGED_BASE || myEntityBuilding.isActive())) {
                 currentUnitTwo = null;
             }
 
@@ -1107,7 +1131,7 @@ public class EconomicManager {
         else return false;
     }
 
-    private RepairAction getNearbyBuildNeedHeal(Vec2Int position, GlobalManager globalManager) {
+    private MyEntity getNearbyBuildNeedHeal(Vec2Int position, GlobalManager globalManager) {
         byte[][] bytes = new byte[][]{
                 {1, 0}, {0, 1}, {-1, 0}, {0, -1},
         };
@@ -1124,16 +1148,14 @@ public class EconomicManager {
                     if (entity.getPlayerId() == FinalConstant.getMyID()) {
                         EntityProperties entityProperties = FinalConstant.getEntityProperties(entity);
                         if (entity.getHealth() < entityProperties.getMaxHealth()) {
-                            entity.addRepairCounter();
-                            return new RepairAction(entity.getId());
+                            return entity;
                         }
                     }
                 }
                 if (entity.getEntityType() == EntityType.RANGED_UNIT) {
                     if (entity.getHealth() <=5) {
                         Final.DEBUG(TAG, "Heal RANGER!!!");
-                        entity.addRepairCounter();
-                        return new RepairAction(entity.getId());
+                        return entity;
                     }
                 }
 

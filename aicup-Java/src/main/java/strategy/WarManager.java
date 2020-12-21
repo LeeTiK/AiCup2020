@@ -268,7 +268,6 @@ public class WarManager {
         ArrayList<MyEntity> rangeArrayList = myPlayer.getEntityArrayList(EntityType.RANGED_UNIT);
         ArrayList<MyEntity> meleeArrayList = myPlayer.getEntityArrayList(EntityType.MELEE_UNIT);
         ArrayList<MyEntity> turretArrayList = myPlayer.getEntityArrayList(EntityType.TURRET);
-        ArrayList<MyEntity> buildArrayList = myPlayer.getEntityArrayList(EntityType.BUILDER_UNIT);
 
         ArrayList<MyEntity> enemyArrayList = myPlayer.getEnemyArrayList();
 
@@ -533,6 +532,13 @@ public class WarManager {
             }
         }
 
+
+    }
+
+    public void updateWarBuilder(GlobalManager globalManager,HashMap<Integer,EntityAction> actionHashMap){
+        MyPlayer myPlayer = globalManager.getGlobalStatistic().getMyPlayer();
+        ArrayList<MyEntity> buildArrayList = myPlayer.getEntityArrayList(EntityType.BUILDER_UNIT);
+
         if (globalManager.getGlobalMap().getResourceMap()<2000)
         {
             for (int i = 0; i < buildArrayList.size(); i++) {
@@ -540,9 +546,9 @@ public class WarManager {
 
                 if (build.getTargetEntity()!=null) continue;
 
-                if (build.getUnitState() == EUnitState.REPAIR || build.getUnitState() == EUnitState.BUILD)
+                if (build.getUnitState() == EUnitState.REPAIR || build.getUnitState() == EUnitState.BUILD || build.getUnitState()==EUnitState.RESURCE)
                     continue;
-               // if (build.isUpdate()) continue;
+                // if (build.isUpdate()) continue;
 
                 EntityAction entityAction = actionHashMap.get(build.getId());
                 if (entityAction == null) entityAction = new EntityAction(null, null, null, null);
@@ -557,8 +563,8 @@ public class WarManager {
                     Final.DEBUG(TAG, "ID:" + build.getId() + " entity: " + entity);
                     MoveAction m;
                     if (entity == null) */
-                   // MoveAction  m = globalManager.getMoveManager().getMoveActionPosition(build,enemy.getPosition());
-                            //new MoveAction(enemy.getPosition(), true, false);
+                    // MoveAction  m = globalManager.getMoveManager().getMoveActionPosition(build,enemy.getPosition());
+                    //new MoveAction(enemy.getPosition(), true, false);
                    /* } else {
                         m = new MoveAction(entity.getPosition(), true, false);
                         entity.setRotation(true);
@@ -594,7 +600,7 @@ public class WarManager {
                         MoveAction m;
                         if (entity == null) {*/
                         MoveAction   m =   globalManager.getMoveManager().getMoveActionPosition(build,vec2Int);
-                                //new MoveAction(vec2Int, true, false);
+                        //new MoveAction(vec2Int, true, false);
 
 
                      /*   } else {

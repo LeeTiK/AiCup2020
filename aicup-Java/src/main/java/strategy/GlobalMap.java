@@ -357,9 +357,9 @@ public class GlobalMap {
     private void updateMapFogOfWar(GlobalStatistic globalStatistic) {
         if (globalStatistic.getPlayers().size()==2)
         {
-            if (FinalConstant.getCurrentTik()<500)
+            if (FinalConstant.getCurrentTik()<900)
             {
-                MyEntity entity = new MyEntity(10000, globalStatistic.getLeftPlyer().getId(), EntityType.BUILDER_BASE, Vec2Int.createVector(70,70), 100, true);
+                MyEntity entity = new MyEntity(10000, globalStatistic.getLeftPlyer().getId(), EntityType.BUILDER_BASE, Vec2Int.createVector(73,73), 100, true);
                 addEntity(entity);
             }
         }
@@ -389,14 +389,22 @@ public class GlobalMap {
         }
     }
     public ArrayList<Vec2Int> getCoordAround(Vec2Int start, int size, boolean checkEmpty){
-        return getCoordAround(start,size,checkEmpty,-1,-1,null);
+        return getCoordAround(start,size,checkEmpty,-1,-1,null,null);
     }
 
     public ArrayList<Vec2Int> getCoordAround(Vec2Int start, int size, boolean checkEmpty, int ID){
-        return getCoordAround(start,size,checkEmpty,ID,-1,null);
+        return getCoordAround(start,size,checkEmpty,ID,-1,null,null);
     }
 
-    public ArrayList<Vec2Int> getCoordAround(Vec2Int start, int size, boolean checkEmpty, int myID, int district, MapPotField mapPotField) {
+    public ArrayList<Vec2Int> getCoordAround(Vec2Int start, int size, boolean checkEmpty, Vec2Int position){
+        return getCoordAround(start,size,checkEmpty,-1,-1,null,position);
+    }
+
+    public ArrayList<Vec2Int> getCoordAround(Vec2Int start, int size, boolean checkEmpty, int myID, int district, MapPotField mapPotField){
+        return getCoordAround(start,size,checkEmpty,myID,district,mapPotField,null);
+    }
+
+    public ArrayList<Vec2Int> getCoordAround(Vec2Int start, int size, boolean checkEmpty, int myID, int district, MapPotField mapPotField,Vec2Int position) {
         ArrayList<Vec2Int> arrayList = new ArrayList<>();
 
 
@@ -406,6 +414,11 @@ public class GlobalMap {
             Vec2Int vec2Int1 = vec2Int.add(x, size);
 
             if (!checkCoord(vec2Int1)) continue;
+
+            if (vec2Int1.equals(position)){
+                arrayList.add(vec2Int1);
+                return arrayList;
+            }
 
             boolean check = false;
 
@@ -447,6 +460,11 @@ public class GlobalMap {
 
             if (!checkCoord(vec2Int1)) continue;
 
+            if (vec2Int1.equals(position)){
+                arrayList.add(vec2Int1);
+                return arrayList;
+            }
+
             boolean check = false;
 
             if (checkEmpty) {
@@ -486,6 +504,11 @@ public class GlobalMap {
 
             if (!checkCoord(vec2Int1)) continue;
 
+            if (vec2Int1.equals(position)){
+                arrayList.add(vec2Int1);
+                return arrayList;
+            }
+
             boolean check = false;
 
             if (checkEmpty) {
@@ -522,6 +545,11 @@ public class GlobalMap {
 
         for (int y = size - 1; y >= 0; y--) {
             Vec2Int vec2Int1 = vec2Int.add(-1, y);
+
+            if (vec2Int1.equals(position)){
+                arrayList.add(vec2Int1);
+                return arrayList;
+            }
 
             if (!checkCoord(vec2Int1)) continue;
 
@@ -894,7 +922,7 @@ public class GlobalMap {
 
     // функция показывает наилушую точку для создания здания юнитом
     public Vec2Int getMinPositionBuilding(Vec2Int positionUnit, Vec2Int positionBuild, EntityProperties entityProperties) {
-        ArrayList arrayList = getCoordAround(positionBuild, entityProperties.getSize(), true);
+        ArrayList arrayList = getCoordAround(positionBuild, entityProperties.getSize(), true, positionUnit);
 
         Vec2Int vec2Int = getNearestCoord(positionUnit, arrayList);
 

@@ -26,6 +26,7 @@ public class Field {
 
     boolean attackPositionRanger;
     boolean targetAttackClosed;
+    boolean repairPositionClose;
 
     int playerArea;
     int playerAreaTwo;
@@ -73,6 +74,7 @@ public class Field {
         districtResource = -1;
         block = false;
         attackPositionRanger = false;
+        repairPositionClose=false;
     }
 
 
@@ -323,5 +325,13 @@ public class Field {
 
     public void setTargetAttackClosed(boolean targetAttackClosed) {
         this.targetAttackClosed = targetAttackClosed;
+    }
+
+    public void setRepairPositionClose(boolean repairPositionClose) {
+        this.repairPositionClose = repairPositionClose;
+    }
+
+    public boolean isRepairPositionClose() {
+        return repairPositionClose;
     }
 }

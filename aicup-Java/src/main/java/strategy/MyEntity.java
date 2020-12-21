@@ -225,7 +225,9 @@ public class MyEntity extends Entity {
     public String toString() {
         String str = "" + getId() + " ";
         str += getPosition().toString();
-     //   if (oldTwoTikPosition != null) str += oldTwoTikPosition.toString();
+      //  if (oldTikPosition != null) str += oldTikPosition.toString();
+        if (oldTwoTikPosition != null) str += oldTwoTikPosition.toString();
+
         if (getEntityAction().getMoveAction() != null) {
             str += " M:" + getEntityAction().getMoveAction().getTarget().toString();
         }
