@@ -16,6 +16,8 @@ public class GlobalMap {
     ArrayList<MyEntity> allEntityUnits;
     ArrayList<MyEntity> allEntityResource;
 
+    MapPotField mMapPotField;
+
     //массив в котором просишь подвинуться юниту если тебе очень нужно, он обязан это исполнить если это не
 
     AreaPlayer mAreaPlayer;
@@ -230,19 +232,22 @@ public class GlobalMap {
             {2, 14}, {3, 14},{4, 14},{5, 14},{6, 14},{7, 14},{8, 14},{9, 14},{10, 14},{11, 14},{12, 14},{13, 14},{14, 14},{15, 14},{16, 14},
             {14, 2}, {14, 3}, {14, 4}, {14, 5}, {14, 6}, {14, 7}, {14, 8}, {14, 9}, {14, 10}, {14, 11}, {14, 12},{14, 13},{14, 14},{14, 15},
             {10, 10},{11, 2},{11, 3},{11, 4},{11, 6},{11, 7},{11, 8},{11, 9},{11, 10},
-            {0, 10},{0, 11},{0, 12},{0, 6},
-            {0, 15}, {15, 0}, {0, 0},
+            {0, 10},{0, 11},{0, 12},
+            {0, 15}, {15, 0},
+            {9,10}
     };
 
     public GlobalMap() {
 
     }
 
-    public void update(GlobalStatistic globalStatistic) {
+    public void update(GlobalStatistic globalStatistic, MapPotField mapPotField) {
         if (map == null) {
             map = new MyEntity[FinalConstant.getMapSize()][FinalConstant.getMapSize()];
             mapNextTick = new MyEntity[FinalConstant.getMapSize()][FinalConstant.getMapSize()];
         }
+
+        this.mMapPotField = mapPotField;
 
         updateMap(globalStatistic);
 
@@ -643,10 +648,15 @@ public class GlobalMap {
         return current;
     }
 
-    public Vec2Int getNearestCoord(Vec2Int position, ArrayList<Vec2Int> arrayList) {
+    public Vec2Int getNearestCoord(Vec2Int position, ArrayList<Vec2Int> arrayList, boolean repair) {
         double minDis = 0xFFFF;
         Vec2Int current = null;
         for (int i = 0; i < arrayList.size(); i++) {
+            if (repair && mMapPotField.getMapPotField(arrayList.get(i)).isRepairPositionClose())
+            {
+                continue;
+            }
+
             double dis = position.distance(arrayList.get(i));
             if (dis < minDis) {
                 current = arrayList.get(i);
@@ -924,7 +934,7 @@ public class GlobalMap {
     public Vec2Int getMinPositionBuilding(Vec2Int positionUnit, Vec2Int positionBuild, EntityProperties entityProperties) {
         ArrayList arrayList = getCoordAround(positionBuild, entityProperties.getSize(), true, positionUnit);
 
-        Vec2Int vec2Int = getNearestCoord(positionUnit, arrayList);
+        Vec2Int vec2Int = getNearestCoord(positionUnit, arrayList,true);
 
         return vec2Int;
     }

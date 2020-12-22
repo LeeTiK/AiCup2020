@@ -284,5 +284,10 @@ public class AStar {
     public void setHvCost(int hvCost) {
         this.hvCost = hvCost;
     }
+
+    public void addNewBlock(Vec2Int vec2Int)
+    {
+        this.searchArea[vec2Int.getX()][vec2Int.getY()].setBlock(true);
+    }
 }
 

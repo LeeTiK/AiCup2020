@@ -12,8 +12,9 @@ public class Final {
     public final static boolean debugGraphic = false;
 
 
-    public static boolean A_STAR = false;
+    public static boolean A_STAR = true;
     public static boolean A_STAR_BLOCK_ALL_BUILD_UNIT = false;
+    public static boolean A_STAR_CHECK_FIRST_NODE_BLOCK = true;
     public final static boolean A_NEED_MOVE = false;
     final static boolean OFF_WAR = false;
 

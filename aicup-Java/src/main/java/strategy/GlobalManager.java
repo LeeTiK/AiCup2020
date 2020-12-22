@@ -70,7 +70,7 @@ public class GlobalManager {
             A_STAR = true;
         }
 
-        mGlobalMap.update(getGlobalStatistic());
+        mGlobalMap.update(getGlobalStatistic(),mMapPotField);
         mMapPotField.update(this);
         waveSearchModule.updateMap(mMapPotField.getMapPotField());
 

@@ -52,6 +52,7 @@ public class MoveManager {
         if (entity.getPosition().distance(targetPosition)<1.1) {
             moveAction.setTarget(targetPosition);
             getGlobalMap().setPositionNextTick(entity, entity.getPosition(),targetPosition);
+            mAStar.addNewBlock(targetPosition);
             entity.getEntityAction().setMoveAction(moveAction);
         }
         else {
@@ -73,6 +74,7 @@ public class MoveManager {
 
                     moveAction.setTarget(path.get(1).getVec2Int());
                     getGlobalMap().setPositionNextTick(entity,entity.getPosition(),path.get(1).getVec2Int());
+                    mAStar.addNewBlock(path.get(1).getVec2Int());
                     entity.getEntityAction().setMoveAction(moveAction);
 
                     return moveAction;
@@ -320,6 +322,13 @@ public class MoveManager {
 
     public MapPotField getMapPotField() {
         return mMapPotField;
+    }
+
+    public List<Node> findPath(Vec2Int start, Vec2Int end, EntityType type){
+        mAStar.initSearch(start, end);
+        List<Node> path = mAStar.findPath(type);
+
+        return path;
     }
 
     static final public Comparator<MyEntity> mMyEntityComparator =  new Comparator<MyEntity>() {

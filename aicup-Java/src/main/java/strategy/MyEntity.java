@@ -362,4 +362,12 @@ public class MyEntity extends Entity {
     public DodgePositionAnswer getDodgePositionAnswer() {
         return mDodgePositionAnswer;
     }
+
+    public float getMinDisToHouse() {
+        return minDisToHouse;
+    }
+
+    public Vec2Int getPositionHouse() {
+        return positionHouse;
+    }
 }

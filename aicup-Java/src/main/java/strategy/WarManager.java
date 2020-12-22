@@ -11,7 +11,7 @@ public class WarManager {
     public static final String TAG = "strategy.WarManager";
 
     public static final boolean HEAL_RANGER = true;
-    public static final int counterAttack = 2;
+    public static int counterAttack = 2;
 
     DebugInterface debugInterface;
     //группы юнитов
@@ -35,6 +35,10 @@ public class WarManager {
         GlobalStatistic globalStatistic = globalManager.getGlobalStatistic();
 
         MyPlayer myPlayer = globalStatistic.getMyPlayer();
+
+        if (globalManager.getGlobalStatistic().getPlayers().size()==2){
+            counterAttack = 2;
+        }
 
         sizeMy = myPlayer.getEntityArrayList(EntityType.RANGED_UNIT).size() + myPlayer.getEntityArrayList(EntityType.MELEE_UNIT).size();
         sizeLeft = globalManager.getGlobalStatistic().getLeftPlyer().getEntityArrayList(EntityType.RANGED_UNIT).size() + globalManager.getGlobalStatistic().getLeftPlyer().getEntityArrayList(EntityType.MELEE_UNIT).size();
