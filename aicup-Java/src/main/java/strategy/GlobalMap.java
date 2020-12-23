@@ -604,6 +604,13 @@ public class GlobalMap {
 
         ArrayList<MyEntity> allEntity;
 
+        int myDist = -1;
+
+        if (mapPotField!=null)
+        {
+            myDist = mapPotField.getMapPotField(position).getDistrict();
+        }
+
         if (entityType==EntityType.RESOURCE)
         {
             allEntity = allEntityResource;
@@ -633,12 +640,18 @@ public class GlobalMap {
 
                 if (mapPotField!=null) {
                     boolean check = false;
+                    boolean allDistrict = false;
                     for (int j = 0; j < arrayList.size(); j++) {
                         if (mapPotField.getMapPotField()[arrayList.get(j).getX()][arrayList.get(j).getY()].getSumDanger()==0) {
                             check = true;
                         }
+                        if (myDist==mapPotField.getMapPotField()[arrayList.get(j).getX()][arrayList.get(j).getY()].getDistrict())
+                        {
+                            allDistrict = true;
+                        }
                     }
                     if (!check) continue;
+                    if (!allDistrict) continue;
                 }
 
                 current = allEntity.get(i);

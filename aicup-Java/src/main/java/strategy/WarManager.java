@@ -277,13 +277,6 @@ public class WarManager {
 
         Final.DEBUG(TAG, "TIK: " + FinalConstant.getCurrentTik() + " rangeArrayList SIZE: " + rangeArrayList.size());
 
-        for (int i = 0; i < rangeArrayList.size(); i++){
-            rangeArrayList.get(i).setUpdate(false);
-        }
-        for (int i = 0; i < meleeArrayList.size(); i++) {
-            meleeArrayList.get(i).setUpdate(false);
-        }
-
         for (int i = 0; i < rangeArrayList.size(); i++) {
             MyEntity range = rangeArrayList.get(i);
 

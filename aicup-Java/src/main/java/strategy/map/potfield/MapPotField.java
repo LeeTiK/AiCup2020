@@ -126,6 +126,12 @@ public class MapPotField {
         if (!mGlobalMap.checkCoord(x,y)) return;
 
         if (mGlobalMap.getMap()[x][y].getEntityType()==EntityType.RESOURCE) return;
+        if (mGlobalMap.getMap()[x][y].getEntityType()==EntityType.HOUSE ||
+                mGlobalMap.getMap()[x][y].getEntityType()==EntityType.BUILDER_BASE ||
+                mGlobalMap.getMap()[x][y].getEntityType()==EntityType.RANGED_BASE ||
+                mGlobalMap.getMap()[x][y].getEntityType()==EntityType.MELEE_BASE ||
+                mGlobalMap.getMap()[x][y].getEntityType()==EntityType.TURRET
+        ) return;
 
         if (mMapPotField[x][y].getDistrict()!=-1) return;
 
@@ -841,7 +847,7 @@ public class MapPotField {
             if (mMapPotField[entity.getPosition().getX()][entity.getPosition().getY()].getSumDanger()==0) return entity.getPosition();
         }
 
-        if (minDanger==1 && current.getSumDangerContour()>0 && current.getSumDangerContour()-current.getSafetyContour()+6>0)
+        if (minDanger==1 && current.getSumDangerContour()>0 && current.getSumDangerContour()-current.getSafetyContour()+1>0)
         {
             Field field = mMapPotField[position.getX()][position.getY()];
 

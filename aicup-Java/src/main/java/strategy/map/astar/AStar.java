@@ -18,6 +18,8 @@ import java.util.*;
  */
 public class AStar {
     private static int DEFAULT_HV_COST = 1; // Horizontal - Vertical Cost
+    private static int DEFAULT_HV_COST_RESOURSCE = 6; //
+    private static int DEFAULT_HV_COST_BUILD_UNIT = 3; //
     private int hvCost;
     private int diagonalCost;
     private Node[][] searchArea;
@@ -76,7 +78,7 @@ public class AStar {
 
                 if (entity.getEntityType()== EntityType.RESOURCE)
                 {
-                    this.searchArea[i][j].setH2(50);
+                    this.searchArea[i][j].setH2(DEFAULT_HV_COST_RESOURSCE);
                 }
 
                 if (
@@ -92,10 +94,11 @@ public class AStar {
 
                 if (entity.getEntityType()== EntityType.BUILDER_UNIT &&
                         entity.getPlayerId()==FinalConstant.getMyID()){
-                    if (Final.A_STAR_BLOCK_ALL_BUILD_UNIT || globalMap.getSpecialCheckBuilderTask(vec2Int))
+                 /*   if (Final.A_STAR_BLOCK_ALL_BUILD_UNIT || globalMap.getSpecialCheckBuilderTask(vec2Int))
                     {
                         this.searchArea[i][j].setBlock(true);
-                    }
+                    }*/
+                    this.searchArea[i][j].setH2(DEFAULT_HV_COST_BUILD_UNIT);
                 }
 
                 if (entity.getEntityType()== EntityType.RANGED_UNIT||
@@ -137,14 +140,16 @@ public class AStar {
         this.mEntityTypeFindPath = entityType;
 
         openList.add(initialNode);
+        int k = 0;
         while (!isEmpty(openList)) {
             Node currentNode = openList.poll();
             closedSet.add(currentNode);
             if (isFinalNode(currentNode)) {
                 return getPath(currentNode);
             } else {
-                addAdjacentNodes(currentNode);
+                addAdjacentNodes(currentNode, k);
             }
+            k++;
         }
         return new ArrayList<Node>();
     }
@@ -159,13 +164,13 @@ public class AStar {
         return path;
     }
 
-    private void addAdjacentNodes(Node currentNode) {
-        addAdjacentUpperRow(currentNode);
-        addAdjacentMiddleRow(currentNode);
-        addAdjacentLowerRow(currentNode);
+    private void addAdjacentNodes(Node currentNode, int k) {
+        addAdjacentUpperRow(currentNode,k);
+        addAdjacentMiddleRow(currentNode,k);
+        addAdjacentLowerRow(currentNode,k);
     }
 
-    private void addAdjacentLowerRow(Node currentNode) {
+    private void addAdjacentLowerRow(Node currentNode,int k) {
         int row = currentNode.getRow();
         int col = currentNode.getCol();
         int lowerRow = row + 1;
@@ -176,23 +181,23 @@ public class AStar {
             if (col + 1 < getSearchArea()[0].length) {
                 checkNode(currentNode, col + 1, lowerRow, getDiagonalCost()); // Comment this line if diagonal movements are not allowed
             }*/
-            checkNode(currentNode, col, lowerRow, getHvCost());
+            checkNode(currentNode, col, lowerRow, getHvCost(),k);
         }
     }
 
-    private void addAdjacentMiddleRow(Node currentNode) {
+    private void addAdjacentMiddleRow(Node currentNode, int k) {
         int row = currentNode.getRow();
         int col = currentNode.getCol();
         int middleRow = row;
         if (col - 1 >= 0) {
-            checkNode(currentNode, col - 1, middleRow, getHvCost());
+            checkNode(currentNode, col - 1, middleRow, getHvCost(),k);
         }
         if (col + 1 < getSearchArea()[0].length) {
-            checkNode(currentNode, col + 1, middleRow, getHvCost());
+            checkNode(currentNode, col + 1, middleRow, getHvCost(),k);
         }
     }
 
-    private void addAdjacentUpperRow(Node currentNode) {
+    private void addAdjacentUpperRow(Node currentNode, int k) {
         int row = currentNode.getRow();
         int col = currentNode.getCol();
         int upperRow = row - 1;
@@ -203,23 +208,25 @@ public class AStar {
             if (col + 1 < getSearchArea()[0].length) {
                 checkNode(currentNode, col + 1, upperRow, getDiagonalCost()); // Comment this if diagonal movements are not allowed
             }*/
-            checkNode(currentNode, col, upperRow, getHvCost());
+            checkNode(currentNode, col, upperRow, getHvCost(),k);
         }
     }
 
-    private void checkNode(Node currentNode, int col, int row, int cost) {
+    private void checkNode(Node currentNode, int col, int row, int cost, int k) {
         Node adjacentNode = getSearchArea()[row][col];
-        if (!adjacentNode.isBlock() && !getClosedSet().contains(adjacentNode)) {
-            if (!getOpenList().contains(adjacentNode)) {
-                adjacentNode.setNodeData(currentNode, cost);
-                getOpenList().add(adjacentNode);
-            } else {
-                boolean changed = adjacentNode.checkBetterPath(currentNode, cost);
-                if (changed) {
-                    // Remove and Add the changed node, so that the PriorityQueue can sort again its
-                    // contents with the modified "finalCost" value of the modified node
-                    getOpenList().remove(adjacentNode);
+        if (!Final.A_STAR_CHECK_FIRST_NODE_BLOCK || (k>1 || (k<=1 && !adjacentNode.isBlockFirst()))) {
+            if (!adjacentNode.isBlock() && !getClosedSet().contains(adjacentNode)) {
+                if (!getOpenList().contains(adjacentNode)) {
+                    adjacentNode.setNodeData(currentNode, cost);
                     getOpenList().add(adjacentNode);
+                } else {
+                    boolean changed = adjacentNode.checkBetterPath(currentNode, cost);
+                    if (changed) {
+                        // Remove and Add the changed node, so that the PriorityQueue can sort again its
+                        // contents with the modified "finalCost" value of the modified node
+                        getOpenList().remove(adjacentNode);
+                        getOpenList().add(adjacentNode);
+                    }
                 }
             }
         }
@@ -287,7 +294,7 @@ public class AStar {
 
     public void addNewBlock(Vec2Int vec2Int)
     {
-        this.searchArea[vec2Int.getX()][vec2Int.getY()].setBlock(true);
+        this.searchArea[vec2Int.getX()][vec2Int.getY()].setBlockFirst(true);
     }
 }
 

@@ -106,6 +106,14 @@ public class GlobalManager {
             }
         }
 
+        ArrayList<MyEntity> arrayListAllunit = getGlobalStatistic().getMyPlayer().getUnitArrayList();
+
+        for (int i = 0; i < arrayListAllunit.size(); i++){
+            arrayListAllunit.get(i).setUpdate(false);
+        }
+
+
+
         hashMap.putAll(mWarManager.update(playerView, this,debugInterface));
 
         hashMap.putAll(mEconomicManager.update(playerView, this,debugInterface));
@@ -243,6 +251,26 @@ public class GlobalManager {
                     Vec2Float vec2Float = myEntities.get(i).getPosition().getVec2Float();
                     vec2Float.setY(vec2Float.getY()+ 0.20f);
                     FinalGraphic.sendText(debugInterface, vec2Float, 11, myEntities.get(i).toString());
+                    vec2Float.setY(vec2Float.getY()- 0.10f);
+                    FinalGraphic.sendText(debugInterface, vec2Float, 11, myEntities.get(i).toStringV2());
+                }
+            }
+
+            if (INFO_RECOURCE) {
+                for (int i=0; i<getGlobalMap().getMapNextTick().length; i++)
+                {
+                    for (int j=0; j<getGlobalMap().getMapNextTick().length; j++)
+                    {
+                        MyEntity entity = getGlobalMap().getMapNextTick()[i][j];
+
+                        if (entity.getEntityType()==EntityType.RESOURCE && entity.getTargetEntity()!=null)
+                        {
+                            Vec2Float vec2Float = entity.getPosition().getVec2Float();
+                            vec2Float.setY(vec2Float.getY()+ 0.50f);
+                            vec2Float.setX(vec2Float.getX()+ 0.50f);
+                            FinalGraphic.sendText(debugInterface, vec2Float, 11, ""+entity.getTargetEntity().getId());
+                        }
+                    }
                 }
             }
         }

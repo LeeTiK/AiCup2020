@@ -9,13 +9,14 @@ public class Final {
     final static boolean debug = false;
     final static boolean debugERROR = true;
     final static boolean debugRelease = true;
-    public final static boolean debugGraphic = false;
+    public final static boolean debugGraphic = true;
 
 
     public static boolean A_STAR = true;
     public static boolean A_STAR_BLOCK_ALL_BUILD_UNIT = false;
-    public static boolean A_STAR_CHECK_FIRST_NODE_BLOCK = true;
+    public static boolean A_STAR_CHECK_FIRST_NODE_BLOCK = false;
     public final static boolean A_NEED_MOVE = false;
+    public final static boolean A_NEED_MOVE_V2 = false;
     final static boolean OFF_WAR = false;
 
     // элементы игры
@@ -34,10 +35,12 @@ public class Final {
     public final static boolean BIOM_RESOURCE = false;
     public final static boolean SAFETY_CONTOUR = false;
     public final static boolean ATTACK_RANGE_REGION = false;
-    public final static boolean DISTRICT_REGION = false;
+    public final static boolean DISTRICT_REGION = true;
     public final static boolean HP_NO_ACTIVE = false;
     public final static boolean NEXT_TIK_POSITION = true;
     public final static boolean ENEMY_ATTACK = true;
+    public final static boolean INFO_RECOURCE = true;
+
 
 
     public final static boolean CHECK_SEARCH_WAVE_BUILDER = false;

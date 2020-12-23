@@ -106,6 +106,7 @@ public class MyEntity extends Entity {
         dangerMove = false;
         repairCounter=0;
         mDodgePositionAnswer=null;
+        minDisToHouse=0xFFFF;
     }
 
     public void update(Entity entity) {
@@ -236,6 +237,15 @@ public class MyEntity extends Entity {
         }
         str += " " + isDodge();
         str += " " + isNeedMove();
+        str += " " + getUnitState();
+        return str;
+    }
+
+    public String toStringV2() {
+        String str = "";
+        str += " " + isDodge();
+        str += " " + isNeedMove();
+        str += " " + getUnitState();
         return str;
     }
 

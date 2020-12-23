@@ -17,6 +17,7 @@ public class Node {
     private int row;
     private int col;
     private boolean isBlock;
+    private boolean isBlockFirst;
     private boolean isBlockAttackUnit;
     private Node parent;
 
@@ -33,18 +34,22 @@ public class Node {
     }
 
     public void calculateHeuristic(Node finalNode) {
-        this.h = Math.abs(finalNode.getRow() - getRow()) + Math.abs(finalNode.getCol() - getCol());
+        int x  =finalNode.getRow() - getRow();
+        int y  =finalNode.getCol() - getCol();
+        this.h = (int) Math.sqrt(x*x+y*y);
+
+    //    this.h = Math.abs(finalNode.getRow() - getRow()) + Math.abs(finalNode.getCol() - getCol());
     }
 
     public void setNodeData(Node currentNode, int cost) {
-        int gCost = currentNode.getG() + cost;
+        int gCost = currentNode.getG() + cost  + getH2();
         setParent(currentNode);
         setG(gCost);
         calculateFinalCost();
     }
 
     public boolean checkBetterPath(Node currentNode, int cost) {
-        int gCost = currentNode.getG() + cost;
+        int gCost = currentNode.getG() + cost + getH2();
         if (gCost < getG()) {
             setNodeData(currentNode, cost);
             return true;
@@ -53,7 +58,7 @@ public class Node {
     }
 
     private void calculateFinalCost() {
-        int finalCost = getG() + getH() + getH2();
+        int finalCost = getG() + getH();
         setF(finalCost);
     }
 
@@ -108,6 +113,7 @@ public class Node {
 
         if (isBlock==false){
             h2 = 0;
+            isBlockFirst=false;
         }
 
         this.isBlock = isBlock;
@@ -147,5 +153,13 @@ public class Node {
 
     public boolean isBlockAttackUnit() {
         return isBlockAttackUnit;
+    }
+
+    public void setBlockFirst(boolean blockFirst) {
+        isBlockFirst = blockFirst;
+    }
+
+    public boolean isBlockFirst() {
+        return isBlockFirst;
     }
 }
