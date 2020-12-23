@@ -38,7 +38,7 @@ public class EconomicManager {
         init2=false;
     }
 
-    public HashMap<Integer, EntityAction> update(PlayerView playerView, GlobalManager globalManager,DebugInterface debugInterface) {
+    public HashMap<Integer, EntityAction> update(PlayerView playerView, GlobalManager globalManager,DebugInterface debugInterface, HashMap<Integer, EntityAction> actionHashMap) {
         this.debugInterface = debugInterface;
 
         if (!init) {
@@ -60,13 +60,10 @@ public class EconomicManager {
             }
         }
 
-        HashMap<Integer, EntityAction> actionHashMap = new HashMap<>();
         GlobalStatistic globalStatistic = globalManager.getGlobalStatistic();
         updateInfo(globalStatistic);
 
         MyPlayer myPlayer = globalManager.getGlobalStatistic().getMyPlayer();
-
-
 
 
         //увороты
@@ -82,7 +79,6 @@ public class EconomicManager {
         for (int i = 0; i < builderUnitArrayList.size(); i++)
         {
             MyEntity builder =  builderUnitArrayList.get(i);
-            builder.setUpdate(false);
 
             if (builder.getUnitState()==EUnitState.BUILD)
             {
@@ -141,6 +137,7 @@ public class EconomicManager {
 
             ArrayList<MyEntity> resource;
 
+            if (entity.isUpdate()) continue;
             if (entity.isDodge()) continue;
 
             resource = globalManager.getGlobalMap().getEntityMapResourceSpecial(entity.getPosition());
@@ -192,6 +189,7 @@ public class EconomicManager {
             if (resource.size()>0){
                 Final.DEBUG("ERROR",  "resource>0");
             }*/
+            if (builder.isUpdate()) continue;
             if (builder.isDodge()) continue;
 
             MyEntity resourceMidDis;
@@ -616,6 +614,7 @@ public class EconomicManager {
         {
             MyEntity builderUnit = builderUnitArrayList.get(i);
 
+            if (builderUnit.isUpdate()) continue;
             if (builderUnit.isDodge()) continue;
 
             if (builderUnit.getUnitState() == EUnitState.REPAIR || builderUnit.getUnitState() == EUnitState.BUILD)
@@ -758,6 +757,7 @@ public class EconomicManager {
         {
             MyEntity builderUnit = builderUnitArrayList.get(i);
 
+            if (builderUnit.isUpdate()) continue;
             if (builderUnit.isDodge()) continue;
 
             if (builderUnit.getUnitState() == EUnitState.REPAIR || builderUnit.getUnitState() == EUnitState.BUILD)
@@ -820,6 +820,7 @@ public class EconomicManager {
             MyEntity entity = builderUnitArrayList.get(j);
             MyEntity entityRepair = getNearbyBuildNeedHeal(entity.getPosition(), globalManager);
 
+            if (entity.isUpdate()) continue;
             if (entity.isDodge()) continue;
 
             if (entityRepair == null) {
@@ -949,6 +950,7 @@ public class EconomicManager {
             for (int j = 0; j < builderUnitArrayList.size(); j++) {
                 builderUnit = builderUnitArrayList.get(j);
 
+                if (builderUnit.isUpdate()) continue;
                 if (builderUnit.isDodge()) continue;
 
                 if (builderUnit.getDataTaskUnit().getUnitState()==EUnitState.REPAIR || builderUnit.getDataTaskUnit().getUnitState() == EUnitState.BUILD) continue;

@@ -235,9 +235,9 @@ public class MyEntity extends Entity {
         if (getEntityAction().getAttackAction() != null) {
             str += " A:T";
         }
-        str += " " + isDodge();
+      /*  str += " " + isDodge();
         str += " " + isNeedMove();
-        str += " " + getUnitState();
+        str += " " + getUnitState();*/
         return str;
     }
 

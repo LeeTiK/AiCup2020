@@ -18,7 +18,8 @@ import java.util.*;
  */
 public class AStar {
     private static int DEFAULT_HV_COST = 1; // Horizontal - Vertical Cost
-    private static int DEFAULT_HV_COST_RESOURSCE = 6; //
+    private static int DEFAULT_HV_COST_RESOURSCE_ATTACK_UNIT = 6; //
+    private static int DEFAULT_HV_COST_RESOURSCE_BUILD_UNIT = 30; //
     private static int DEFAULT_HV_COST_BUILD_UNIT = 3; //
     private int hvCost;
     private int diagonalCost;
@@ -78,7 +79,7 @@ public class AStar {
 
                 if (entity.getEntityType()== EntityType.RESOURCE)
                 {
-                    this.searchArea[i][j].setH2(DEFAULT_HV_COST_RESOURSCE);
+                    this.searchArea[i][j].setH2(DEFAULT_HV_COST_RESOURSCE_ATTACK_UNIT);
                 }
 
                 if (
@@ -159,6 +160,7 @@ public class AStar {
         Node parent;
         while ((parent = currentNode.getParent()) != null) {
             path.add(0, parent);
+            parent.setChild(currentNode);
             currentNode = parent;
         }
         return path;

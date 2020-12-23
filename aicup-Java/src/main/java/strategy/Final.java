@@ -9,7 +9,7 @@ public class Final {
     final static boolean debug = false;
     final static boolean debugERROR = true;
     final static boolean debugRelease = true;
-    public final static boolean debugGraphic = true;
+    public final static boolean debugGraphic = false;
 
 
     public static boolean A_STAR = true;

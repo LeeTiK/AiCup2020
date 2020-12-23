@@ -522,7 +522,9 @@ public class MyPlayer extends Player {
         for (int i=0; i<builders.size(); i++)
         {
             MyEntity builder = builders.get(i);
+
             if (builder.getTargetEntity()!=null) continue;
+
 
             int count = globalMap.getAroundEntity(builder.getPosition(),EntityType.RESOURCE);
             if (count==0){

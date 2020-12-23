@@ -31,6 +31,8 @@ public class GlobalManager {
     long timeAllStrategy = 0;
     long timeParsingAll = 0;
 
+    HashMap<Integer, model.EntityAction> mActionHashMap;
+
 
     public GlobalManager() {
         mEconomicManager = new EconomicManager();
@@ -45,6 +47,8 @@ public class GlobalManager {
         timeParsing = 0;
 
         mMapPotField = new MapPotField(80);
+
+        mActionHashMap = new HashMap<>();
     }
 
 
@@ -59,7 +63,7 @@ public class GlobalManager {
         }
         startTime = System.nanoTime();
 
-        HashMap<Integer, model.EntityAction> hashMap = new HashMap<>();
+        mActionHashMap.clear();
         // глобальная статистика и информация о мире
 
 
@@ -74,7 +78,7 @@ public class GlobalManager {
         mMapPotField.update(this);
         waveSearchModule.updateMap(mMapPotField.getMapPotField());
 
-        mMoveManager.update(mGlobalMap,mMapPotField,debugInterface);
+        mMoveManager.update(mGlobalMap,mMapPotField,debugInterface,mActionHashMap);
 
 
         debugGraphic(playerView,debugInterface);
@@ -114,23 +118,23 @@ public class GlobalManager {
 
 
 
-        hashMap.putAll(mWarManager.update(playerView, this,debugInterface));
+       mWarManager.update(playerView, this,debugInterface,mActionHashMap);
 
-        hashMap.putAll(mEconomicManager.update(playerView, this,debugInterface));
+        mEconomicManager.update(playerView, this,debugInterface,mActionHashMap);
 
-        mWarManager.updateWarBuilder(this,hashMap);
+        mWarManager.updateWarBuilder(this,mActionHashMap);
 
         // проверяем всех юнитов чтобы уступили дорогу
         if (A_NEED_MOVE)
         {
-            mMoveManager.calculateDodgeUnits(playerView,this,hashMap);
+            mMoveManager.calculateDodgeUnits(playerView,this,mActionHashMap);
         }
 
         timeAllStrategy += System.nanoTime() - startTime;
 
         if (Final.debug)
         {
-            for ( Integer key : hashMap.keySet() ) {
+            for ( Integer key : mActionHashMap.keySet() ) {
                 boolean check = false;
                 Entity entity = null;
                 for (int i=0; i<playerView.getEntities().length; i++)
@@ -155,11 +159,13 @@ public class GlobalManager {
             }
         }
 
+        //f (Final.)
+
         debugGraphicV2(playerView,debugInterface);
 
         timeParsing = System.nanoTime();
 
-        return new Action(hashMap);
+        return new Action(mActionHashMap);
     }
 
     private void debugGraphic(PlayerView playerView, DebugInterface debugInterface){

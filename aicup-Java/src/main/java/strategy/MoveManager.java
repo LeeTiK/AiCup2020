@@ -17,14 +17,17 @@ public class MoveManager {
 
     DebugInterface mDebugInterface;
 
+    HashMap<Integer,EntityAction> actionHashMap;
+
     public MoveManager(){
         mAStar = new AStar(80);
     }
 
-    public void update(GlobalMap globalMap, MapPotField mapPotField,DebugInterface debugInterface){
+    public void update(GlobalMap globalMap, MapPotField mapPotField,DebugInterface debugInterface, HashMap<Integer,EntityAction> actionHashMap){
         this.mGlobalMap = globalMap;
         this.mMapPotField = mapPotField;
         mDebugInterface = debugInterface;
+        this.actionHashMap = actionHashMap;
 
         mAStar.updateMap(mGlobalMap,mapPotField);
     }
@@ -34,35 +37,53 @@ public class MoveManager {
     }
 
     MoveAction getMoveActionPosition(MyEntity entity, Vec2Int targetPosition, boolean astar){
+        return getMoveActionPosition(entity,targetPosition,astar,null);
+    }
 
-        if (targetPosition==null) return null;
-        if (entity.getPosition().equals(targetPosition)) return null;
+    MoveAction getMoveActionPosition(MyEntity entity, Vec2Int targetPosition, boolean astar, Node current ){
+
+    /*    if (current!=null)
+        {
+            Final.DEBUGRelease("MOVE",FinalConstant.getCurrentTik() + " " + entity.toString() + " " + current.getVec2Int().toString());
+        }*/
+
+
+        if (targetPosition==null && current==null) return null;
+        if (targetPosition!=null && entity.getPosition().equals(targetPosition)) return null;
 
         MoveAction moveAction = new MoveAction();
         moveAction.setBreakThrough(true);
         moveAction.setFindClosestPosition(true);
 
-        if (!astar)
+        if (!astar && targetPosition!=null)
         {
             moveAction.setTarget(targetPosition);
             entity.getEntityAction().setMoveAction(moveAction);
             return moveAction;
         }
 
-        if (entity.getPosition().distance(targetPosition)<1.1) {
+        if (targetPosition!=null && entity.getPosition().distance(targetPosition)<1.1) {
             moveAction.setTarget(targetPosition);
-            getGlobalMap().setPositionNextTick(entity, entity.getPosition(),targetPosition);
-            mAStar.addNewBlock(targetPosition);
+            MyEntity entity1 = getGlobalMap().setPositionNextTick(entity, targetPosition);
+            if (entity1!=null) {
+                // тут нужен додж
+               /* boolean rotation = addMoveTargetUnit(entity1, entity.getPosition());
+                if (!rotation)
+                {
+                    entity.getEntityAction().setMoveAction(null);
+                    return null;
+                }*/
+            }
+            //mAStar.addNewBlock(targetPosition);
             entity.getEntityAction().setMoveAction(moveAction);
         }
         else {
             // поиск Astar интересно
-            if (Final.A_STAR) {
+            if (Final.A_STAR && current==null) {
 
                 mAStar.initSearch(entity.getPosition(), targetPosition);
                 List<Node> path = mAStar.findPath(entity.getEntityType());
-
-                if (path.size() > 1) {
+                if (path.size()>0) {
 
                     if (Final.debugGraphic) {
                         if (Final.CHECK_SEARCH_PATH_ASTAR) {
@@ -72,9 +93,26 @@ public class MoveManager {
                         }
                     }
 
-                    moveAction.setTarget(path.get(1).getVec2Int());
-                    getGlobalMap().setPositionNextTick(entity,entity.getPosition(),path.get(1).getVec2Int());
-                    mAStar.addNewBlock(path.get(1).getVec2Int());
+                    current = path.get(0);
+                }
+            }
+
+            if (current!=null) {
+                if (current.getChild()!=null) {
+
+                    moveAction.setTarget(current.getChild().getVec2Int());
+                    MyEntity entity1 = getGlobalMap().setPositionNextTick(entity,current.getChild().getVec2Int());
+                    if (entity1!=null) {
+                        if (current.getChild().getChild()!=null) {
+                            boolean rotation = addMoveTargetUnit(entity1,current.getChild());
+                            if (!rotation) {
+                                entity.getEntityAction().setMoveAction(null);
+                                return null;
+                            }
+                        }
+                    }
+
+                    //mAStar.addNewBlock(path.get(1).getVec2Int());
                     entity.getEntityAction().setMoveAction(moveAction);
 
                     return moveAction;
@@ -88,6 +126,39 @@ public class MoveManager {
         entity.getEntityAction().setMoveAction(moveAction);
 
         return moveAction;
+    }
+
+    private boolean addMoveTargetUnit(MyEntity entity, Vec2Int newPosition) {
+     //   if (entity.isUpdate()) return false;
+
+        MoveAction moveAction = getMoveActionPosition(entity,newPosition,true);
+        entity.setUpdate(true);
+
+        EntityAction entityAction = new EntityAction();
+        entityAction.clear();
+
+        entityAction.setMoveAction(moveAction);
+
+        actionHashMap.put(entity.getId(),entityAction);
+
+        return true;
+    }
+
+    private boolean addMoveTargetUnit(MyEntity entity, Node current) {
+        if (entity.isRotation()) return false;
+
+        MoveAction moveAction = getMoveActionPosition(entity,null,true,current);
+        entity.setUpdate(true);
+        entity.setRotation(true);
+
+        EntityAction entityAction = new EntityAction();
+        entityAction.clear();
+
+        entityAction.setMoveAction(moveAction);
+
+        actionHashMap.put(entity.getId(),entityAction);
+
+        return true;
     }
 
     void calculateDodgeUnits(PlayerView playerView, GlobalManager globalManager, HashMap<Integer,EntityAction> actionHashMap){

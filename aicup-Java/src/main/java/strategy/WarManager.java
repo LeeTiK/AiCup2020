@@ -27,9 +27,8 @@ public class WarManager {
     //отвечаем за атаку и защиту
 
 
-    public HashMap<Integer, EntityAction> update(PlayerView playerView, GlobalManager globalManager, DebugInterface debugInterface) {
+    public HashMap<Integer, EntityAction> update(PlayerView playerView, GlobalManager globalManager, DebugInterface debugInterface, HashMap<Integer, EntityAction> actionHashMap) {
         this.debugInterface = debugInterface;
-        HashMap<Integer, EntityAction> actionHashMap = new HashMap<>();
 
 
         GlobalStatistic globalStatistic = globalManager.getGlobalStatistic();
@@ -376,6 +375,8 @@ public class WarManager {
                 MoveAction m =  globalManager.getMoveManager().getMoveActionPosition(melee,positionEnemy);
 
                 entityAction.setMoveAction(m);
+                melee.setUpdate(true);
+
                 actionHashMap.put(melee.getId(), entityAction);
             }
         }
@@ -442,6 +443,8 @@ public class WarManager {
                     entity.setRotation(true);
                 }**/
 
+                range.setUpdate(true);
+
                 range.setEnemyMinDis(enemy);
                 enemy.addCountAttackingUnit();
                 entityAction.setMoveAction(m);
@@ -489,6 +492,7 @@ public class WarManager {
                             entityAction.setMoveAction(m);
                             range.getEntityAction().setMoveAction(m);
                             actionHashMap.put(range.getId(), entityAction);
+                            range.setUpdate(true);
                             continue;
                         }
                     }
@@ -513,17 +517,11 @@ public class WarManager {
                     MyEntity entity = globalManager.getGlobalMap().getMoveMyUnit(range.getPosition());
 
                     Final.DEBUG(TAG, "ID:" + range.getId() + " entity: " + entity);
-                    MoveAction m;
-                    if (entity == null) {
-                        m = globalManager.getMoveManager().getMoveActionPosition(range,vec2Int);
+                    MoveAction m = globalManager.getMoveManager().getMoveActionPosition(range,vec2Int);
                                 //new MoveAction(vec2Int, true, true);
-                    } else {
-                        m = globalManager.getMoveManager().getMoveActionPosition(range,entity.getPosition());
-                                //new MoveAction(entity.getPosition(), true, true);
-                        entity.setRotation(true);
-                    }
 
                     entityAction.setMoveAction(m);
+                    range.setUpdate(true);
                     actionHashMap.put(range.getId(), entityAction);
                 }
             }

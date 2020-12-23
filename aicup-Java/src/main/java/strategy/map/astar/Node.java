@@ -20,6 +20,7 @@ public class Node {
     private boolean isBlockFirst;
     private boolean isBlockAttackUnit;
     private Node parent;
+    private Node child;
 
     public Node(int row, int col) {
         super();
@@ -161,5 +162,13 @@ public class Node {
 
     public boolean isBlockFirst() {
         return isBlockFirst;
+    }
+
+    public void setChild(Node child) {
+        this.child = child;
+    }
+
+    public Node getChild() {
+        return child;
     }
 }

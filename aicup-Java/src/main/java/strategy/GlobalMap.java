@@ -1601,10 +1601,10 @@ public class GlobalMap {
             return null;
         }
 
-        if (entityTwo.getEntityType()!=EntityType.Empty){
+      /*  if (entityTwo.getEntityType()!=EntityType.Empty){
             Final.DEBUG("NEED_MOVE", "V2 ERROR NO EMPTY " + entityTwo.toString());
             return null;
-        }
+        }*/
 
 
         if (entityTwo.getEntityType()!=EntityType.Empty && entityTwo.getEntityType()!=EntityType.RESOURCE)
