@@ -16,6 +16,8 @@ public class GlobalMap {
     ArrayList<MyEntity> allEntityUnits;
     ArrayList<MyEntity> allEntityResource;
 
+    ArrayList<MyEntity> allEntityResourceForOfWar;
+
     MapPotField mMapPotField;
 
     //массив в котором просишь подвинуться юниту если тебе очень нужно, он обязан это исполнить если это не
@@ -73,6 +75,20 @@ public class GlobalMap {
             {4, 2}, {4, 1}, {4, 0}, {4, -1}, {4, -2},
             {5, 1}, {5, 0}, {5, -1},
             {6, 0},
+    };
+
+    final public static byte[][] rangerDamageContourArray = new byte[][]{
+            {-5, 0},
+            {-4, 1}, {-4, -1},
+            {-3, 2}, {-3, -2},
+            {-2, 3}, {-2, -3},
+            {-1, 4}, {-1, -4},
+            {0, 5}, {0, -5},
+            {1, 4}, {1, -4},
+            {2, 3}, {2, -3},
+            {3, 2}, {3, -2},
+            {4, 1}, {4, -1},
+            {5, 0},
     };
 
     final public static byte[][] rangerContourArray = new byte[][]{
@@ -156,6 +172,30 @@ public class GlobalMap {
             {5, 3}, {5, -2},
             {6, 2}, {6, -1},
             {7, 1}, {7, 0},
+    };
+
+    final public static byte[][] sightRangeUnit = new byte[][]{
+            {-10,0},
+            {-9,-1},{-9,0},{-9,1},
+            {-8,-2},{-8,-1},{-8,0},{-8,1},{-8,2},
+            {-7,-3},{-7,-2},{-7,-1},{-7,0},{-7,1},{-7,2},{-7,3},
+            {-6,-4},{-6,-3},{-6,-2},{-6,-1},{-6,0},{-6,1},{-6,2},{-6,3},{-6,4},
+            {-5,-5},{-5,-4},{-5,-3},{-5,-2},{-5,-1},{-5,0},{-5,1},{-5,2},{-5,3},{-5,4},{-5,5},
+            {-4,-6},{-4,-5},{-4,-4},{-4,-3},{-4,-2},{-4,-1},{-4,0},{-4,1},{-4,2},{-4,3},{-4,4},{-4,5},{-4,6},
+            {-3,-7},{-3,-6},{-3,-5},{-3,-4},{-3,-3},{-3,-2},{-3,-1},{-3,0},{-3,1},{-3,2},{-3,3},{-3,4},{-3,5},{-3,6},{-3,7},
+            {-2,-8},{-2,-7},{-2,-6},{-2,-5},{-2,-4},{-2,-3},{-2,-2},{-2,-1},{-2,0},{-2,1},{-2,2},{-2,3},{-2,4},{-2,5},{-2,6},{-2,7},{-2,8},
+            {-1,-9},{-1,-8},{-1,-7},{-1,-6},{-1,-5},{-1,-4},{-1,-3},{-1,-2},{-1,-1},{-1,0},{-1,1},{-1,2},{-1,3},{-1,4},{-1,5},{-1,6},{-1,7},{-1,8},{-1,9},
+            {0,-10},{0,-9},{0,-8},{0,-7},{0,-6},{0,-5},{0,-4},{0,-3},{0,-2},{0,-1},{0,0},{0,1},{0,2},{0,3},{0,4},{0,5},{0,6},{0,7},{0,8},{0,9},{0,10},
+            {1,-9},{1,-8},{1,-7},{1,-6},{1,-5},{1,-4},{1,-3},{1,-2},{1,-1},{1,0},{1,1},{1,2},{1,3},{1,4},{1,5},{1,6},{1,7},{1,8},{1,9},
+            {2,-8},{2,-7},{2,-6},{2,-5},{2,-4},{2,-3},{2,-2},{2,-1},{2,0},{2,1},{2,2},{2,3},{2,4},{2,5},{2,6},{2,7},{2,8},
+            {3,-7},{3,-6},{3,-5},{3,-4},{3,-3},{3,-2},{3,-1},{3,0},{3,1},{3,2},{3,3},{3,4},{3,5},{3,6},{3,7},
+            {4,-6},{4,-5},{4,-4},{4,-3},{4,-2},{4,-1},{4,0},{4,1},{4,2},{4,3},{4,4},{4,5},{4,6},
+            {5,-5},{5,-4},{5,-3},{5,-2},{5,-1},{5,0},{5,1},{5,2},{5,3},{5,4},{5,5},
+            {6,-4},{6,-3},{6,-2},{6,-1},{6,0},{6,1},{6,2},{6,3},{6,4},
+            {7,-3},{7,-2},{7,-1},{7,0},{7,1},{7,2},{7,3},
+            {8,-2},{8,-1},{8,0},{8,1},{8,2},
+            {9,-1},{9,0},{9,1},
+            {10,0},
     };
 
     final public static byte[][] housePositionFogOfWar = new byte[][]{
@@ -245,6 +285,7 @@ public class GlobalMap {
         if (map == null) {
             map = new MyEntity[FinalConstant.getMapSize()][FinalConstant.getMapSize()];
             mapNextTick = new MyEntity[FinalConstant.getMapSize()][FinalConstant.getMapSize()];
+            allEntityResourceForOfWar = new ArrayList<>();
         }
 
         this.mMapPotField = mapPotField;
@@ -331,13 +372,16 @@ public class GlobalMap {
         {
             updateMapFogOfWar(globalStatistic);
         }
+
     }
 
     private void addEntity(MyEntity entity){
-        if (checkCoord(entity.getPosition())
+        Vec2Int position = entity.getPosition();
+
+        if (checkCoord(position)
         ) {
-            map[entity.getPosition().getX()][entity.getPosition().getY()] = entity;
-            mapNextTick[entity.getPosition().getX()][entity.getPosition().getY()] = entity;
+            map[position.getX()][position.getY()] = entity;
+            mapNextTick[position.getX()][position.getY()] = entity;
 
             switch (entity.getEntityType()) {
 
@@ -349,23 +393,28 @@ public class GlobalMap {
                     EntityProperties entityProperties = FinalConstant.getEntityProperties(entity.getEntityType());
                     for (int j = 0; j < entityProperties.getSize(); j++) {
                         for (int k = 0; k < entityProperties.getSize(); k++) {
-                            map[entity.getPosition().getX() + j][entity.getPosition().getY() + k] = entity;
-                            mapNextTick[entity.getPosition().getX() + j][entity.getPosition().getY() + k] = entity;
+                            map[position.getX() + j][position.getY() + k] = entity;
+                            mapNextTick[position.getX() + j][position.getY() + k] = entity;
                         }
                     }
                     break;
             }
 
+            addMapSeeFogOfWar(entity);
         }
     }
 
     private void updateMapFogOfWar(GlobalStatistic globalStatistic) {
         if (globalStatistic.getPlayers().size()==2)
         {
-            if (FinalConstant.getCurrentTik()<900)
-            {
-                MyEntity entity = new MyEntity(10000, globalStatistic.getLeftPlyer().getId(), EntityType.BUILDER_BASE, Vec2Int.createVector(73,73), 100, true);
-                addEntity(entity);
+            if (Final.FOG_OF_WAR_MAP){
+                mirrorReflection(globalStatistic);
+            }
+            else {
+                if (FinalConstant.getCurrentTik() < 900) {
+                    MyEntity entity = new MyEntity(10000, globalStatistic.getLeftPlyer().getId(), EntityType.BUILDER_BASE, Vec2Int.createVector(73, 73), 100, true);
+                    addEntity(entity);
+                }
             }
         }
 
@@ -378,6 +427,111 @@ public class GlobalMap {
 
                 MyEntity entity1 = new MyEntity(10001, globalStatistic.getRightPlyer().getId(), EntityType.BUILDER_BASE, Vec2Int.createVector(70,5), 100, true);
                 addEntity(entity1);
+            }
+        }
+    }
+
+    private void addMapSeeFogOfWar(Entity entity){
+        if (!Final.FOG_OF_WAR_MAP) return;
+        if (entity.getPlayerId()!=FinalConstant.getMyID()) return;
+
+        byte[][] bytes = null;
+
+        switch (entity.getEntityType()) {
+
+            case HOUSE:
+            case BUILDER_BASE:
+            case MELEE_BASE:
+            case RANGED_BASE:
+            case TURRET:
+                bytes = turretArray;
+                break;
+            case MELEE_UNIT:
+            case RANGED_UNIT:
+            case BUILDER_UNIT:
+                bytes = sightRangeUnit;
+                break;
+        }
+
+
+        Vec2Int position = entity.getPosition();
+
+        if (bytes!=null) {
+            for (int i = 0; i < bytes.length; i++) {
+                int x = bytes[i][0] + position.getX();
+                int y = bytes[i][1] + position.getY();
+
+                if (!checkCoord(x,y)) continue;
+
+                mMapPotField.getMapPotField()[x][y].setSeeFogOfWar(true);
+            }
+        }
+    }
+
+    private void mirrorReflection(GlobalStatistic globalStatistic) {
+
+        for (int i = 0; i < allEntityUnits.size(); i++) {
+            MyEntity entity = allEntityUnits.get(i);
+
+            int x = 79-entity.getPosition().getX();
+            int y = 79-entity.getPosition().getY();
+
+            if (!checkCoord(x,y)) continue;
+            if (mMapPotField.getMapPotField()[x][y].isSeeFogOfWar()) continue;
+
+            MyEntity entity1 = new MyEntity(entity.getId()*100,FinalConstant.getMyID()+1,entity.getEntityType(),Vec2Int.createVector(x,y),entity.getHealth(),entity.isActive());
+
+            addEntity(entity1);
+            //  playerView.getEntityProperties().get()
+        }
+
+        // проверяем на удаление увиденных уничтоженных ресурсов
+        for (int i=0; i<allEntityResourceForOfWar.size(); i++)
+        {
+            MyEntity entity = allEntityResourceForOfWar.get(i);
+
+            if (!mMapPotField.getMapPotField()[entity.getPosition().getX()][entity.getPosition().getY()].isSeeFogOfWar()) continue;
+
+            if (map[entity.getPosition().getX()][entity.getPosition().getY()].getEntityType()!=entity.getEntityType()){
+                allEntityResourceForOfWar.remove(i);
+                i--;
+                mMapPotField.getMapPotField()[entity.getPosition().getX()][entity.getPosition().getY()].setDontUpdateFogOfWar(true);
+            }
+        }
+
+
+        // добавляю новые
+        for (int i = 0; i < allEntityResource.size(); i++) {
+            MyEntity entity = allEntityResource.get(i);
+
+            int x = 79-entity.getPosition().getX();
+            int y = 79-entity.getPosition().getY();
+
+            if (mMapPotField.getMapPotField()[x][y].isDontUpdateFogOfWar()) continue;
+
+            boolean checkAdd = true;
+
+            for (int j=0; j<allEntityResourceForOfWar.size(); j++) {
+                MyEntity entity1 = allEntityResourceForOfWar.get(j);
+                if (entity1.getPosition().equals(Vec2Int.createVector(x,y))){
+                    checkAdd = false;
+                    break;
+                }
+            }
+
+            if (checkAdd){
+                MyEntity entity1 = new MyEntity(entity,Vec2Int.createVector(x,y));
+                allEntityResourceForOfWar.add(entity1);
+            }
+        }
+
+        for (int i=0; i<allEntityResourceForOfWar.size(); i++)
+        {
+            MyEntity entity = allEntityResourceForOfWar.get(i);
+
+            if (map[entity.getPosition().getX()][entity.getPosition().getY()].getEntityType()==EntityType.Empty) {
+                map[entity.getPosition().getX()][entity.getPosition().getY()] = entity;
+                mapNextTick[entity.getPosition().getX()][entity.getPosition().getY()] = entity;
             }
         }
     }
@@ -1065,7 +1219,7 @@ public class GlobalMap {
                 if (enemyID != -1 && map[i][j].getPlayerId() != enemyID) continue;
 
                 if (update) {
-                    if (map[i][j].isUpdate() || map[i][j].isDodge())
+                    if (map[i][j].isUpdate() || map[i][j].isDodge() ||  map[i][j].isDangerMove())
                     {
                         continue;
                     }
@@ -1246,7 +1400,7 @@ public class GlobalMap {
 
         if (turret)
         {
-            return getEntityMap(position,turretArray,playerID,-1,onlyUnit,entityType);
+            return getEntityMap(position,turretArray,playerID,-1,onlyUnit,entityType,false);
         }
 
         ArrayList<MyEntity> arrayList = new ArrayList<>();
@@ -1285,9 +1439,12 @@ public class GlobalMap {
 
         return arrayList;
     }
+    public ArrayList<MyEntity> getEntityMap(Vec2Int position, byte[][] bytes, int myID, int enemyID, boolean onlyUnit, EntityType entityType){
+        return getEntityMap(position,bytes,myID,enemyID,onlyUnit,entityType,false);
+    }
 
     // список юнитов в позициях в bytes с центром position
-    public ArrayList<MyEntity> getEntityMap(Vec2Int position, byte[][] bytes, int myID, int enemyID, boolean onlyUnit, EntityType entityType) {
+    public ArrayList<MyEntity> getEntityMap(Vec2Int position, byte[][] bytes, int myID, int enemyID, boolean onlyUnit, EntityType entityType, boolean specialMapPot) {
         ArrayList<MyEntity> arrayList = new ArrayList<>();
 
         for (int i=0; i<bytes.length; i++)
@@ -1310,6 +1467,70 @@ public class GlobalMap {
                 if (entity.getPlayerId() == null) continue;
 
                 if (entity.getPlayerId()==myID) continue;
+
+                if (specialMapPot)
+                {
+                    if (entity.getHealth()<=5) continue;
+                    if (mMapPotField.getMapPotField(entity.getPosition()).getSumDanger()>0) continue;
+                    // проверяем возможность прохода
+                    if (position.getX()==entity.getPosition().getX())
+                    {
+                        if (position.getY()>entity.getPosition().getY()){
+                            if (!checkEmpty(entity.getPosition().add(0,1))) continue;
+                        }
+                        else {
+                            if (!checkEmpty(entity.getPosition().add(0,-1))) continue;
+                        }
+                    }
+
+                    if (position.getY()==entity.getPosition().getY())
+                    {
+                        if (position.getX()>entity.getPosition().getX()){
+                            if (!checkEmpty(entity.getPosition().add(1,0))) continue;
+                        }
+                        else {
+                            if (!checkEmpty(entity.getPosition().add(-1,0))) continue;
+                        }
+                    }
+
+                    if (position.getY()>entity.getPosition().getY() &&
+                            position.getX()>entity.getPosition().getX()
+                    )
+                    {
+                        if (!checkEmpty(entity.getPosition().add(1,0)) &&
+                                !checkEmpty(entity.getPosition().add(0,1))
+                        ) continue;
+                    }
+
+
+                    if (position.getY()>entity.getPosition().getY() &&
+                            position.getX()<entity.getPosition().getX()
+                    )
+                    {
+                        if (!checkEmpty(entity.getPosition().add(-1,0)) &&
+                                !checkEmpty(entity.getPosition().add(0,1))
+                        ) continue;
+                    }
+
+                    if (position.getY()<entity.getPosition().getY() &&
+                            position.getX()>entity.getPosition().getX()
+                    )
+                    {
+                        if (!checkEmpty(entity.getPosition().add(1,0)) &&
+                                !checkEmpty(entity.getPosition().add(0,-1))
+                        ) continue;
+                    }
+
+                    if (position.getY()<entity.getPosition().getY() &&
+                            position.getX()<entity.getPosition().getX()
+                    )
+                    {
+                        if (!checkEmpty(entity.getPosition().add(-1,0)) &&
+                                !checkEmpty(entity.getPosition().add(0,-1))
+                        ) continue;
+                    }
+
+                }
 
                 if (entity.getPlayerId() == enemyID || enemyID==-1) {
                     arrayList.add(entity);

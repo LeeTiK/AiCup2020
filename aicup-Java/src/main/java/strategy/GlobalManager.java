@@ -24,6 +24,7 @@ public class GlobalManager {
     static WaveSearchModule waveSearchModule;
 
     MoveManager mMoveManager;
+    DodgeManager mDodgeManager;
 
     long startTime;
     long timeParsing;
@@ -42,6 +43,7 @@ public class GlobalManager {
         waveSearchModule = new WaveSearchModule(mGlobalMap);
 
         mMoveManager = new MoveManager();
+        mDodgeManager = new DodgeManager();
 
         timeAllStrategy = 0;
         timeParsing = 0;
@@ -74,12 +76,17 @@ public class GlobalManager {
             A_STAR = true;
         }
 
+        if (timeAllStrategy>33000)
+        {
+           // A_STAR = false;
+        }
+
+        mMapPotField.clearField();
         mGlobalMap.update(getGlobalStatistic(),mMapPotField);
         mMapPotField.update(this);
         waveSearchModule.updateMap(mMapPotField.getMapPotField());
 
         mMoveManager.update(mGlobalMap,mMapPotField,debugInterface,mActionHashMap);
-
 
         debugGraphic(playerView,debugInterface);
         ////////////////////////STATISTIC/////////////////////////////
@@ -112,13 +119,20 @@ public class GlobalManager {
 
         ArrayList<MyEntity> arrayListAllunit = getGlobalStatistic().getMyPlayer().getUnitArrayList();
 
+        // затираем всю активность
         for (int i = 0; i < arrayListAllunit.size(); i++){
             arrayListAllunit.get(i).setUpdate(false);
         }
 
 
 
-       mWarManager.update(playerView, this,debugInterface,mActionHashMap);
+        if (GLOBAL_DODGE) {
+            //увороты
+            mDodgeManager.update(this,mActionHashMap);
+        }
+
+
+        mWarManager.update(playerView, this,debugInterface,mActionHashMap);
 
         mEconomicManager.update(playerView, this,debugInterface,mActionHashMap);
 
@@ -147,8 +161,6 @@ public class GlobalManager {
                         check = true;
                         break;
                     }
-
-
                 }
 
                 if (!check)
@@ -275,6 +287,28 @@ public class GlobalManager {
                             vec2Float.setY(vec2Float.getY()+ 0.50f);
                             vec2Float.setX(vec2Float.getX()+ 0.50f);
                             FinalGraphic.sendText(debugInterface, vec2Float, 11, ""+entity.getTargetEntity().getId());
+                        }
+                    }
+                }
+            }
+
+            if (INFO_FOG_OF_WAR_MAP) {
+                for (int i=0; i<getGlobalMap().getMap().length; i++)
+                {
+                    for (int j=0; j<getGlobalMap().getMap().length; j++)
+                    {
+                        MyEntity entity = getGlobalMap().getMapNextTick()[i][j];
+
+                        if (entity.getEntityType()==EntityType.RESOURCE)
+                        {
+                            FinalGraphic.sendSquare(debugInterface, entity.getPosition(), 1, FinalGraphic.COLOR_WHITE_TWO);
+                        }
+
+                        if (entity.getEntityType()!=EntityType.RESOURCE && entity.getEntityType()!=EntityType.Empty)
+                        {
+                            if (entity.getPlayerId()!=FinalConstant.getMyID()){
+                                FinalGraphic.sendSquare(debugInterface, entity.getPosition(), 1, FinalGraphic.COLOR_RED_TWO);
+                            }
                         }
                     }
                 }

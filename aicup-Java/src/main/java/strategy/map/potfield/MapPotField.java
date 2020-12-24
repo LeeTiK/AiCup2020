@@ -30,8 +30,6 @@ public class MapPotField {
             }
         }
         mBiomResourceMap = new BiomResourceMap();
-
-
     }
 
     public void update(GlobalManager globalManager) {
@@ -44,7 +42,11 @@ public class MapPotField {
 
         MyEntity[][] map = mGlobalMap.getMap();
 
-        clearField(map);
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                mMapPotField[i][j].setMyEntity(map[i][j]);
+            }
+        }
 
         int district= 0;
 
@@ -72,9 +74,22 @@ public class MapPotField {
 
                     addPlayerArea(map[i][j], Vec2Int.createVector(i, j), map);
 
-                    addSafare(map[i][j], map);
+                   // addSafare(map[i][j], map);
                 } else {
                     addDanger(map[i][j], map);
+                }
+
+                // отмечаем вражеские войска
+            }
+        }
+
+
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                if (map[i][j].getPlayerId() == null) continue;
+                // отмечаем свои владения
+                if (map[i][j].getPlayerId()!= FinalConstant.getMyID()) {
+                    addSafetyContour(map[i][j], map);
                 }
 
                 // отмечаем вражеские войска
@@ -220,14 +235,14 @@ public class MapPotField {
                     break;
             }
         }
-        int sizeMyUnitTwoCounter =0;
+      /*  int sizeMyUnitTwoCounter =0;
         if (entity.getEntityType()==EntityType.RANGED_UNIT)
         {
           //  mGlobalMap.checkNextPositionUnit(entity);
 
-            ArrayList<MyEntity> arrayList = mGlobalMap.getEntityMap(position,GlobalMap.rangerTwoContourArray,-1,FinalConstant.getMyID(),true,EntityType.RANGED_UNIT);
+            ArrayList<MyEntity> arrayList = mGlobalMap.getEntityMap(position,GlobalMap.rangerTwoContourArray,-1,FinalConstant.getMyID(),true,EntityType.RANGED_UNIT,true);
             sizeMyUnitTwoCounter = arrayList.size();
-        }
+        }*/
 
         // counter
 
@@ -244,7 +259,7 @@ public class MapPotField {
                         break;
                     case RANGED_UNIT:
                         mMapPotField[x + position.getX()][y + position.getY()].addDangerContourRanger();
-                        mMapPotField[x + position.getX()][y + position.getY()].setSafetyContour(sizeMyUnitTwoCounter);
+                   //     mMapPotField[x + position.getX()][y + position.getY()].setSafetyContour(sizeMyUnitTwoCounter);
                         break;
                     case TURRET:
                         mMapPotField[x + position.getX()][y + position.getY()].addDangerContourTurret();
@@ -278,9 +293,72 @@ public class MapPotField {
         }
     }
 
-    private void addSafetyContour(MyEntity entity, MyEntity[][] map){
+    private void addSafetyContour(MyEntity entity, MyEntity[][] map) {
         if (entity.getEntityType() != EntityType.RANGED_UNIT)
             return;
+
+        EntityProperties entityProperties = FinalConstant.getEntityProperties(entity);
+
+        Vec2Int position = entity.getPosition();
+
+
+        int sizeMyUnitTwoCounter =0;
+        if (entity.getEntityType()==EntityType.RANGED_UNIT)
+        {
+            //  mGlobalMap.checkNextPositionUnit(entity);
+
+            ArrayList<MyEntity> arrayList = mGlobalMap.getEntityMap(position,GlobalMap.rangerTwoContourArray,-1,FinalConstant.getMyID(),true,EntityType.RANGED_UNIT,true);
+            sizeMyUnitTwoCounter = arrayList.size();
+        }
+
+        // counter
+
+        if (sizeMyUnitTwoCounter>0) {
+            for (int i = 0; i < GlobalMap.getRadiusContourUnit(entity.getEntityType()).length; i++) {
+                int x = GlobalMap.getRadiusContourUnit(entity.getEntityType())[i][0];
+                int y = GlobalMap.getRadiusContourUnit(entity.getEntityType())[i][1];
+
+                if (!checkCoord(position.getX() + x, position.getY() + y)) continue;
+
+                switch (entity.getEntityType()) {
+                    case MELEE_UNIT:
+                        break;
+                    case RANGED_UNIT:
+                        mMapPotField[x + position.getX()][y + position.getY()].setSafetyContour(sizeMyUnitTwoCounter);
+                        break;
+                    case TURRET:
+                        break;
+                }
+            }
+        }
+
+        sizeMyUnitTwoCounter =0;
+        if (entity.getEntityType()==EntityType.RANGED_UNIT)
+        {
+            //  mGlobalMap.checkNextPositionUnit(entity);
+
+            ArrayList<MyEntity> arrayList = mGlobalMap.getEntityMap(position,GlobalMap.rangerContourArray,-1,FinalConstant.getMyID(),true,EntityType.RANGED_UNIT,true);
+            sizeMyUnitTwoCounter = arrayList.size();
+        }
+
+        if (sizeMyUnitTwoCounter>0) {
+            for (int i = 0; i < GlobalMap.rangerDamageContourArray.length; i++) {
+                int x = GlobalMap.rangerDamageContourArray[i][0];
+                int y = GlobalMap.rangerDamageContourArray[i][1];
+
+                if (!checkCoord(position.getX() + x, position.getY() + y)) continue;
+
+                switch (entity.getEntityType()) {
+                    case MELEE_UNIT:
+                        break;
+                    case RANGED_UNIT:
+                        mMapPotField[x + position.getX()][y + position.getY()].setSafetyContour(sizeMyUnitTwoCounter);
+                        break;
+                    case TURRET:
+                        break;
+                }
+            }
+        }
     }
 
     private int resourceDirect(Field field) {
@@ -307,15 +385,13 @@ public class MapPotField {
         return -1;
     }
 
-    private void clearField(MyEntity[][] map) {
+    public void clearField() {
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
                 mMapPotField[i][j].clear();
-                mMapPotField[i][j].setMyEntity(map[i][j]);
             }
         }
     }
-
 
     private void addPlayerArea(MyEntity myEntity, Vec2Int position, MyEntity[][] map) {
         EntityProperties entityProperties = FinalConstant.getEntityProperties(myEntity);
@@ -775,8 +851,8 @@ public class MapPotField {
             }
 
             if (field.getSumDangerContour() > 0 && field.getSumDangerContour() < minCounterDanger) {
-             //   minCounterDanger = field.getSumDangerContour();
-             //   currentContour = field;
+                minCounterDanger = field.getSumDangerContour();
+                currentContour = field;
             }
 
             if (field.getSumDanger(entity.getEntityType()) == 0
@@ -796,6 +872,14 @@ public class MapPotField {
 
         if (minDanger == 0xFFFF) {
 
+            if (currentContour!=null)
+            {
+                if (currentContour.getSumDanger()==0 && currentContour.getSumDangerContour()==1)
+                {
+                    return currentContour.getPosition();
+                }
+            }
+
             if (maxCounterOnlyUnitDanger>1)
             {
                 if (currentNoDanger!=null) {
@@ -813,7 +897,17 @@ public class MapPotField {
      /*   Field currentPosition = mMapPotField[position.getX()][position.getY()];
         Final.DEBUG("DangerAttackRange", "T: "+FinalConstant.getCurrentTik()+"ID: " + entity.getId()
         + " MD: " + minDanger + " " + currentPosition.toString() + " CD: " + (currentNoDanger==null ? "null" : currentNoDanger.toString()));
+
+
 */
+        if (current.getSumDanger()>0 || current.getSumDangerContour()>0 && current.getSumDanger()+current.getSumDangerContour()-current.getSafetyContour()+1>0)
+        {
+            Field field = mMapPotField[position.getX()][position.getY()];
+
+            return current.getPosition();
+        }
+
+
         if (minDanger > 1) {
 
             // надо чекнуть много ли наших рядом с турелью и только тогда заходим и выносим
@@ -823,13 +917,14 @@ public class MapPotField {
                 {
                     MyEntity vec2Int = mGlobalMap.getNearestPlayer(entity.getPosition(),FinalConstant.getMyID(),EntityType.TURRET);
 
-                    ArrayList<MyEntity> arrayList = mGlobalMap.getEntityMap(vec2Int.getPosition(),GlobalMap.turretAndContourArray,-1,FinalConstant.getMyID(),true,EntityType.ALL);
+                    ArrayList<MyEntity> arrayList = mGlobalMap.getEntityMap(vec2Int.getPosition(),GlobalMap.turretAndContourArray,-1,FinalConstant.getMyID(),true,EntityType.ALL,false);
                     if (arrayList.size()>=5)
                     {
                         return current.getPosition();
                     }
                 }
             }
+
 
             Field field = mMapPotField[position.getX()][position.getY()];
 
@@ -860,6 +955,112 @@ public class MapPotField {
 
         return current.getPosition();
     }
+
+    public Vec2Int getDangerAttackRangerV2(MyEntity entity) {
+
+        byte[][] bytes = bytesOne;
+
+        Vec2Int position = entity.getPosition();
+
+        Field currentPosition = mMapPotField[position.getX()][position.getY()];
+
+        Field attackPosition = null;
+        Field defencePosition = null;
+        Field sleepPosition = null;
+
+        int maxDanger = 0;
+        int maxCounterDanger = 0;
+        int maxCounterOnlyUnitDanger = 0;
+
+        boolean unitPosition;
+        boolean emptyPosition;
+
+        for (int i = 0; i < bytes.length; i++) {
+            Vec2Int newPosition = position.add(bytes[i][0], bytes[i][1]);
+
+            unitPosition = false;
+            emptyPosition = false;
+
+            if (!mGlobalMap.checkCoord(newPosition)) continue;
+            // if (mGlobalMap.getMap(newPosition).getEntityType()==EntityType.RESOURCE) continue;
+            if (mGlobalMap.checkUnit(mGlobalMap.getMapNextTick(), newPosition)) {
+                unitPosition = true;
+            }
+
+            if (mGlobalMap.checkEmpty(mGlobalMap.getMapNextTick(), newPosition)) {
+                emptyPosition = true;
+            }
+
+            if (newPosition.equals(position)) {
+                unitPosition = false;
+                emptyPosition = true;
+            }
+
+            Field field = mMapPotField[newPosition.getX()][newPosition.getY()];
+
+            if (field.getSumDanger(entity.getEntityType())>maxDanger) {
+                maxDanger = field.getSumDanger(entity.getEntityType());
+            }
+
+            if (field.getSumDangerContour()>maxCounterDanger) {
+               maxCounterDanger = field.getSumDangerContour();
+            }
+
+            if (emptyPosition) {
+                if (field.getSumDanger() == 1 && field.getSumDangerContour() == 0) {
+                    attackPosition = field;
+                }
+
+                if (field.getSumDanger() == 0 && field.getSumDangerContour() == 1) {
+                    attackPosition = field;
+                }
+
+                if (field.getSumDanger() + field.getSumDangerContour() > 0 &&
+                        field.getSumDanger() + field.getSumDangerContour() - field.getSafetyContour() <= 0
+                ) {
+                    attackPosition = field;
+                }
+
+                if (currentPosition.getSumDanger() + currentPosition.getSumDangerContour() - currentPosition.getSafetyContour() >
+                        field.getSumDanger() + field.getSumDangerContour() - field.getSafetyContour() && currentPosition.getSumDanger()>=field.getSumDanger()) {
+                    if (defencePosition==null){
+                        defencePosition = field;
+                    }
+                    else {
+                        if (defencePosition.getSumDanger() + defencePosition.getSumDangerContour() - defencePosition.getSafetyContour() >
+                                field.getSumDanger() + field.getSumDangerContour() - field.getSafetyContour()  && defencePosition.getSumDanger()>=field.getSumDanger()){
+                            defencePosition = field;
+                        }
+                    }
+                }
+            }
+        }
+
+        Final.DEBUG("DangeAttack: ", FinalConstant.getCurrentTik() + " " + entity.getId() + " " +
+                currentPosition.getPosition().toString() + " " +
+                (attackPosition!=null?attackPosition.toString():"") + " " +
+                (defencePosition!=null?defencePosition.toString():"" + " " +
+                (currentPosition.getSumDanger()+currentPosition.getSumDangerContour()-currentPosition.getSafetyContour())
+                )
+        );
+
+        if (attackPosition!=null) {
+            return attackPosition.getPosition();
+        }
+
+        if (currentPosition.getSumDanger()+currentPosition.getSumDangerContour()-currentPosition.getSafetyContour()>0 && defencePosition!=null)
+        {
+            return defencePosition.getPosition();
+        }
+
+        if (maxDanger>0 || maxCounterDanger>0)
+        {
+            return position;
+        }
+
+        return null;
+    }
+
 
     public Vec2Int getDangerPositionBuild(MyEntity entity, boolean resource, boolean needMove) {
 

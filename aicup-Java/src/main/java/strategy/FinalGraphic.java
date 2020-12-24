@@ -5,10 +5,12 @@ import model.*;
 public class FinalGraphic {
 
     final static public Color COLOR_RED = new Color(1.0f, 0.0f, 0.0f, 0.7f);
+    final static public Color COLOR_RED_TWO = new Color(1.0f, 0.0f, 0.0f, 0.3f);
     final static public Color COLOR_BLUE = new Color(0.0f, 0.0f, 1.0f, 0.7f);
     final static public Color COLOR_GREEN = new Color(0.0f, 1.0f, 0.0f, 0.7f);
     final static public Color COLOR_GREEN_TWO = new Color(0.0f, 1.0f, 0.0f, 0.2f);
     final static public Color COLOR_WHITE = new Color(1.0f, 1.0f, 1.0f, 0.7f);
+    final static public Color COLOR_WHITE_TWO = new Color(1.0f, 1.0f, 1.0f, 0.3f);
     final static public Color COLOR_BLACK = new Color(0.0f, 0.0f, 0.0f, 0.7f);
     final static public Color COLOR_BLACK_TWO = new Color(0.0f, 0.0f, 0.0f, 0.3f);
 

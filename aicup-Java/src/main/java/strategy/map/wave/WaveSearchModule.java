@@ -325,6 +325,14 @@ public class WaveSearchModule {
             return EResultSearch.SUCCES;
         }
         else {
+            if (getMap()[x][y].getSumDanger()==0 && getMap()[x][y].getSumDangerContour()-getMap()[x][y].getSafetyContour()>0) {
+                return EResultSearch.SUCCES;
+            }
+
+            if ((getMap()[x][y].getSumDanger() + getMap()[x][y].getSumDangerContour()-getMap()[x][y].getSafetyContour())>0) {
+                return EResultSearch.SUCCES;
+            }
+
             if (getMap()[x][y].getSumDanger()>1 || getMap()[x][y].getSumDangerContour()>1
                 //    || getMap()[x][y].getSumDanger()==1 && getMap()[x][y].getSumDangerContour()>0
             ) {
@@ -352,8 +360,8 @@ public class WaveSearchModule {
                         getGlobalMap().getMapNextTick()[x][y].getEntityType()!=EntityType.MELEE_UNIT)
                 {
                    // System.out.println("EBLAN:2 " +  getGlobalMap().getMapNextTick()[x][y].getEntityType() );
-                    getMap()[x][y].setCost(0xFFFF);
-                    return EResultSearch.BLOCK;
+                   // getMap()[x][y].setCost(0xFFFF);
+                   // return EResultSearch.BLOCK;
                 }
             }
             else {

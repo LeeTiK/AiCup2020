@@ -60,6 +60,12 @@ public class MyEntity extends Entity {
         init();
     }
 
+    public MyEntity(Entity entity,Vec2Int position) {
+        super(entity.getId(), entity.getPlayerId(), entity.getEntityType(), position, entity.getHealth(), entity.isActive());
+
+        init();
+    }
+
     public MyEntity(int id, Integer playerId, EntityType entityType, Vec2Int position, int health, boolean active) {
         super(id, playerId, entityType, position, health, active);
 

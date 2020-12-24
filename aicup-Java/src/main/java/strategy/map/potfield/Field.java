@@ -36,9 +36,13 @@ public class Field {
     int districtResource;
     boolean block;
 
+    boolean seeFogOfWar;
+    boolean dontUpdateFogOfWar;
+
     public Field(Vec2Int position) {
         this.position = position;
         mMyEntity = null;
+        dontUpdateFogOfWar = false;
         clear();
     }
 
@@ -75,6 +79,8 @@ public class Field {
         block = false;
         attackPositionRanger = false;
         repairPositionClose=false;
+
+        seeFogOfWar = false;
     }
 
 
@@ -333,5 +339,21 @@ public class Field {
 
     public boolean isRepairPositionClose() {
         return repairPositionClose;
+    }
+
+    public boolean isSeeFogOfWar() {
+        return seeFogOfWar;
+    }
+
+    public void setSeeFogOfWar(boolean seeFogOfWar) {
+        this.seeFogOfWar = seeFogOfWar;
+    }
+
+    public void setDontUpdateFogOfWar(boolean dontUpdateFogOfWar) {
+        this.dontUpdateFogOfWar = dontUpdateFogOfWar;
+    }
+
+    public boolean isDontUpdateFogOfWar() {
+        return dontUpdateFogOfWar;
     }
 }

@@ -7,6 +7,8 @@ import strategy.map.potfield.DodgePositionAnswer;
 
 import java.util.*;
 
+import static strategy.Final.GLOBAL_DODGE;
+
 public class EconomicManager {
 
     public static final String TAG = "strategy.EconomicManager";
@@ -66,8 +68,10 @@ public class EconomicManager {
         MyPlayer myPlayer = globalManager.getGlobalStatistic().getMyPlayer();
 
 
-        //увороты
-        dodgeBuilderV2(myPlayer, playerView, globalManager, actionHashMap);
+        if (!GLOBAL_DODGE) {
+            //увороты
+            dodgeBuilderV2(myPlayer, playerView, globalManager, actionHashMap);
+        }
 
         //всё что связанно с починкой
         repairBuilder(myPlayer, playerView, globalManager, actionHashMap);
@@ -990,6 +994,8 @@ public class EconomicManager {
 
                     Vec2Int vec2Int1 = globalManager.getGlobalMap().getMinPositionBuilding(currentUnit.getPosition(), myEntityBuilding.getPosition(), FinalConstant.getEntityProperties(myEntityBuilding.getEntityType()));
 
+                    if (vec2Int1==null) break;
+
                     MoveAction m = null;
                     BuildAction b = null;
                     AttackAction a = null;
@@ -1027,7 +1033,6 @@ public class EconomicManager {
 
         return actionHashMap;
     }
-
 
     private HashMap createUnit(MyPlayer myPlayer, PlayerView playerView, GlobalManager globalManager) {
         HashMap<Integer, EntityAction> actionHashMap = new HashMap<>();

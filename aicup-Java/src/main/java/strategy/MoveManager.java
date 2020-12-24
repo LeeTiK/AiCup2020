@@ -51,6 +51,11 @@ public class MoveManager {
         if (targetPosition==null && current==null) return null;
         if (targetPosition!=null && entity.getPosition().equals(targetPosition)) return null;
 
+        if (entity.isDangerMove())
+        {
+            int k =0;
+        }
+
         MoveAction moveAction = new MoveAction();
         moveAction.setBreakThrough(true);
         moveAction.setFindClosestPosition(true);
@@ -146,10 +151,10 @@ public class MoveManager {
 
     private boolean addMoveTargetUnit(MyEntity entity, Node current) {
         if (entity.isRotation()) return false;
-
-        MoveAction moveAction = getMoveActionPosition(entity,null,true,current);
         entity.setUpdate(true);
         entity.setRotation(true);
+
+        MoveAction moveAction = getMoveActionPosition(entity,null,true,current);
 
         EntityAction entityAction = new EntityAction();
         entityAction.clear();
@@ -171,7 +176,7 @@ public class MoveManager {
                 if (a.getDodgePositionAnswer().getSafetyArrayList().size()+
                         a.getDodgePositionAnswer().getSafetyPositionUnitArrayList().size() >
                         b.getDodgePositionAnswer().getSafetyArrayList().size()+
-                        b.getDodgePositionAnswer().getSafetyPositionUnitArrayList().size()) return 1;
+                                b.getDodgePositionAnswer().getSafetyPositionUnitArrayList().size()) return 1;
                 if (a.getDodgePositionAnswer().getSafetyArrayList().size()+
                         a.getDodgePositionAnswer().getSafetyPositionUnitArrayList().size() <
                         b.getDodgePositionAnswer().getSafetyArrayList().size()+
@@ -198,7 +203,7 @@ public class MoveManager {
                     EntityAction entityAction = actionHashMap.get(entity.getId());
                     if (entityAction == null) entityAction = new EntityAction(null, null, null, null);
 
-                //    ArrayList<MyEntity> resource = globalManager.getGlobalMap().getEntityMap(entity.getPosition(),GlobalMap.aroundArray,FinalConstant.getMyID(),-1,false,EntityType.RESOURCE);
+                    //    ArrayList<MyEntity> resource = globalManager.getGlobalMap().getEntityMap(entity.getPosition(),GlobalMap.aroundArray,FinalConstant.getMyID(),-1,false,EntityType.RESOURCE);
                     Vec2Int vec2IntDodge  =null;
                     // увороты от всех по ПП
                     if (entity.getDodgePositionAnswer().getSafetyArrayList().size()>0)
@@ -238,7 +243,7 @@ public class MoveManager {
 
                     if (vec2IntDodge != null) {
                         m = //globalManager.getMoveManager().getMoveActionPosition(entity,vec2IntDodge);
-                        new MoveAction(vec2IntDodge, true, true);
+                                new MoveAction(vec2IntDodge, true, true);
                         //  globalManager.getGlobalMap().setPositionNextTick(builderUnit.getPosition(),vec2IntDodge);
 
                         entityAction.setAttackAction(null);
@@ -285,7 +290,7 @@ public class MoveManager {
                 case BUILDER_UNIT:
                     entity.setDodgePositionAnswer(getMapPotField().calculateDodgePosition(entity,true));
                     needDodge.add(entity);
-                   // dodge(entity,globalManager,actionHashMap);
+                    // dodge(entity,globalManager,actionHashMap);
                     break;
             }
         }
@@ -402,20 +407,5 @@ public class MoveManager {
         return path;
     }
 
-    static final public Comparator<MyEntity> mMyEntityComparator =  new Comparator<MyEntity>() {
-        public int compare(MyEntity a, MyEntity b) {
-            if (a.getDodgePositionAnswer().getSafetyArrayList().size()==0 &&
-                    b.getDodgePositionAnswer().getSafetyArrayList().size()!=0) return 1;
 
-            if (a.getDodgePositionAnswer().getSafetyArrayList().size() +
-                    a.getDodgePositionAnswer().getSafetyPositionUnitArrayList().size() >
-                    b.getDodgePositionAnswer().getSafetyArrayList().size() +
-                            b.getDodgePositionAnswer().getSafetyPositionUnitArrayList().size()) return 1;
-            if (a.getDodgePositionAnswer().getSafetyArrayList().size() +
-                    a.getDodgePositionAnswer().getSafetyPositionUnitArrayList().size() <
-                    b.getDodgePositionAnswer().getSafetyArrayList().size() +
-                            b.getDodgePositionAnswer().getSafetyPositionUnitArrayList().size()) return -1;
-            return 0;
-        }
-    };
 }

@@ -1,7 +1,5 @@
 import model.*;
-import strategy.DebugInterface;
-import strategy.Final;
-import strategy.GlobalManager;
+import strategy.*;
 
 public class MyStrategy {
     GlobalManager mGlobalManager;
@@ -27,6 +25,17 @@ public class MyStrategy {
         }
       //  debugInterface.getState().
 
+       /* int size = 10;
+        Vec2Int position = Vec2Int.createVector(0,0);
+
+        for (int x = -size; x <= size; x++) {
+            int sizeY = size - Math.abs(x);
+
+            for (int y = -sizeY; y <= sizeY; y++) {
+                System.out.print("{"+x+","+y+"},");
+            }
+            System.out.println();
+        }*/
 
         //debugInterface.getState().
       //  playerView.get
