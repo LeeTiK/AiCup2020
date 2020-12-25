@@ -4,15 +4,14 @@ import model.*;
 import strategy.map.potfield.PositionAnswer;
 import strategy.map.wave.SearchAnswer;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 
 public class WarManager {
 
     public static final String TAG = "strategy.WarManager";
 
     public static final boolean HEAL_RANGER = true;
-    public static final int WAVE_DISTANCE = 1;
+    public static final int WAVE_DISTANCE = 0;
     public static int counterAttack = 2;
 
     DebugInterface debugInterface;
@@ -23,10 +22,12 @@ public class WarManager {
     int sizeRight;
     int sizeMy;
 
+    Vec2Int mVec2IntLeft = Vec2Int.createVector(70,15);
+    Vec2Int mVec2IntRight = Vec2Int.createVector(15,70);
 
     int globalPositionDefense = 0;
 
-    //отвечаем за атаку и защиту
+    ArrayList<MyEntity> mRangerSpecialArrayList = new ArrayList<>();
 
 
     public HashMap<Integer, EntityAction> update(PlayerView playerView, GlobalManager globalManager, DebugInterface debugInterface, HashMap<Integer, EntityAction> actionHashMap) {
@@ -40,6 +41,8 @@ public class WarManager {
         if (globalManager.getGlobalStatistic().getPlayers().size()==2){
             counterAttack = 2;
         }
+
+        mRangerSpecialArrayList.clear();
 
         sizeMy = myPlayer.getEntityArrayList(EntityType.RANGED_UNIT).size() + myPlayer.getEntityArrayList(EntityType.MELEE_UNIT).size();
         sizeLeft = globalManager.getGlobalStatistic().getLeftPlyer().getEntityArrayList(EntityType.RANGED_UNIT).size() + globalManager.getGlobalStatistic().getLeftPlyer().getEntityArrayList(EntityType.MELEE_UNIT).size();
@@ -314,6 +317,115 @@ public class WarManager {
 
             dangerAttackRange(range,globalManager,actionHashMap,false);
         }
+
+
+
+        if (Final.SPECIAL_ATTACK_ENEMY_BUILDER && globalManager.getGlobalStatistic().getPlayers().size()==2)
+        {
+
+            int needCountAttack = 2;
+            int count = 0;
+
+
+            for (int i = 0; i < rangeArrayList.size(); i++) {
+                MyEntity range = rangeArrayList.get(i);
+
+                if (range.isDodge()) continue;
+                if (range.isDangerMove()) continue;
+                if (range.isUpdate()) continue;
+                if (range.isOkey()) continue;
+
+               // MyEntity enemy = globalManager.getGlobalMap().getNearestPlayer(range.getPosition(), myPlayer.getId(), -1,EntityType.BUILDER_UNIT,true);
+                range.setMinDisLeftSpecial((float) mVec2IntLeft.distance(range.getPosition()));
+                range.setMinDisRightSpecial((float) mVec2IntRight.distance(range.getPosition()));
+
+                if (range.getMinDisRightSpecial()> 15 && range.getMinDisLeftSpecial()>15) {
+                    mRangerSpecialArrayList.add(range);
+                }
+                else {
+                    range.setOkey(true);
+                }
+
+            }
+
+            Collections.sort(mRangerSpecialArrayList, new Comparator<MyEntity>() {
+                public int compare(MyEntity a, MyEntity b) {
+                    if (a.getMinDisLeftSpecial() > b.getMinDisLeftSpecial()) return 1;
+                    if (a.getMinDisLeftSpecial() < b.getMinDisLeftSpecial()) return -1;
+                    return 0;
+                }
+            });
+
+            for (int i = 0; i < mRangerSpecialArrayList.size(); i++) {
+                MyEntity range = mRangerSpecialArrayList.get(i);
+
+                if (i>=needCountAttack) break;
+
+                EntityAction entityAction = actionHashMap.get(range.getId());
+                if (entityAction == null) entityAction = new EntityAction(null, null, null, null);
+
+                MoveAction moveAction = globalManager.getMoveManager().getMoveActionPosition(range, mVec2IntLeft);
+                entityAction.setMoveAction(moveAction);
+
+                range.setUpdate(true);
+
+                actionHashMap.put(range.getId(), entityAction);
+
+            }
+
+
+            Collections.sort(mRangerSpecialArrayList, new Comparator<MyEntity>() {
+                public int compare(MyEntity a, MyEntity b) {
+                    if (a.getMinDisRightSpecial() > b.getMinDisRightSpecial()) return 1;
+                    if (a.getMinDisRightSpecial() < b.getMinDisRightSpecial()) return -1;
+                    return 0;
+                }
+            });
+
+            for (int i = 0; i < mRangerSpecialArrayList.size(); i++) {
+                MyEntity range = mRangerSpecialArrayList.get(i);
+
+                if (count>=needCountAttack) break;
+                if (range.isUpdate()) continue;
+
+                count++;
+
+                EntityAction entityAction = actionHashMap.get(range.getId());
+                if (entityAction == null) entityAction = new EntityAction(null, null, null, null);
+
+                MoveAction moveAction = globalManager.getMoveManager().getMoveActionPosition(range, mVec2IntRight);
+                entityAction.setMoveAction(moveAction);
+
+                range.setUpdate(true);
+
+                actionHashMap.put(range.getId(), entityAction);
+
+            }
+
+            for (int i = 0; i < rangeArrayList.size(); i++) {
+                MyEntity range = rangeArrayList.get(i);
+
+                if (range.isDodge()) continue;
+                if (range.isDangerMove()) continue;
+                if (range.isUpdate()) continue;
+                if (!range.isOkey()) continue;
+
+                MyEntity enemy = globalManager.getGlobalMap().getNearestPlayer(range.getPosition(), myPlayer.getId(), -1,EntityType.BUILDER_UNIT,true);
+
+                EntityAction entityAction = actionHashMap.get(range.getId());
+                if (entityAction == null) entityAction = new EntityAction(null, null, null, null);
+
+                MoveAction moveAction = globalManager.getMoveManager().getMoveActionPosition(range, enemy.getPosition());
+                entityAction.setMoveAction(moveAction);
+
+                range.setUpdate(true);
+
+                actionHashMap.put(range.getId(), entityAction);
+            }
+
+        }
+
+
 
         Final.DEBUG(TAG, "TIK: " + FinalConstant.getCurrentTik() + " enemyArrayList SIZE: " + enemyArrayList.size());
         int sizeUnit = 1;

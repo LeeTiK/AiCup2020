@@ -322,7 +322,7 @@ public class Field {
     }
 
     public void setSafetyContour(int safetyContour) {
-        if (this.safetyContour<safetyContour) {
+        if (this.safetyContour>safetyContour || (this.safetyContour==0 && safetyContour!=0)) {
             this.safetyContour = safetyContour;
         }
     }

@@ -17,6 +17,9 @@ public class EconomicManager {
     static int MAX_BUILDER_UNIT_ALL_GAME = 70;
 
     static int MAX_BUILDER_REPAIR = 3;
+    static int MAX_BUILDER_REPAIR_BASE = 12;
+
+    static int START_HOUSE_SPECIAL = 9;
 
     // количество рабочих
     int sizeBuildUnit;
@@ -46,7 +49,7 @@ public class EconomicManager {
 
         if (!init) {
             if (globalManager.getGlobalStatistic().getPlayers().size() == 2) {
-                MAX_BUILDER_UNIT = 85;
+                MAX_BUILDER_UNIT = 75;
             } else {
                 MAX_BUILDER_UNIT = 71;
             }
@@ -55,6 +58,18 @@ public class EconomicManager {
         }
         if (FinalConstant.isFogOfWar() && !init2)
         {
+            if (globalManager.getGlobalStatistic().getMyPlayer().getEntityArrayList(EntityType.RANGED_UNIT).size()>30)
+            {
+                if (globalManager.getGlobalStatistic().getPlayers().size() == 2) {
+                    MAX_BUILDER_UNIT = 85;
+                } else {
+                    MAX_BUILDER_UNIT = 71;
+                }
+                MAX_BUILDER_UNIT_ALL_GAME = MAX_BUILDER_UNIT+5;
+
+                init2  = true;
+            }
+
             if (globalManager.getGlobalStatistic().getMyPlayer().getCountAllBiuld()==MAX_BUILDER_UNIT_ALL_GAME && !globalManager.getGlobalStatistic().isCheckFirstEnemyUnits())
             {
                 MAX_BUILDER_UNIT+=5;
@@ -253,12 +268,6 @@ public class EconomicManager {
                 }
             }
             else {
-                MoveAction m = globalManager.getMoveManager().getMoveActionPosition(builder,Vec2Int.createVector(0,0));
-                //new MoveAction(resourceMidDis.getPosition(),true,true);
-                BuildAction b = null;
-                AttackAction a = null;
-                RepairAction r = null;
-                actionHashMap.put(builder.getId(), new EntityAction(m, b, a, r));
                 builder.getDataTaskUnit().clear();
             }
         }
@@ -509,7 +518,7 @@ public class EconomicManager {
 
         //boolean checkCreate = false;
 
-        if ((myPlayer.getResource() - createHouse * myPlayer.getCost(EntityType.HOUSE)) > myPlayer.getCost(EntityType.HOUSE) - 5 &&
+        if ((myPlayer.getResource() - createHouse * myPlayer.getCost(EntityType.HOUSE)) > myPlayer.getCost(EntityType.HOUSE) - builderUnitArrayList.size() &&
                 ((myPlayer.getPopulationCurrent() * 1.2 >= myPlayer.getPopulationMax() && myPlayer.getResource() > myPlayer.getCost(EntityType.HOUSE) * 2) || myPlayer.getPopulationMax() < 80)
                 && (myPlayer.getPopulationMax() < 180)
                 && (myPlayer.getCountBuildDontCreate(EntityType.HOUSE) < 3 || (myPlayer.getResource() > 50 && myPlayer.getCountBuildDontCreate(EntityType.HOUSE) < 7 && myPlayer.getPopulationMax() < 70))
@@ -518,7 +527,7 @@ public class EconomicManager {
                     myPlayer.getEntityArrayList(EntityType.BUILDER_BASE).size()>0) ||
                 myPlayer.getEntityArrayList(EntityType.HOUSE).size() < 5 ||
             ( myPlayer.getResource()>550 && myPlayer.getEntityArrayList(EntityType.HOUSE).size() < 7)
-            || (globalManager.getGlobalStatistic().getPlayers().size()==2 && myPlayer.getEntityArrayList(EntityType.HOUSE).size() < 7)
+            || (globalManager.getGlobalStatistic().getPlayers().size()==2 && myPlayer.getEntityArrayList(EntityType.HOUSE).size() < START_HOUSE_SPECIAL)
             ) {
 
              //   System.out.println("size HOME: " +  myPlayer.getEntityArrayList(EntityType.HOUSE).size());
@@ -1106,7 +1115,7 @@ public class EconomicManager {
 
             if (myEntityBuilding.getEntityType()==EntityType.RANGED_BASE)
             {
-                needBuilderRepait*=3;
+                needBuilderRepait=MAX_BUILDER_REPAIR_BASE;
             }
 
             if (myEntityBuilding.getRepairCounter()>=needBuilderRepait) continue;

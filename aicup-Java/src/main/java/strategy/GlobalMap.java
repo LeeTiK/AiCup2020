@@ -213,11 +213,13 @@ public class GlobalMap {
     final public static byte[][] housePositionFogOfWar = new byte[][]{
             {2, 2},   {5, 2}, {8, 2},  {12, 2},  {16, 2}, {20, 2},  {24, 2},
             {2, 5},   {5, 6}, {10, 6},  {14, 6},  {18, 6}, {22, 6},  {24, 6},
-            {2, 8}, {6, 10}, {10, 10}, {14, 10}, {18,10}, {22, 10}, {26, 10},
-            {2, 12}, {6, 14}, {10, 14}, {14, 14}, {18,14}, {22, 14}, {26, 14},
-            {2, 16}, {6, 18}, {10, 18}, {14, 18}, {18,18}, {22, 18}, {26, 18},
-            {2, 20}, {6, 22}, {10, 22}, {14, 22}, {18,22}, {22, 22},
-            {2, 24}, {6, 26}, {10, 26}, {14, 26}, {18,26},
+            {2, 8}, {6, 10}, {10, 10}, {14, 10}, {18,10}, {22, 10}, {26, 10},{30, 10},{34, 10},{38, 10},{44, 10},
+            {2, 12}, {6, 14}, {10, 14}, {14, 14}, {18,14}, {22, 14}, {26, 14},{30, 14},{34, 14},{38, 14},{44, 14},
+            {2, 16}, {6, 18}, {10, 18}, {14, 18}, {18,18}, {22, 18}, {26, 18},{30, 18},{34, 18},{38, 18},//{44, 18},
+            {2, 20}, {6, 22}, {10, 22}, {14, 22}, {18,22}, {22, 22}, {26, 22},{30, 22},{34, 22},//{38, 22},{44, 22},
+            {2, 24}, {6, 26}, {10, 26}, {14, 26}, {18,26}, {22, 26}, {26, 26},{30, 26},//{34, 26},{38, 26},{44, 26},
+            {2, 28}, {6, 30}, {10, 30}, {14, 30}, {18,30}, {22, 30}, {26, 30},
+            {2, 32}, {6, 34}, {10, 34}, {14, 34}, {18,34}, {22, 34},
     };
 
     final public static byte[][] housePosition = new byte[][]{
@@ -519,6 +521,7 @@ public class GlobalMap {
 
             if (!checkCoord(x,y)) continue;
             if (mMapPotField.getMapPotField()[x][y].isSeeFogOfWar()) continue;
+            if (mMapPotField.getMapPotField()[entity.getPosition().getX()][entity.getPosition().getY()].isDontUpdateFogOfWar()) continue;
 
             MyEntity entity1 = new MyEntity(entity.getId()*100,FinalConstant.getMyID()+1,entity.getEntityType(),Vec2Int.createVector(x,y),entity.getHealth(),entity.isActive());
 
@@ -566,11 +569,38 @@ public class GlobalMap {
             }
         }
 
+        // добавляю новые
+        for (int i = 0; i < allEntityResource.size(); i++) {
+            MyEntity entity = allEntityResource.get(i);
+
+            int x = entity.getPosition().getX();
+            int y = entity.getPosition().getY();
+
+            if (mMapPotField.getMapPotField()[x][y].isDontUpdateFogOfWar()) continue;
+
+            boolean checkAdd = true;
+
+            for (int j=0; j<allEntityResourceForOfWar.size(); j++) {
+                MyEntity entity1 = allEntityResourceForOfWar.get(j);
+                if (entity1.getPosition().equals(Vec2Int.createVector(x,y))){
+                    checkAdd = false;
+                    break;
+                }
+            }
+
+            if (checkAdd){
+                MyEntity entity1 = new MyEntity(entity,Vec2Int.createVector(x,y));
+                allEntityResourceForOfWar.add(entity1);
+            }
+        }
+
         for (int i=0; i<allEntityResourceForOfWar.size(); i++)
         {
             MyEntity entity = allEntityResourceForOfWar.get(i);
 
-            if (map[entity.getPosition().getX()][entity.getPosition().getY()].getEntityType()==EntityType.Empty) {
+            if (map[entity.getPosition().getX()][entity.getPosition().getY()].getEntityType()==EntityType.Empty
+            ) {
+
                 map[entity.getPosition().getX()][entity.getPosition().getY()] = entity;
                 mapNextTick[entity.getPosition().getX()][entity.getPosition().getY()] = entity;
             }
@@ -1271,6 +1301,10 @@ public class GlobalMap {
 
     public MyEntity getNearestPlayer(Vec2Int vec2Int, int myID, int enemyID,boolean counterAttack){
         return getNearestPlayer(vec2Int,myID,enemyID,null,false,counterAttack);
+    }
+
+    public MyEntity getNearestPlayer(Vec2Int vec2Int, int myID, int enemyID,EntityType entityType, boolean counterAttack){
+        return getNearestPlayer(vec2Int,myID,enemyID,entityType,false,counterAttack);
     }
 
     public MyEntity getNearestPlayer(Vec2Int vec2Int, int myID,  EntityType entityType){

@@ -6,7 +6,7 @@ import model.PlayerView;
 public class Final {
 
 
-    final static boolean RELEASE = true;
+    final static boolean RELEASE = false;
 
 
     final static boolean TEST = false;
@@ -16,12 +16,13 @@ public class Final {
     final static boolean debug = false;
     final static boolean debugERROR = true;
     final static boolean debugRelease = true;
-    public final static boolean debugGraphic = false;
+    public final static boolean debugGraphic = true;
 
     ////////////////////////////РЕЖИМЫ РАБОТЫ/////////////////////////////////
     public static boolean FOG_OF_WAR_MAP = true;
     public static boolean A_STAR = true;
     public static boolean GLOBAL_DODGE = false;
+    public static boolean SPECIAL_ATTACK_ENEMY_BUILDER = true;
 
     // элементы игры
     public final static boolean BUILD_TURRET = false;
@@ -53,7 +54,7 @@ public class Final {
     public final static boolean NEXT_TIK_POSITION = true;
     public final static boolean ENEMY_ATTACK = true;
     public final static boolean INFO_RECOURCE = false;
-    public final static boolean INFO_FOG_OF_WAR_MAP = false;
+    public final static boolean INFO_FOG_OF_WAR_MAP = true;
 
 
     public final static boolean CHECK_SEARCH_WAVE_BUILDER = false;

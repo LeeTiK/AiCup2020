@@ -56,6 +56,10 @@ public class MyEntity extends Entity {
     DodgePositionAnswer mDodgePositionAnswer;
     AttackRangeAnswer mAttackRangeAnswer;
 
+    float minDisLeftSpecial;
+    float minDisRightSpecial;
+    boolean okey;
+
     public MyEntity(Entity entity) {
         super(entity.getId(), entity.getPlayerId(), entity.getEntityType(), entity.getPosition(), entity.getHealth(), entity.isActive());
 
@@ -84,6 +88,7 @@ public class MyEntity extends Entity {
         mEntityAction = new EntityAction(null, null, null, null);
         oldTikPosition = null;
         oldTwoTikPosition = null;
+        okey=false;
         clear();
     }
 
@@ -116,6 +121,8 @@ public class MyEntity extends Entity {
         mDodgePositionAnswer=null;
         minDisToHouse=0xFFFF;
         mAttackRangeAnswer=null;
+        minDisLeftSpecial = 0xFFFF;
+        minDisRightSpecial = 0xFFFF;
     }
 
     public void update(Entity entity) {
@@ -349,6 +356,14 @@ public class MyEntity extends Entity {
         }
     }
 
+    public void setMinDisLeftSpecial(float minDisLeftSpecial) {
+        this.minDisLeftSpecial = minDisLeftSpecial;
+    }
+
+    public void setMinDisRightSpecial(float minDisRightSpecial) {
+        this.minDisRightSpecial = minDisRightSpecial;
+    }
+
     public void setNeedMove(boolean needMove) {
         this.needMove = needMove;
     }
@@ -396,5 +411,21 @@ public class MyEntity extends Entity {
 
     public AttackRangeAnswer getAttackRangeAnswer() {
         return mAttackRangeAnswer;
+    }
+
+    public float getMinDisLeftSpecial() {
+        return minDisLeftSpecial;
+    }
+
+    public float getMinDisRightSpecial() {
+        return minDisRightSpecial;
+    }
+
+    public boolean isOkey() {
+        return okey;
+    }
+
+    public void setOkey(boolean okey) {
+        this.okey = okey;
     }
 }

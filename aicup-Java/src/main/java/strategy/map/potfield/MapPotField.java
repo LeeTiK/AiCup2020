@@ -333,8 +333,8 @@ public class MapPotField {
             }
         }
 
-        if (left && rigth && down && up)
-        {
+       /* if (left && rigth && down && up)
+        {*/
             for (int i = 0; i < GlobalMap.getRadiusContourUnit(entity.getEntityType()).length; i++) {
                 int x = GlobalMap.getRadiusContourUnit(entity.getEntityType())[i][0];
                 int y = GlobalMap.getRadiusContourUnit(entity.getEntityType())[i][1];
@@ -354,13 +354,13 @@ public class MapPotField {
                         break;
                 }
             }
-        }
+       /* }
         else {
 
 
 
 
-        }
+        }*/
 
 
 
@@ -398,7 +398,7 @@ public class MapPotField {
 
 
         int sizeMyUnitTwoCounter =0;
-        if (entity.getEntityType()==EntityType.RANGED_UNIT)
+      /*  if (entity.getEntityType()==EntityType.RANGED_UNIT)
         {
             //  mGlobalMap.checkNextPositionUnit(entity);
 
@@ -425,7 +425,7 @@ public class MapPotField {
                         break;
                 }
             }
-        }
+        }*/
 
         sizeMyUnitTwoCounter =0;
         if (entity.getEntityType()==EntityType.RANGED_UNIT)
