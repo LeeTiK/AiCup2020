@@ -25,9 +25,10 @@ public class Final {
 
     // элементы игры
     public final static boolean BUILD_TURRET = false;
-
+    public final static boolean BUILD_TURRET_SPECIAL = false;
 
     //////////////УСТАРЕВШИЕ
+
     public static boolean A_STAR_BLOCK_ALL_BUILD_UNIT = false;
     public static boolean A_STAR_CHECK_FIRST_NODE_BLOCK = false;
     public final static boolean A_NEED_MOVE = false;
@@ -51,7 +52,7 @@ public class Final {
     public final static boolean HP_NO_ACTIVE = false;
     public final static boolean NEXT_TIK_POSITION = true;
     public final static boolean ENEMY_ATTACK = true;
-    public final static boolean INFO_RECOURCE = true;
+    public final static boolean INFO_RECOURCE = false;
     public final static boolean INFO_FOG_OF_WAR_MAP = false;
 
 
@@ -59,7 +60,7 @@ public class Final {
     public final static boolean CHECK_SEARCH_WAVE_START_END = false;
 
     public final static boolean CHECK_SEARCH_PATH_RANGER = true;
-    public final static boolean CHECK_SEARCH_PATH_ASTAR = false;
+    public final static boolean CHECK_SEARCH_PATH_ASTAR = true;
 
     static public Player getMyPlayer(PlayerView playerView) {
         int myID = playerView.getMyId();

@@ -21,6 +21,7 @@ public class AStar {
     private static int DEFAULT_HV_COST_RESOURSCE_ATTACK_UNIT = 6; //
     private static int DEFAULT_HV_COST_RESOURSCE_BUILD_UNIT = 30; //
     private static int DEFAULT_HV_COST_BUILD_UNIT = 3; //
+    private static int DEFAULT_HV_COST_ATTACK_UNIT = 3; //
     private int hvCost;
     private int diagonalCost;
     private Node[][] searchArea;
@@ -77,6 +78,8 @@ public class AStar {
 
                 MyEntity entity = globalMap.getMap()[vec2Int.getX()][vec2Int.getY()];
 
+                this.searchArea[i][j].setType(entity.getEntityType());
+
                 if (entity.getEntityType()== EntityType.RESOURCE)
                 {
                     this.searchArea[i][j].setH2(DEFAULT_HV_COST_RESOURSCE_ATTACK_UNIT);
@@ -108,10 +111,12 @@ public class AStar {
                     if (entity.getPlayerId()==FinalConstant.getMyID())
                     {
                         if (mapPotField.getMapPotField()[vec2Int.getX()][vec2Int.getY()].getSumDanger() +
-                                mapPotField.getMapPotField()[vec2Int.getX()][vec2Int.getY()].getSumDangerContour() +
-                                mapPotField.getMapPotField()[vec2Int.getX()][vec2Int.getY()].getSafetyContour()
+                                mapPotField.getMapPotField()[vec2Int.getX()][vec2Int.getY()].getSumDangerContour()
                                 >0 ) {
                             this.searchArea[i][j].setBlock(true);
+                        }
+                        else {
+                            this.searchArea[i][j].setH2(DEFAULT_HV_COST_ATTACK_UNIT);
                         }
                     }
                 }
@@ -137,7 +142,7 @@ public class AStar {
     }
 
     public List<Node> findPath(EntityType entityType) {
-        if (this.searchArea[finalNode.getVec2Int().getX()][finalNode.getVec2Int().getY()].isBlock()) return new ArrayList<Node>();
+        if (this.searchArea[finalNode.getVec2Int().getX()][finalNode.getVec2Int().getY()].isBlock(mEntityTypeFindPath)) return new ArrayList<Node>();
         this.mEntityTypeFindPath = entityType;
 
         openList.add(initialNode);
@@ -217,12 +222,12 @@ public class AStar {
     private void checkNode(Node currentNode, int col, int row, int cost, int k) {
         Node adjacentNode = getSearchArea()[row][col];
         if (!Final.A_STAR_CHECK_FIRST_NODE_BLOCK || (k>1 || (k<=1 && !adjacentNode.isBlockFirst()))) {
-            if (!adjacentNode.isBlock() && !getClosedSet().contains(adjacentNode)) {
+            if (!adjacentNode.isBlock(mEntityTypeFindPath) && !getClosedSet().contains(adjacentNode)) {
                 if (!getOpenList().contains(adjacentNode)) {
-                    adjacentNode.setNodeData(currentNode, cost);
+                    adjacentNode.setNodeData(currentNode, cost,mEntityTypeFindPath);
                     getOpenList().add(adjacentNode);
                 } else {
-                    boolean changed = adjacentNode.checkBetterPath(currentNode, cost);
+                    boolean changed = adjacentNode.checkBetterPath(currentNode, cost,mEntityTypeFindPath);
                     if (changed) {
                         // Remove and Add the changed node, so that the PriorityQueue can sort again its
                         // contents with the modified "finalCost" value of the modified node

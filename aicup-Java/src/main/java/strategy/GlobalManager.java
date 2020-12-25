@@ -71,19 +71,24 @@ public class GlobalManager {
 
         mGlobalStatistic.updateInfo(playerView, this);
 
-        if (FinalConstant.isFogOfWar())
+        if (FinalConstant.isFogOfWar() && !RELEASE)
         {
             A_STAR = true;
         }
+        if (RELEASE) {
+            if ((timeAllStrategy / 1000000) > 31000) {
 
-        if ((timeAllStrategy / 1000000)>31000)
-        {
-            if (RELEASE) {
-                if (A_STAR==true)
-                {
-                    Final.DEBUGRelease("", "Tik: " + FinalConstant.getCurrentTik() + " ERROR TIME, A_STAR OFF");
+                if (RELEASE) {
+                    if (A_STAR == true) {
+                        Final.DEBUGRelease("", "Tik: " + FinalConstant.getCurrentTik() + " ERROR TIME, A_STAR OFF");
+                    }
+                    A_STAR = false;
                 }
-                A_STAR = false;
+            }
+            else {
+                if (FinalConstant.isFogOfWar()) {
+                    A_STAR = true;
+                }
             }
         }
 

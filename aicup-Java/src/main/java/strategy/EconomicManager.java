@@ -26,6 +26,7 @@ public class EconomicManager {
     int countMaxUnit;
 
     int createHouse;
+    int createTurret;
     int createBase;
 
     int nextResource;
@@ -47,7 +48,7 @@ public class EconomicManager {
             if (globalManager.getGlobalStatistic().getPlayers().size() == 2) {
                 MAX_BUILDER_UNIT = 85;
             } else {
-                MAX_BUILDER_UNIT = 60;
+                MAX_BUILDER_UNIT = 71;
             }
             MAX_BUILDER_UNIT_ALL_GAME = MAX_BUILDER_UNIT+5;
             init = true;
@@ -78,6 +79,7 @@ public class EconomicManager {
 
 
         createHouse = 0;
+        createTurret=0;
 
         ArrayList<MyEntity> builderUnitArrayList = myPlayer.getEntityArrayList(EntityType.BUILDER_UNIT);
         for (int i = 0; i < builderUnitArrayList.size(); i++)
@@ -87,6 +89,14 @@ public class EconomicManager {
             if (builder.getUnitState()==EUnitState.BUILD)
             {
                 createHouse++;
+            }
+        }
+        ArrayList<MyEntity> turretArray = myPlayer.getEntityArrayList(EntityType.TURRET);
+        for (int i=0; i<turretArray.size(); i++)
+        {
+            if (!turretArray.get(i).isActive())
+            {
+                createTurret++;
             }
         }
 
@@ -136,6 +146,15 @@ public class EconomicManager {
         Final.DEBUG(TAG, "BUILDER_UNITSIZE: " + myPlayer.getEntityArrayList(EntityType.BUILDER_UNIT).size());
         Final.DEBUG(TAG, "BUILDER_UNIT_ONE SIZE: " + builderUnitArrayListOne.size());
 
+        ArrayList<MyPlayer> arrayList = globalManager.getGlobalStatistic().getPlayers();
+
+        boolean checkTargetAttack = true;
+
+       /* if (arrayList.size()==2)
+        {
+            checkTargetAttack=false;
+        }*/
+
         for (int i = 0; i < builderUnitArrayListOne.size(); i++) {
             MyEntity entity = builderUnitArrayListOne.get(i);
 
@@ -143,8 +162,10 @@ public class EconomicManager {
 
             if (entity.isUpdate()) continue;
             if (entity.isDodge()) continue;
+            if (entity.getDataTaskUnit().getUnitState() == EUnitState.REPAIR || entity.getDataTaskUnit().getUnitState() == EUnitState.BUILD) continue;
 
-            resource = globalManager.getGlobalMap().getEntityMapResourceSpecial(entity.getPosition());
+
+            resource = globalManager.getGlobalMap().getEntityMapResourceSpecial(entity.getPosition(),checkTargetAttack);
 
             if (resource.size() > 0)
             {
@@ -195,6 +216,7 @@ public class EconomicManager {
             }*/
             if (builder.isUpdate()) continue;
             if (builder.isDodge()) continue;
+            if (builder.getDataTaskUnit().getUnitState() == EUnitState.REPAIR || builder.getDataTaskUnit().getUnitState() == EUnitState.BUILD) continue;
 
             MyEntity resourceMidDis;
 
@@ -231,6 +253,12 @@ public class EconomicManager {
                 }
             }
             else {
+                MoveAction m = globalManager.getMoveManager().getMoveActionPosition(builder,Vec2Int.createVector(0,0));
+                //new MoveAction(resourceMidDis.getPosition(),true,true);
+                BuildAction b = null;
+                AttackAction a = null;
+                RepairAction r = null;
+                actionHashMap.put(builder.getId(), new EntityAction(m, b, a, r));
                 builder.getDataTaskUnit().clear();
             }
         }
@@ -484,12 +512,12 @@ public class EconomicManager {
         if ((myPlayer.getResource() - createHouse * myPlayer.getCost(EntityType.HOUSE)) > myPlayer.getCost(EntityType.HOUSE) - 5 &&
                 ((myPlayer.getPopulationCurrent() * 1.2 >= myPlayer.getPopulationMax() && myPlayer.getResource() > myPlayer.getCost(EntityType.HOUSE) * 2) || myPlayer.getPopulationMax() < 80)
                 && (myPlayer.getPopulationMax() < 180)
-                && (myPlayer.getCountBuildDontCreate(EntityType.HOUSE) < 3 || (myPlayer.getResource() > 300 && myPlayer.getCountBuildDontCreate(EntityType.HOUSE) < 5 && myPlayer.getPopulationMax() < 70))
+                && (myPlayer.getCountBuildDontCreate(EntityType.HOUSE) < 3 || (myPlayer.getResource() > 50 && myPlayer.getCountBuildDontCreate(EntityType.HOUSE) < 7 && myPlayer.getPopulationMax() < 70))
         ) {
             if ( (myPlayer.getEntityArrayList(EntityType.RANGED_BASE).size()>0 &&
                     myPlayer.getEntityArrayList(EntityType.BUILDER_BASE).size()>0) ||
                 myPlayer.getEntityArrayList(EntityType.HOUSE).size() < 5 ||
-            ( myPlayer.getResource()>1000 && myPlayer.getEntityArrayList(EntityType.HOUSE).size() < 7)
+            ( myPlayer.getResource()>550 && myPlayer.getEntityArrayList(EntityType.HOUSE).size() < 7)
             || (globalManager.getGlobalStatistic().getPlayers().size()==2 && myPlayer.getEntityArrayList(EntityType.HOUSE).size() < 7)
             ) {
 
@@ -530,6 +558,47 @@ public class EconomicManager {
                 }
             }
         }*/
+
+        if (Final.BUILD_TURRET_SPECIAL && globalManager.getGlobalStatistic().getPlayers().size()==2 && globalManager.getGlobalStatistic().isCheckFirstEnemyUnits() &&
+        globalManager.getGlobalStatistic().getMyPlayer().getEntityArrayList(EntityType.RANGED_BASE).size()>0 && createTurret<3)
+        {
+            for (int i=0; i<builderUnitArrayList.size(); i++)
+            {
+                MyEntity builder = builderUnitArrayList.get(i);
+
+                if (!globalManager.getGlobalMap().getSpecialCheckBuilderTask(builder.getPosition(),true))
+                {
+                    continue;
+                }
+
+                if (globalManager.getGlobalMap().getSpecialCheckBuilderTaskTurretCreate(builder.getPosition())<30*10){
+                    continue;
+                }
+
+                MoveAction m = null;
+                BuildAction b = null;
+                AttackAction a = null;
+                RepairAction r = null;
+                Vec2Int vec2Int1 = globalManager.getGlobalMap().checkBuildTurretSpecial(builder);
+                if (vec2Int1!=null) {
+
+                    //new MoveAction(vec2Int1, true, false);
+
+                    b = new BuildAction(EntityType.TURRET, vec2Int1);
+                    // checkCreate = true;
+                    a = null;
+
+                    builder.setDataTaskUnit(new DataTaskUnit(EUnitState.BUILD));
+                    builder.getDataTaskUnit().setEntityType(EntityType.TURRET);
+
+                    Final.DEBUG(TAG, "VECTOR BUILD: " + builder.toString() + " currentP: " + builder.getPosition());
+
+                    actionHashMap.put(builder.getId(), new EntityAction(m, b, a, r));
+                    break;
+                }
+            }
+        }
+
 
 
         if (myPlayer.getResource() > myPlayer.getCost(EntityType.TURRET) - 10 && myPlayer.getPopulationMax() >= 50 && Final.BUILD_TURRET) {
@@ -628,7 +697,7 @@ public class EconomicManager {
         }
 
      //   for (int j=0; j<positionBuildBase.size(); j++) {
-            Final.DEBUGRelease("BASE CREATE", FinalConstant.getCurrentTik() + " positionBuildBase: " + positionBuildBase.toString());
+          //  Final.DEBUGRelease("BASE CREATE", FinalConstant.getCurrentTik() + " positionBuildBase: " + positionBuildBase.toString());
      //   }
 
         MyEntity current = null;
@@ -666,7 +735,7 @@ public class EconomicManager {
             }
         }
 
-        Final.DEBUGRelease("BASE CREATE", FinalConstant.getCurrentTik() + " pos: " + positionHouse.toString() + " unit: " + current.getPosition().toString() + " minDis: " + minDis);
+      //  Final.DEBUGRelease("BASE CREATE", FinalConstant.getCurrentTik() + " pos: " + positionHouse.toString() + " unit: " + current.getPosition().toString() + " minDis: " + minDis);
 
         if (current!=null)
         {
@@ -680,7 +749,7 @@ public class EconomicManager {
             Vec2Int vec2Int1 = globalManager.getGlobalMap().getMinPositionBuilding(current.getPosition(), positionHouse, FinalConstant.getEntityProperties(entityType));
             if (vec2Int1!=null) {
 
-                Final.DEBUGRelease("BASE CREATE", FinalConstant.getCurrentTik() + " unitPOS: " + vec2Int1.toString() );
+                //Final.DEBUGRelease("BASE CREATE", FinalConstant.getCurrentTik() + " unitPOS: " + vec2Int1.toString() );
 
                 m = globalManager.getMoveManager().getMoveActionPosition(current,vec2Int1);
                         //new MoveAction(vec2Int1, true, false);
@@ -793,8 +862,11 @@ public class EconomicManager {
 
         MyEntity current = null;
         Vec2Int positionHouse = null;
-        float minDis = 0xFFFF;
-
+        float minDisOne = 0xFFFF;
+        float minDisTwo = 0xFFFF;
+        float minDisThree= 0xFFFF;
+        float sumMin= 0xFFFF;
+/*
         for (int i=0; i<builderUnitArrayList.size(); i++)
         {
             MyEntity builderUnit = builderUnitArrayList.get(i);
@@ -807,6 +879,7 @@ public class EconomicManager {
 
             for (int j=0; j<positionBuildHouse.size(); j++)
             {
+                builderUnit.setMinDisToHouse();
                 double dis = builderUnit.getPosition().distance(positionBuildHouse.get(j));
                 if (dis<minDis)
                 {
@@ -815,7 +888,57 @@ public class EconomicManager {
                     positionHouse = positionBuildHouse.get(j);
                 }
             }
+        }*/
+        for (int j=0; j<positionBuildHouse.size(); j++)
+        {
+            Vec2Int position = positionBuildHouse.get(j);
+
+            minDisOne = 0xFFFF;
+            minDisTwo = 0xFFFF;
+            minDisThree= 0xFFFF;
+            MyEntity buildMinDisOne = null;
+
+            for (int i=0; i<builderUnitArrayList.size(); i++) {
+                MyEntity builderUnit = builderUnitArrayList.get(i);
+
+                if (builderUnit.isUpdate()) continue;
+                if (builderUnit.isDodge()) continue;
+
+                if (builderUnit.getUnitState() == EUnitState.REPAIR || builderUnit.getUnitState() == EUnitState.BUILD)
+                    continue;
+
+                double dis = builderUnit.getPosition().distance(positionBuildHouse.get(j));
+
+                if (dis < minDisOne) {
+                    minDisThree  = minDisTwo;
+                    minDisTwo = minDisOne;
+                    minDisOne = (float) dis;
+                    buildMinDisOne = builderUnit;
+                }
+                else {
+                    if (dis < minDisTwo) {
+                        minDisThree = minDisTwo;
+                        minDisTwo = (float) dis;
+                    } else {
+                        if (dis < minDisThree) {
+                            minDisThree = (float) dis;
+                        }
+                    }
+                }
+            }
+
+            if (minDisOne+minDisTwo+minDisThree<sumMin && buildMinDisOne!=null)
+            {
+                current = buildMinDisOne;
+                positionHouse = position;
+                sumMin = minDisOne+minDisTwo+minDisThree;
+            }
         }
+
+        if (positionHouse!=null) {
+            Final.DEBUG("HOUSE", FinalConstant.getCurrentTik() + " sumMin: " + sumMin + " " + positionHouse.toString() + " current: " + current.toString());
+        }
+
 
         if (current!=null)
         {
@@ -836,12 +959,12 @@ public class EconomicManager {
                 current.setDataTaskUnit(new DataTaskUnit(EUnitState.BUILD));
                 current.getDataTaskUnit().setEntityType(EntityType.HOUSE);
 
-                Final.DEBUG(TAG, "VECTOR BUILD: " + positionBuildHouse.toString() + " currentP: " + current.getPosition());
+                Final.DEBUG(TAG, "VECTOR BUILD: " + positionHouse.toString() + " currentP: " + current.getPosition() + " vec2Int1: " + vec2Int1);
 
                 actionHashMap.put(current.getId(), new EntityAction(m, b, a, r));
             }
             else {
-                Final.DEBUG(TAG," BAD POSITION MinPositionBuilding");
+                Final.DEBUG("HOUSE"," BAD POSITION MinPositionBuilding");
             }
         }
 

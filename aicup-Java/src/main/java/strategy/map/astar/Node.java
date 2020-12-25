@@ -1,5 +1,6 @@
 package strategy.map.astar;
 
+import model.EntityType;
 import model.Vec2Int;
 
 /**
@@ -21,6 +22,7 @@ public class Node {
     private boolean isBlockAttackUnit;
     private Node parent;
     private Node child;
+    EntityType entityType;
 
     public Node(int row, int col) {
         super();
@@ -42,17 +44,23 @@ public class Node {
     //    this.h = Math.abs(finalNode.getRow() - getRow()) + Math.abs(finalNode.getCol() - getCol());
     }
 
-    public void setNodeData(Node currentNode, int cost) {
-        int gCost = currentNode.getG() + cost  + getH2();
+    public void setNodeData(Node currentNode, int cost, EntityType entityType) {
+        int gCost = currentNode.getG() + cost;
+        if (entityType==EntityType.BUILDER_UNIT && this.entityType == EntityType.BUILDER_UNIT){
+
+        }
+        else {
+            gCost+=getH2();
+        }
         setParent(currentNode);
         setG(gCost);
         calculateFinalCost();
     }
 
-    public boolean checkBetterPath(Node currentNode, int cost) {
+    public boolean checkBetterPath(Node currentNode, int cost, EntityType entityType) {
         int gCost = currentNode.getG() + cost + getH2();
         if (gCost < getG()) {
-            setNodeData(currentNode, cost);
+            setNodeData(currentNode, cost,entityType);
             return true;
         }
         return false;
@@ -106,7 +114,8 @@ public class Node {
         this.parent = parent;
     }
 
-    public boolean isBlock() {
+    public boolean isBlock(EntityType entityType) {
+        if (entityType==EntityType.BUILDER_UNIT && this.entityType==EntityType.RESOURCE) return true;
         return isBlock;
     }
 
@@ -170,5 +179,9 @@ public class Node {
 
     public Node getChild() {
         return child;
+    }
+
+    public void setType(EntityType entityType) {
+        this.entityType = entityType;
     }
 }

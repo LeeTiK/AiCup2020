@@ -74,7 +74,7 @@ public class MapPotField {
 
                     addPlayerArea(map[i][j], Vec2Int.createVector(i, j), map);
 
-                   // addSafare(map[i][j], map);
+                    addSafare(map[i][j], map);
                 } else {
                     addDanger(map[i][j], map);
                 }
@@ -162,7 +162,7 @@ public class MapPotField {
     }
 
     private void addSafare(MyEntity entity, MyEntity[][] map) {
-        if (entity.getEntityType() != EntityType.RANGED_UNIT && entity.getEntityType() != EntityType.MELEE_UNIT && entity.getEntityType() != EntityType.TURRET)
+        if (entity.getEntityType() != EntityType.TURRET && entity.getEntityType() != EntityType.HOUSE)
             return;
 
         EntityProperties entityProperties = FinalConstant.getEntityProperties(entity);
@@ -179,14 +179,13 @@ public class MapPotField {
             entityType = EntityType.RANGED_UNIT;
         }
 
-        for (int i = 0; i < GlobalMap.getRadiusUnit(entityType).length; i++) {
-            int x = GlobalMap.getRadiusUnit(entityType)[i][0];
-            int y = GlobalMap.getRadiusUnit(entityType)[i][1];
+
+        byte[][] bytes = GlobalMap.getRadiusUnit(entityType);
+        for (int i = 0; i < bytes.length; i++) {
+            int x = bytes[i][0];
+            int y = bytes[i][1];
 
             if (!checkCoord(position.getX() + x, position.getY() + y)) continue;
-
-            if (x + position.getX() < 0 || x + position.getX() >= FinalConstant.getMapSize()) continue;
-            if (y + position.getY() < 0 || y + position.getY() >= FinalConstant.getMapSize()) continue;
 
             switch (entity.getEntityType()) {
                 case MELEE_UNIT:
@@ -197,6 +196,9 @@ public class MapPotField {
                     break;
                 case TURRET:
                     mMapPotField[x + position.getX()][y + position.getY()].addSafetyTurret();
+                    break;
+                case HOUSE:
+                    mMapPotField[x + position.getX()][y + position.getY()].addSafetyHouse();
                     break;
             }
         }
@@ -217,9 +219,6 @@ public class MapPotField {
             int y = GlobalMap.getRadiusUnit(entity.getEntityType())[i][1];
 
             if (!checkCoord(position.getX() + x, position.getY() + y)) continue;
-
-            if (x + position.getX() < 0 || x + position.getX() >= FinalConstant.getMapSize()) continue;
-            if (y + position.getY() < 0 || y + position.getY() >= FinalConstant.getMapSize()) continue;
 
             switch (entity.getEntityType()) {
                 case MELEE_UNIT:
@@ -247,7 +246,10 @@ public class MapPotField {
         // counter
 
         //if ((entity.isUpPosition() || entity.isDownPosition() || entity.isLeftPosition() || entity.isRigthPosition()) || entity.getEntityType()!=EntityType.RANGED_UNIT) {
-            for (int i = 0; i < GlobalMap.getRadiusContourUnit(entity.getEntityType()).length; i++) {
+
+
+
+          /*  for (int i = 0; i < GlobalMap.getRadiusContourUnit(entity.getEntityType()).length; i++) {
                 int x = GlobalMap.getRadiusContourUnit(entity.getEntityType())[i][0];
                 int y = GlobalMap.getRadiusContourUnit(entity.getEntityType())[i][1];
 
@@ -265,8 +267,101 @@ public class MapPotField {
                         mMapPotField[x + position.getX()][y + position.getY()].addDangerContourTurret();
                         break;
                 }
-            }
+            }*/
        // }
+
+        /// массив заменяем на проверку 4 граней и 4 точек
+        // сначала проверяем есть ли у юнита припятсвия с  4 сторон
+        boolean left =true;
+        boolean rigth = true;
+        boolean up = true;
+        boolean down = true;
+
+        Vec2Int vec2IntLeft = entity.getPosition().add(-1,0);
+        Vec2Int vec2IntRigth = entity.getPosition().add(1,0);
+        Vec2Int vec2IntUp = entity.getPosition().add(0,1);
+        Vec2Int vec2IntDown = entity.getPosition().add(0,-1);
+        if (mGlobalMap.checkCoord(vec2IntLeft)){
+            if (mGlobalMap.getMap()[vec2IntLeft.getX()][vec2IntLeft.getY()].getEntityType()==EntityType.RESOURCE ||
+                    mGlobalMap.getMap()[vec2IntLeft.getX()][vec2IntLeft.getY()].getEntityType()==EntityType.HOUSE ||
+                    mGlobalMap.getMap()[vec2IntLeft.getX()][vec2IntLeft.getY()].getEntityType()==EntityType.RANGED_BASE ||
+                    mGlobalMap.getMap()[vec2IntLeft.getX()][vec2IntLeft.getY()].getEntityType()==EntityType.BUILDER_BASE ||
+                    mGlobalMap.getMap()[vec2IntLeft.getX()][vec2IntLeft.getY()].getEntityType()==EntityType.WALL ||
+                    mGlobalMap.getMap()[vec2IntLeft.getX()][vec2IntLeft.getY()].getEntityType()==EntityType.MELEE_BASE
+            )
+            {
+                left = false;
+            }
+        }
+
+        if (mGlobalMap.checkCoord(vec2IntRigth)){
+            if (mGlobalMap.getMap()[vec2IntLeft.getX()][vec2IntLeft.getY()].getEntityType()==EntityType.RESOURCE ||
+                    mGlobalMap.getMap()[vec2IntLeft.getX()][vec2IntLeft.getY()].getEntityType()==EntityType.HOUSE ||
+                    mGlobalMap.getMap()[vec2IntLeft.getX()][vec2IntLeft.getY()].getEntityType()==EntityType.RANGED_BASE ||
+                    mGlobalMap.getMap()[vec2IntLeft.getX()][vec2IntLeft.getY()].getEntityType()==EntityType.BUILDER_BASE ||
+                    mGlobalMap.getMap()[vec2IntLeft.getX()][vec2IntLeft.getY()].getEntityType()==EntityType.WALL ||
+                    mGlobalMap.getMap()[vec2IntLeft.getX()][vec2IntLeft.getY()].getEntityType()==EntityType.MELEE_BASE
+            )
+            {
+                rigth = false;
+            }
+        }
+
+        if (mGlobalMap.checkCoord(vec2IntUp)){
+            if (mGlobalMap.getMap()[vec2IntLeft.getX()][vec2IntLeft.getY()].getEntityType()==EntityType.RESOURCE ||
+                    mGlobalMap.getMap()[vec2IntLeft.getX()][vec2IntLeft.getY()].getEntityType()==EntityType.HOUSE ||
+                    mGlobalMap.getMap()[vec2IntLeft.getX()][vec2IntLeft.getY()].getEntityType()==EntityType.RANGED_BASE ||
+                    mGlobalMap.getMap()[vec2IntLeft.getX()][vec2IntLeft.getY()].getEntityType()==EntityType.BUILDER_BASE ||
+                    mGlobalMap.getMap()[vec2IntLeft.getX()][vec2IntLeft.getY()].getEntityType()==EntityType.WALL ||
+                    mGlobalMap.getMap()[vec2IntLeft.getX()][vec2IntLeft.getY()].getEntityType()==EntityType.MELEE_BASE
+            )
+            {
+                up = false;
+            }
+        }
+
+        if (mGlobalMap.checkCoord(vec2IntDown)){
+            if (mGlobalMap.getMap()[vec2IntLeft.getX()][vec2IntLeft.getY()].getEntityType()==EntityType.RESOURCE ||
+                    mGlobalMap.getMap()[vec2IntLeft.getX()][vec2IntLeft.getY()].getEntityType()==EntityType.HOUSE ||
+                    mGlobalMap.getMap()[vec2IntLeft.getX()][vec2IntLeft.getY()].getEntityType()==EntityType.RANGED_BASE ||
+                    mGlobalMap.getMap()[vec2IntLeft.getX()][vec2IntLeft.getY()].getEntityType()==EntityType.BUILDER_BASE ||
+                    mGlobalMap.getMap()[vec2IntLeft.getX()][vec2IntLeft.getY()].getEntityType()==EntityType.WALL ||
+                    mGlobalMap.getMap()[vec2IntLeft.getX()][vec2IntLeft.getY()].getEntityType()==EntityType.MELEE_BASE
+            )
+            {
+                down = false;
+            }
+        }
+
+        if (left && rigth && down && up)
+        {
+            for (int i = 0; i < GlobalMap.getRadiusContourUnit(entity.getEntityType()).length; i++) {
+                int x = GlobalMap.getRadiusContourUnit(entity.getEntityType())[i][0];
+                int y = GlobalMap.getRadiusContourUnit(entity.getEntityType())[i][1];
+
+                if (!checkCoord(position.getX() + x, position.getY() + y)) continue;
+
+                switch (entity.getEntityType()) {
+                    case MELEE_UNIT:
+                        mMapPotField[x + position.getX()][y + position.getY()].addDangerContourMelee();
+                        break;
+                    case RANGED_UNIT:
+                        mMapPotField[x + position.getX()][y + position.getY()].addDangerContourRanger();
+                        //     mMapPotField[x + position.getX()][y + position.getY()].setSafetyContour(sizeMyUnitTwoCounter);
+                        break;
+                    case TURRET:
+                        mMapPotField[x + position.getX()][y + position.getY()].addDangerContourTurret();
+                        break;
+                }
+            }
+        }
+        else {
+
+
+
+
+        }
+
 
 
         // добавляю клетки для от куда можно атаковать ренджам
@@ -314,9 +409,9 @@ public class MapPotField {
         // counter
 
         if (sizeMyUnitTwoCounter>0) {
-            for (int i = 0; i < GlobalMap.getRadiusContourUnit(entity.getEntityType()).length; i++) {
-                int x = GlobalMap.getRadiusContourUnit(entity.getEntityType())[i][0];
-                int y = GlobalMap.getRadiusContourUnit(entity.getEntityType())[i][1];
+            for (int i = 0; i < GlobalMap.rangerContourArray.length; i++) {
+                int x = GlobalMap.rangerContourArray[i][0];
+                int y =GlobalMap.rangerContourArray[i][1];
 
                 if (!checkCoord(position.getX() + x, position.getY() + y)) continue;
 
@@ -345,6 +440,23 @@ public class MapPotField {
             for (int i = 0; i < GlobalMap.rangerDamageContourArray.length; i++) {
                 int x = GlobalMap.rangerDamageContourArray[i][0];
                 int y = GlobalMap.rangerDamageContourArray[i][1];
+
+                if (!checkCoord(position.getX() + x, position.getY() + y)) continue;
+
+                switch (entity.getEntityType()) {
+                    case MELEE_UNIT:
+                        break;
+                    case RANGED_UNIT:
+                        mMapPotField[x + position.getX()][y + position.getY()].setSafetyContour(sizeMyUnitTwoCounter);
+                        break;
+                    case TURRET:
+                        break;
+                }
+            }
+
+            for (int i = 0; i < GlobalMap.rangerContourArray.length; i++) {
+                int x = GlobalMap.rangerContourArray[i][0];
+                int y = GlobalMap.rangerContourArray[i][1];
 
                 if (!checkCoord(position.getX() + x, position.getY() + y)) continue;
 
@@ -1187,6 +1299,20 @@ public class MapPotField {
                         field.getSumDanger() + field.getSumDangerContour() - field.getSafetyContour() <= 0
                 ) {
                     attackRangeAnswer.attackPosition = field;
+                }
+
+                if (field.getSumDanger()>=4)
+                {
+                    if (field.getDangerTurret()>=4)
+                    {
+                        MyEntity vec2Int = mGlobalMap.getNearestPlayer(entity.getPosition(),FinalConstant.getMyID(),EntityType.TURRET);
+
+                        ArrayList<MyEntity> arrayList = mGlobalMap.getEntityMap(vec2Int.getPosition(),GlobalMap.turretAndContourArray,-1,FinalConstant.getMyID(),true,EntityType.ALL,false);
+                        if (arrayList.size()>=5)
+                        {
+                            attackRangeAnswer.attackPosition = field;
+                        }
+                    }
                 }
 
                 if (attackRangeAnswer.defencePosition==null)

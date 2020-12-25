@@ -23,6 +23,7 @@ public class Field {
     int safetyRanger;
     int safetyMelee;
     int safetyTurret;
+    int safetyHouse;
 
     boolean attackPositionRanger;
     boolean targetAttackClosed;
@@ -68,6 +69,7 @@ public class Field {
         safetyRanger = 0;
         safetyMelee = 0;
         safetyTurret = 0;
+        safetyHouse = 0;
         playerArea = 0;
         playerAreaTwo = 0;
 
@@ -271,6 +273,10 @@ public class Field {
         this.safetyTurret++;
     }
 
+    public void addSafetyHouse() {
+        this.safetyHouse++;
+    }
+
     public int getSafetyMelee() {
         return safetyMelee;
     }
@@ -281,6 +287,10 @@ public class Field {
 
     public int getSafetyTurret() {
         return safetyTurret;
+    }
+
+    public int getSafetyHouse() {
+        return safetyHouse;
     }
 
     public int getSumSafaty() {

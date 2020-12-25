@@ -198,6 +198,7 @@ public class GlobalMap {
             {10,0},
     };
 
+    /*
     final public static byte[][] housePositionFogOfWar = new byte[][]{
             {2, 2}, {6, 2}, {10, 2}, {14, 2}, {18, 2}, {22, 2}, {26, 2},
                     {2, 22}, {2, 26},
@@ -207,6 +208,16 @@ public class GlobalMap {
             {2, 18}, {6, 18}, {10, 18}, {14, 18}, {18,18}, {22, 18}, {26, 18},
             {2, 22}, {6, 22}, {10, 22}, {14, 22}, {18,22}, {22, 22},
             {2, 26}, {6, 26}, {10, 26}, {14, 26}, {18,26},
+    };*/
+
+    final public static byte[][] housePositionFogOfWar = new byte[][]{
+            {2, 2},   {5, 2}, {8, 2},  {12, 2},  {16, 2}, {20, 2},  {24, 2},
+            {2, 5},   {5, 6}, {10, 6},  {14, 6},  {18, 6}, {22, 6},  {24, 6},
+            {2, 8}, {6, 10}, {10, 10}, {14, 10}, {18,10}, {22, 10}, {26, 10},
+            {2, 12}, {6, 14}, {10, 14}, {14, 14}, {18,14}, {22, 14}, {26, 14},
+            {2, 16}, {6, 18}, {10, 18}, {14, 18}, {18,18}, {22, 18}, {26, 18},
+            {2, 20}, {6, 22}, {10, 22}, {14, 22}, {18,22}, {22, 22},
+            {2, 24}, {6, 26}, {10, 26}, {14, 26}, {18,26},
     };
 
     final public static byte[][] housePosition = new byte[][]{
@@ -276,6 +287,18 @@ public class GlobalMap {
             {0, 15}, {15, 0},
             {9,10}
     };
+
+    final public static byte[][] createTurretSpecial = new byte[][]{
+            {0, 1}, {-1, 1},
+
+            {-2,0}, {-2, -1},
+
+            {1,0}, {1, -1},
+
+            {0,-2}, {-1, 2},
+
+    };
+
 
     public GlobalMap() {
 
@@ -1188,6 +1211,28 @@ public class GlobalMap {
         return true;
     }
 
+
+    public boolean checkEmptyCreatTurretSpecial(Vec2Int vec2Int, int size) {
+        if (checkEmptyCreatTurretSpecial(getMap(), vec2Int, size, size)){
+            if (mMapPotField.checkSafety(vec2Int, size)) return true;
+        }
+        return false;
+
+    }
+
+    public boolean checkEmptyCreatTurretSpecial(MyEntity[][] map,Vec2Int vec2Int, int width, int height) {
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                if (!checkCoord(vec2Int.getX() + x, vec2Int.getY() + y)) return false;
+                if (mMapPotField.getMapPotField()[vec2Int.getX() + x][vec2Int.getY() + y].getSafetyTurret()>0) return false;
+                if (mMapPotField.getMapPotField()[vec2Int.getX() + x][vec2Int.getY() + y].getSafetyHouse()>0) return false;
+                if (map[vec2Int.getX() + x][vec2Int.getY() + y].getEntityType() != EntityType.Empty) return false;
+            }
+        }
+
+        return true;
+    }
+
     public Vec2Int getNearestPlayer(ArrayList<MyPlayer> arrayList) {
         return Vec2Int.createVector(0, 0);
     }
@@ -1699,6 +1744,8 @@ public class GlobalMap {
                 return turretArray;
             case BUILDER_UNIT:
                 return aroundArray;
+            case HOUSE:
+                return sightRangeUnit;
         }
 
         return null;
@@ -1779,7 +1826,7 @@ public class GlobalMap {
     }
 
     // список юнитов в позициях в bytes с центром position
-    public ArrayList<MyEntity> getEntityMapResourceSpecial(Vec2Int position) {
+    public ArrayList<MyEntity> getEntityMapResourceSpecial(Vec2Int position,boolean checkTargetAttack) {
         ArrayList<MyEntity> arrayList = new ArrayList<>();
 
         byte[][] bytes = aroundArray;
@@ -1793,7 +1840,7 @@ public class GlobalMap {
 
             MyEntity entity = map[x][y];
 
-            if (entity.getEntityType()==EntityType.RESOURCE && entity.getTargetEntity()==null) {
+            if (entity.getEntityType()==EntityType.RESOURCE && (entity.getTargetEntity()==null || !checkTargetAttack)) {
                 arrayList.add(entity);
                 continue;
             }
@@ -2034,11 +2081,11 @@ public class GlobalMap {
         }
 
 
-        positionDistanHome = positionDistanHome.add(3,3);
+        positionDistanHome = positionDistanHome.add(0,3);
 
         int sizeSearchX = 15;
         int sizeSearchY = 10;
-        for (int x = -sizeSearchX; x<=sizeSearchX; x++ )
+        for (int x = 0; x<=sizeSearchX; x++ )
         {
             for (int y = 0; y<=sizeSearchY; y++ )
             {
@@ -2053,11 +2100,30 @@ public class GlobalMap {
             }
         }
 
+
+
         if (arrayList.size()==0)
         {
-            for (int x = -sizeSearchX; x<=sizeSearchX; x++ )
+            for (int x = 0; x<=sizeSearchX; x++ )
             {
                 for (int y = -sizeSearchY; y<0; y++ )
+                {
+                    Vec2Int positionNew = Vec2Int.createVector(positionDistanHome.getX()+x,positionDistanHome.getY()+y);
+                    if (checkEmptyAndFogIsWar(positionNew,5)){
+                        ArrayList Position = getCoordAround(positionNew, entityProperties.getSize(), true);
+                        if (Position.size()>7) {
+                            arrayList.add(positionNew);
+                        }
+                    }
+                }
+            }
+        }
+
+        if (arrayList.size()==0)
+        {
+            for (int x = -sizeSearchX; x<=0; x++ )
+            {
+                for (int y = -sizeSearchY; y<sizeSearchY; y++ )
                 {
                     Vec2Int positionNew = Vec2Int.createVector(positionDistanHome.getX()+x,positionDistanHome.getY()+y);
                     if (checkEmptyAndFogIsWar(positionNew,5)){
@@ -2095,7 +2161,7 @@ public class GlobalMap {
         return allEntityUnits;
     }
 
-    public boolean getSpecialCheckBuilderTask(Vec2Int vector) {
+    public boolean getSpecialCheckBuilderTask(Vec2Int vector, boolean onlyResourse) {
 
         byte[][] bytes = aroundArray;
 
@@ -2119,7 +2185,7 @@ public class GlobalMap {
                 case MELEE_BASE:
                 case RANGED_BASE:
                 case TURRET:
-                    if (entity.getHealth()<FinalConstant.getEntityProperties(entity).getMaxHealth()) return true;
+                    if (entity.getHealth()<FinalConstant.getEntityProperties(entity).getMaxHealth() && !onlyResourse) return true;
                     break;
                 case RESOURCE:
                     return true;
@@ -2177,4 +2243,41 @@ public class GlobalMap {
         }
         return current;
     }
+
+    public Vec2Int checkBuildTurretSpecial(MyEntity myUnit) {
+        if (mMapPotField.getMapPotField()[myUnit.getPosition().getX()][myUnit.getPosition().getY()].getSafetyTurret()>0) return null;
+
+        byte[][] bytes = createTurretSpecial;
+
+        for (int i=0; i<bytes.length; i++) {
+            Vec2Int vec2Int = myUnit.getPosition().add(bytes[i][0],bytes[i][1]);
+            // if (!checkEmpty(map,vec2Int)) continue;
+            if (checkEmptyCreatTurretSpecial(vec2Int,2)) return vec2Int;
+        }
+        return null;
+    }
+
+    public int getSpecialCheckBuilderTaskTurretCreate(Vec2Int vector) {
+
+        byte[][] bytes = rangerArray;
+
+        int sumResource = 0;
+
+        for (int i=0; i<bytes.length; i++)
+        {
+            int x = vector.getX() + bytes[i][0];
+            int y = vector.getY() + bytes[i][1];
+
+            if (!checkCoord(x,y)) continue;
+
+            MyEntity entity = map[x][y];
+
+            if (entity.getEntityType()==EntityType.RESOURCE) {
+                sumResource+=entity.getHealth();
+            }
+        }
+
+        return sumResource;
+    }
+
 }

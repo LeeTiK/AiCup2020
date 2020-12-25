@@ -5,13 +5,13 @@
       "comment": null
     },
     {
-      "crashed": true,
-      "comment": "Player crashed: IO error: Удаленный хост принудительно разорвал существующее подключение. (os error 10054)"
+      "crashed": false,
+      "comment": null
     }
   ],
   "results": [
-    136737,
-    13267
+    136080,
+    311505
   ],
-  "seed": 13350978098620846860
+  "seed": 7224386526148076328
 }
