@@ -560,7 +560,9 @@ public class EconomicManager {
         }*/
 
         if (Final.BUILD_TURRET_SPECIAL && globalManager.getGlobalStatistic().getPlayers().size()==2 && globalManager.getGlobalStatistic().isCheckFirstEnemyUnits() &&
-        globalManager.getGlobalStatistic().getMyPlayer().getEntityArrayList(EntityType.RANGED_BASE).size()>0 && createTurret<3)
+        globalManager.getGlobalStatistic().getMyPlayer().getEntityArrayList(EntityType.RANGED_BASE).size()>0 && createTurret<3 &&
+                myPlayer.getResource()>strategy.FinalConstant.getEntityProperties(EntityType.TURRET).getCost()
+        )
         {
             for (int i=0; i<builderUnitArrayList.size(); i++)
             {
@@ -571,7 +573,7 @@ public class EconomicManager {
                     continue;
                 }
 
-                if (globalManager.getGlobalMap().getSpecialCheckBuilderTaskTurretCreate(builder.getPosition())<30*10){
+                if (globalManager.getGlobalMap().getSpecialCheckBuilderTaskTurretCreate(builder.getPosition())<30*11){
                     continue;
                 }
 

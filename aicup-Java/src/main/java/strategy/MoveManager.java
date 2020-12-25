@@ -47,7 +47,6 @@ public class MoveManager {
             Final.DEBUGRelease("MOVE",FinalConstant.getCurrentTik() + " " + entity.toString() + " " + current.getVec2Int().toString());
         }*/
 
-
         if (targetPosition==null && current==null) return null;
         if (targetPosition!=null && entity.getPosition().equals(targetPosition)) return null;
 

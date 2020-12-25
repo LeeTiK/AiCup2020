@@ -76,7 +76,7 @@ public class GlobalManager {
             A_STAR = true;
         }
         if (RELEASE) {
-            if ((timeAllStrategy / 1000000) > 31000) {
+            if ((timeAllStrategy / 1000000) > 30000) {
 
                 if (RELEASE) {
                     if (A_STAR == true) {

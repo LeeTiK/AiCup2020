@@ -150,7 +150,7 @@ public class AStar {
         while (!isEmpty(openList)) {
             Node currentNode = openList.poll();
             closedSet.add(currentNode);
-            if (isFinalNode(currentNode)) {
+            if (isFinalNode(currentNode) || k>500) {
                 return getPath(currentNode);
             } else {
                 addAdjacentNodes(currentNode, k);
