@@ -5,23 +5,34 @@ import model.PlayerView;
 
 public class Final {
 
+
+    final static boolean RELEASE = true;
+
+
     final static boolean TEST = false;
+    final static boolean OFF_WAR = false;
+
+
     final static boolean debug = false;
     final static boolean debugERROR = true;
     final static boolean debugRelease = true;
     public final static boolean debugGraphic = false;
 
+    ////////////////////////////РЕЖИМЫ РАБОТЫ/////////////////////////////////
+    public static boolean FOG_OF_WAR_MAP = true;
     public static boolean A_STAR = true;
+    public static boolean GLOBAL_DODGE = false;
+
+    // элементы игры
+    public final static boolean BUILD_TURRET = false;
+
+
+    //////////////УСТАРЕВШИЕ
     public static boolean A_STAR_BLOCK_ALL_BUILD_UNIT = false;
     public static boolean A_STAR_CHECK_FIRST_NODE_BLOCK = false;
     public final static boolean A_NEED_MOVE = false;
     public final static boolean A_NEED_MOVE_V2 = false;
-    final static boolean OFF_WAR = false;
-    public static boolean GLOBAL_DODGE = false;
-    public static boolean FOG_OF_WAR_MAP = true;
 
-    // элементы игры
-    public final static boolean BUILD_TURRET = false;
 
     //////////DEBUG MAP GRAPHIC//////////////
 
@@ -41,7 +52,7 @@ public class Final {
     public final static boolean NEXT_TIK_POSITION = true;
     public final static boolean ENEMY_ATTACK = true;
     public final static boolean INFO_RECOURCE = true;
-    public final static boolean INFO_FOG_OF_WAR_MAP = true;
+    public final static boolean INFO_FOG_OF_WAR_MAP = false;
 
 
     public final static boolean CHECK_SEARCH_WAVE_BUILDER = false;

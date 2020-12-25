@@ -45,7 +45,7 @@ public class EconomicManager {
 
         if (!init) {
             if (globalManager.getGlobalStatistic().getPlayers().size() == 2) {
-                MAX_BUILDER_UNIT = 70;
+                MAX_BUILDER_UNIT = 85;
             } else {
                 MAX_BUILDER_UNIT = 60;
             }
@@ -602,13 +602,34 @@ public class EconomicManager {
     }
 
     private void createBase(ArrayList<MyEntity> builderUnitArrayList, GlobalManager globalManager, HashMap<Integer, EntityAction> actionHashMap, EntityType entityType) {
-        ArrayList<Vec2Int> positionBuildBase = globalManager.getGlobalMap().getPositionBuildBase(FinalConstant.getEntityProperties(entityType),globalManager.getMapPotField());
+        ArrayList<Vec2Int> positionBuildBase;
+
+        boolean typeV2 = false;
+
+        if (entityType==EntityType.RANGED_BASE && FinalConstant.isFogOfWar()){
+            positionBuildBase = globalManager.getGlobalMap().getPositionBuildBaseV2(FinalConstant.getEntityProperties(entityType), globalManager.getMapPotField(),globalManager);
+            typeV2 = true;
+
+            if (positionBuildBase.size()==0)
+            {
+                typeV2 = false;
+                positionBuildBase = globalManager.getGlobalMap().getPositionBuildBase(FinalConstant.getEntityProperties(entityType), globalManager.getMapPotField());
+            }
+        }
+        else {
+            positionBuildBase = globalManager.getGlobalMap().getPositionBuildBase(FinalConstant.getEntityProperties(entityType), globalManager.getMapPotField());
+            typeV2 = false;
+        }
 
         if (positionBuildBase.size()==0) {
             //Final.DEBUG(TAG," BAD POSITION CREATE HOUSE");
            // createHouse(builderUnitArrayList,globalManager,actionHashMap);
             return;
         }
+
+     //   for (int j=0; j<positionBuildBase.size(); j++) {
+            Final.DEBUGRelease("BASE CREATE", FinalConstant.getCurrentTik() + " positionBuildBase: " + positionBuildBase.toString());
+     //   }
 
         MyEntity current = null;
         Vec2Int positionHouse = null;
@@ -626,7 +647,16 @@ public class EconomicManager {
 
             for (int j=0; j<positionBuildBase.size(); j++)
             {
-                double dis = builderUnit.getPosition().distance(positionBuildBase.get(j));
+                if (builderUnit.getPosition().getX()+1 == positionBuildBase.get(j).getX() && builderUnit.getPosition().getY()+1 == positionBuildBase.get(j).getY()) continue;
+
+                Vec2Int vec2Int1 = globalManager.getGlobalMap().getMinPositionBuilding(builderUnit.getPosition(), positionBuildBase.get(j), FinalConstant.getEntityProperties(EntityType.RANGED_BASE));
+
+                if (vec2Int1 == null) break;
+
+                List<Node> path = globalManager.getMoveManager().findPath(builderUnit.getPosition(),vec2Int1,builderUnit.getEntityType());
+
+                double dis = path.size();
+             //   double dis = builderUnit.getPosition().distance(positionBuildBase.get(j));
                 if (dis<minDis)
                 {
                     current = builderUnit;
@@ -636,15 +666,22 @@ public class EconomicManager {
             }
         }
 
+        Final.DEBUGRelease("BASE CREATE", FinalConstant.getCurrentTik() + " pos: " + positionHouse.toString() + " unit: " + current.getPosition().toString() + " minDis: " + minDis);
+
         if (current!=null)
         {
             MoveAction m = null;
             BuildAction b = null;
             AttackAction a = null;
             RepairAction r = null;
-            positionHouse = positionHouse.subtract(1,1);
+            if (!typeV2){
+                positionHouse = positionHouse.subtract(1,1);
+            }
             Vec2Int vec2Int1 = globalManager.getGlobalMap().getMinPositionBuilding(current.getPosition(), positionHouse, FinalConstant.getEntityProperties(entityType));
             if (vec2Int1!=null) {
+
+                Final.DEBUGRelease("BASE CREATE", FinalConstant.getCurrentTik() + " unitPOS: " + vec2Int1.toString() );
+
                 m = globalManager.getMoveManager().getMoveActionPosition(current,vec2Int1);
                         //new MoveAction(vec2Int1, true, false);
 
@@ -654,6 +691,7 @@ public class EconomicManager {
 
                 current.setDataTaskUnit(new DataTaskUnit(EUnitState.BUILD));
                 current.getDataTaskUnit().setEntityType(entityType);
+                current.setUpdate(true);
 
                 Final.DEBUG(TAG, "VECTOR BUILD: " + positionBuildBase.toString() + " currentP: " + current.getPosition());
 
@@ -943,7 +981,7 @@ public class EconomicManager {
 
             if (myEntityBuilding.getEntityType()==EntityType.RANGED_BASE)
             {
-                needBuilderRepait*=2;
+                needBuilderRepait*=3;
             }
 
             if (myEntityBuilding.getRepairCounter()>=needBuilderRepait) continue;

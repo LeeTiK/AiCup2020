@@ -1,6 +1,7 @@
 package strategy;
 
 import model.*;
+import strategy.map.potfield.PositionAnswer;
 import strategy.map.wave.SearchAnswer;
 
 import java.util.ArrayList;
@@ -47,11 +48,6 @@ public class WarManager {
         Final.DEBUG(TAG, " sizeMy: " + sizeMy + " " + sizeLeft + " " +sizeRight);
 
         if (Final.OFF_WAR) return actionHashMap;
-
-        // поиск врагов
-        myPlayer.searchEnemy(globalManager.getGlobalMap());
-
-        myPlayer.initEnemyArrayListSlow();
 
         if (Final.debugGraphic)
         {
@@ -203,7 +199,7 @@ public class WarManager {
                     //m = new MoveAction(dataAttack.getMyEntity().getPosition(), true, true);
                 } else {
 
-                    if (range.isDodge())
+                    if (range.isDodge() || range.isDangerMove())
                     {
                         if (dataAttack.getTargetEntity().getEntityType()==EntityType.MELEE_UNIT)
                         {
@@ -316,28 +312,7 @@ public class WarManager {
 
             if (range.isDodge()) continue;
 
-            EntityAction entityAction = actionHashMap.get(range.getId());
-            if (entityAction == null) entityAction = new EntityAction(null, null, null, null);
-
-            Vec2Int vec2IntDanger = globalManager.getMapPotField().getDangerAttackRangerV2(range);
-
-            if (range.getPosition().equals(Vec2Int.createVector(42,47)))
-            {
-                int k=0;
-            }
-
-            if (vec2IntDanger != null) {
-                MoveAction m = globalManager.getMoveManager().getMoveActionPosition(range, vec2IntDanger);
-                //new MoveAction(vec2IntDanger, true, false);
-                //  globalManager.getGlobalMap().setPositionNextTick(range.getPosition(),vec2IntDanger);
-
-                entityAction.setMoveAction(m);
-                range.setUpdate(true);
-                range.setDangerMove(true);
-
-                actionHashMap.put(range.getId(), entityAction);
-                continue;
-            }
+            dangerAttackRange(range,globalManager,actionHashMap,false);
         }
 
         Final.DEBUG(TAG, "TIK: " + FinalConstant.getCurrentTik() + " enemyArrayList SIZE: " + enemyArrayList.size());
@@ -459,22 +434,25 @@ public class WarManager {
 
                 range.setEnemyMinDis(enemy);
 
-                if (positionEnemy.distance(range.getPosition()) >= WAVE_DISTANCE) {
-                    MoveAction m;
-                    // if (entity == null) {
-                    m = globalManager.getMoveManager().getMoveActionPosition(range, positionEnemy);
-                    //new MoveAction(enemy.getPosition(), true, true);
+                if (positionEnemy!=null) {
+
+                    if (positionEnemy.distance(range.getPosition()) >= WAVE_DISTANCE) {
+                        MoveAction m;
+                        // if (entity == null) {
+                        m = globalManager.getMoveManager().getMoveActionPosition(range, positionEnemy);
+                        //new MoveAction(enemy.getPosition(), true, true);
               /*  } else {
                     m = globalManager.getMoveManager().getMoveActionPosition(range,entity.getPosition());
                             //new MoveAction(entity.getPosition(), true, true);
                     entity.setRotation(true);
                 }**/
 
-                    range.setUpdate(true);
+                        range.setUpdate(true);
 
-                    enemy.addCountAttackingUnit();
-                    entityAction.setMoveAction(m);
-                    actionHashMap.put(range.getId(), entityAction);
+                        enemy.addCountAttackingUnit();
+                        entityAction.setMoveAction(m);
+                        actionHashMap.put(range.getId(), entityAction);
+                    }
                 }
             }
 
@@ -556,6 +534,36 @@ public class WarManager {
         }
 
 
+    }
+
+    private void dangerAttackRange(MyEntity range,GlobalManager globalManager,HashMap<Integer,EntityAction> actionHashMap, boolean needMove) {
+
+        EntityAction entityAction = actionHashMap.get(range.getId());
+        if (entityAction == null) entityAction = new EntityAction(null, null, null, null);
+
+        PositionAnswer positionAnswer = globalManager.getMapPotField().getDangerAttackRangerV3(range,needMove);
+
+        if (range.getPosition().equals(Vec2Int.createVector(42,47)))
+        {
+            int k=0;
+        }
+
+        if (positionAnswer != null) {
+            MoveAction m = globalManager.getMoveManager().getMoveActionPosition(range, positionAnswer.getPosition());
+            //new MoveAction(vec2IntDanger, true, false);
+            globalManager.getGlobalMap().setPositionNextTick(range,positionAnswer.getPosition());
+
+            entityAction.setMoveAction(m);
+            range.setUpdate(true);
+            range.setDangerMove(true);
+
+            actionHashMap.put(range.getId(), entityAction);
+
+            if (positionAnswer.getMyEntity()!=null)
+            {
+                dangerAttackRange(positionAnswer.getMyEntity(),globalManager,actionHashMap,true);
+            }
+        }
     }
 
     public void updateWarBuilder(GlobalManager globalManager,HashMap<Integer,EntityAction> actionHashMap){

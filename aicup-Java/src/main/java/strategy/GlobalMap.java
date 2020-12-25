@@ -393,6 +393,7 @@ public class GlobalMap {
                     EntityProperties entityProperties = FinalConstant.getEntityProperties(entity.getEntityType());
                     for (int j = 0; j < entityProperties.getSize(); j++) {
                         for (int k = 0; k < entityProperties.getSize(); k++) {
+
                             map[position.getX() + j][position.getY() + k] = entity;
                             mapNextTick[position.getX() + j][position.getY() + k] = entity;
                         }
@@ -433,6 +434,7 @@ public class GlobalMap {
 
     private void addMapSeeFogOfWar(Entity entity){
         if (!Final.FOG_OF_WAR_MAP) return;
+        if (!FinalConstant.isFogOfWar()) return;
         if (entity.getPlayerId()!=FinalConstant.getMyID()) return;
 
         byte[][] bytes = null;
@@ -473,8 +475,24 @@ public class GlobalMap {
         for (int i = 0; i < allEntityUnits.size(); i++) {
             MyEntity entity = allEntityUnits.get(i);
 
+
+
             int x = 79-entity.getPosition().getX();
             int y = 79-entity.getPosition().getY();
+
+            switch (entity.getEntityType())
+            {
+                case TURRET:
+                case HOUSE:
+                case RANGED_BASE:
+                case BUILDER_BASE:
+                case MELEE_BASE:
+                case WALL:
+                    EntityProperties entityProperties = FinalConstant.getEntityProperties(entity);
+                    x -=entityProperties.getSize()+1;
+                    y -=entityProperties.getSize()+1;
+                    break;
+            }
 
             if (!checkCoord(x,y)) continue;
             if (mMapPotField.getMapPotField()[x][y].isSeeFogOfWar()) continue;
@@ -1147,6 +1165,22 @@ public class GlobalMap {
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
                 if (!checkCoord(vec2Int.getX() + x, vec2Int.getY() + y)) return false;
+                if (map[vec2Int.getX() + x][vec2Int.getY() + y].getEntityType() != EntityType.Empty) return false;
+            }
+        }
+
+        return true;
+    }
+
+    public boolean checkEmptyAndFogIsWar(Vec2Int vec2Int, int size) {
+        return checkEmptyAndFogIsWar(getMap(), vec2Int, size, size);
+    }
+
+    public boolean checkEmptyAndFogIsWar(MyEntity[][] map,Vec2Int vec2Int, int width, int height) {
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                if (!checkCoord(vec2Int.getX() + x, vec2Int.getY() + y)) return false;
+                if (!mMapPotField.getMapPotField()[vec2Int.getX() + x][vec2Int.getY() + y].isSeeFogOfWar()) return false;
                 if (map[vec2Int.getX() + x][vec2Int.getY() + y].getEntityType() != EntityType.Empty) return false;
             }
         }
@@ -1975,10 +2009,81 @@ public class GlobalMap {
         return arrayList;
     }
 
+    public ArrayList<Vec2Int> getPositionBuildBaseV2(EntityProperties entityProperties,MapPotField mapPotField, GlobalManager globalManager) {
+        ArrayList<model.Vec2Int> arrayList = new ArrayList<>();
+
+        Vec2Int positionDistanHome = Vec2Int.createVector(0,0);
+        MyPlayer myPlayer = globalManager.getGlobalStatistic().getMyPlayer();
+
+        ArrayList<MyEntity> arrayList1 = myPlayer.getBuildingArrayList();
+
+        for (int i=0; i<arrayList1.size(); i++)
+        {
+            Vec2Int position = arrayList1.get(i).getPosition();
+            if (position.getY()>positionDistanHome.getY())
+            {
+                positionDistanHome = position;
+            }
+            else
+            {
+                if (position.getY()==positionDistanHome.getY() && position.getX()>positionDistanHome.getX())
+                {
+                    positionDistanHome = position;
+                }
+            }
+        }
+
+
+        positionDistanHome = positionDistanHome.add(3,3);
+
+        int sizeSearchX = 15;
+        int sizeSearchY = 10;
+        for (int x = -sizeSearchX; x<=sizeSearchX; x++ )
+        {
+            for (int y = 0; y<=sizeSearchY; y++ )
+            {
+                Vec2Int positionNew = Vec2Int.createVector(positionDistanHome.getX()+x,positionDistanHome.getY()+y);
+                if (checkEmptyAndFogIsWar(positionNew,5)){
+
+                    ArrayList Position = getCoordAround(positionNew, entityProperties.getSize(), true);
+                    if (Position.size()>9) {
+                        arrayList.add(positionNew);
+                    }
+                }
+            }
+        }
+
+        if (arrayList.size()==0)
+        {
+            for (int x = -sizeSearchX; x<=sizeSearchX; x++ )
+            {
+                for (int y = -sizeSearchY; y<0; y++ )
+                {
+                    Vec2Int positionNew = Vec2Int.createVector(positionDistanHome.getX()+x,positionDistanHome.getY()+y);
+                    if (checkEmptyAndFogIsWar(positionNew,5)){
+                        ArrayList Position = getCoordAround(positionNew, entityProperties.getSize(), true);
+                        if (Position.size()>7) {
+                            arrayList.add(positionNew);
+                        }
+                    }
+                }
+            }
+        }
+
+        return arrayList;
+    }
+
     public boolean checkUnit(MyEntity[][] mapNextTick, Vec2Int newPosition) {
         if (mapNextTick[newPosition.getX()][newPosition.getY()].getEntityType()==EntityType.BUILDER_UNIT ||
                 mapNextTick[newPosition.getX()][newPosition.getY()].getEntityType()==EntityType.RANGED_UNIT ||
-                mapNextTick[newPosition.getX()][newPosition.getY()].getEntityType()==EntityType.MELEE_UNIT) return true;
+                mapNextTick[newPosition.getX()][newPosition.getY()].getEntityType()==EntityType.MELEE_UNIT) {
+
+            if (mapNextTick[newPosition.getX()][newPosition.getY()].isDangerMove() || mapNextTick[newPosition.getX()][newPosition.getY()].isDodge()){
+                return false;
+            }
+
+            return true;
+        }
         else return false;
     }
 

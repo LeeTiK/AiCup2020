@@ -76,9 +76,15 @@ public class GlobalManager {
             A_STAR = true;
         }
 
-        if (timeAllStrategy>33000)
+        if ((timeAllStrategy / 1000000)>31000)
         {
-           // A_STAR = false;
+            if (RELEASE) {
+                if (A_STAR==true)
+                {
+                    Final.DEBUGRelease("", "Tik: " + FinalConstant.getCurrentTik() + " ERROR TIME, A_STAR OFF");
+                }
+                A_STAR = false;
+            }
         }
 
         mMapPotField.clearField();
@@ -124,7 +130,15 @@ public class GlobalManager {
             arrayListAllunit.get(i).setUpdate(false);
         }
 
+        // подготовочка сюда
+        // поиск врагов
+        MyPlayer myPlayer = getGlobalStatistic().getMyPlayer();
 
+        myPlayer.searchEnemy(getGlobalMap());
+
+        myPlayer.initEnemyArrayListSlow();
+
+        myPlayer.sortAttackUnit(true);
 
         if (GLOBAL_DODGE) {
             //увороты

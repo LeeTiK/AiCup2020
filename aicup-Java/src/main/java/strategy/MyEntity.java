@@ -4,6 +4,7 @@ import model.Entity;
 import model.EntityAction;
 import model.EntityType;
 import model.Vec2Int;
+import strategy.map.potfield.AttackRangeAnswer;
 import strategy.map.potfield.DodgePositionAnswer;
 
 public class MyEntity extends Entity {
@@ -53,6 +54,7 @@ public class MyEntity extends Entity {
     int repairCounter = 0;
 
     DodgePositionAnswer mDodgePositionAnswer;
+    AttackRangeAnswer mAttackRangeAnswer;
 
     public MyEntity(Entity entity) {
         super(entity.getId(), entity.getPlayerId(), entity.getEntityType(), entity.getPosition(), entity.getHealth(), entity.isActive());
@@ -113,6 +115,7 @@ public class MyEntity extends Entity {
         repairCounter=0;
         mDodgePositionAnswer=null;
         minDisToHouse=0xFFFF;
+        mAttackRangeAnswer=null;
     }
 
     public void update(Entity entity) {
@@ -385,5 +388,13 @@ public class MyEntity extends Entity {
 
     public Vec2Int getPositionHouse() {
         return positionHouse;
+    }
+
+    public void setAttackRangeAnswer(AttackRangeAnswer attackRangeAnswer) {
+        mAttackRangeAnswer = attackRangeAnswer;
+    }
+
+    public AttackRangeAnswer getAttackRangeAnswer() {
+        return mAttackRangeAnswer;
     }
 }

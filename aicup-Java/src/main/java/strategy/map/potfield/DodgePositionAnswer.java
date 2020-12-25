@@ -12,9 +12,9 @@ public class DodgePositionAnswer {
     int maxCounterDanger;
 
     boolean currentSafety;
+    boolean needDodge;
 
     public DodgePositionAnswer(){
-
         mSafetyArrayList = new ArrayList<>(4);
         mSafetyPositionUnitArrayList = new ArrayList<>(4);
         mSafetyCounterArrayList = new ArrayList<>(4);
@@ -29,6 +29,7 @@ public class DodgePositionAnswer {
         maxCounterDanger = 0;
 
         currentSafety = false;
+        needDodge = false;
     }
 
     public ArrayList<Field> getSafetyArrayList() {
@@ -49,5 +50,9 @@ public class DodgePositionAnswer {
 
     public ArrayList<Field> getSafetyCounterArrayList() {
         return mSafetyCounterArrayList;
+    }
+
+    public boolean isNeedDodge() {
+        return needDodge;
     }
 }
