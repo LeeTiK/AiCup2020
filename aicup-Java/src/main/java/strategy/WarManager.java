@@ -409,18 +409,26 @@ public class WarManager {
                 if (range.isDangerMove()) continue;
                 if (range.isUpdate()) continue;
                 if (!range.isOkey()) continue;
+                if (range.isOkeyV2()) continue;
 
-                MyEntity enemy = globalManager.getGlobalMap().getNearestPlayer(range.getPosition(), myPlayer.getId(), -1,EntityType.BUILDER_UNIT,true);
+                Vec2Int vec2Int = Vec2Int.createVector(75,75);
+
+                if (range.getPosition().distance(vec2Int)<20){
+                    range.setOkeyV2(true);
+                    continue;
+                }
 
                 EntityAction entityAction = actionHashMap.get(range.getId());
                 if (entityAction == null) entityAction = new EntityAction(null, null, null, null);
 
-                MoveAction moveAction = globalManager.getMoveManager().getMoveActionPosition(range, enemy.getPosition());
-                entityAction.setMoveAction(moveAction);
+                if (vec2Int!=null) {
+                    MoveAction moveAction = globalManager.getMoveManager().getMoveActionPosition(range, vec2Int);
+                    entityAction.setMoveAction(moveAction);
 
-                range.setUpdate(true);
+                    range.setUpdate(true);
 
-                actionHashMap.put(range.getId(), entityAction);
+                    actionHashMap.put(range.getId(), entityAction);
+                }
             }
 
         }

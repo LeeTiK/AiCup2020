@@ -610,7 +610,47 @@ public class EconomicManager {
             }
         }
 
+        if (Final.BUILD_TURRET_SPECIAL_V2 && globalManager.getGlobalStatistic().getPlayers().size()==2 && globalManager.getGlobalStatistic().isCheckFirstEnemyUnits() &&
+                globalManager.getGlobalStatistic().getMyPlayer().getEntityArrayList(EntityType.RANGED_BASE).size()>0 && createTurret<3 &&
+                myPlayer.getResource()>strategy.FinalConstant.getEntityProperties(EntityType.TURRET).getCost()
+        )
+        {
+            for (int i=0; i<builderUnitArrayList.size(); i++)
+            {
+                MyEntity builder = builderUnitArrayList.get(i);
 
+                if (!globalManager.getGlobalMap().getSpecialCheckBuilderTask(builder.getPosition(),true))
+                {
+                    continue;
+                }
+
+                if (globalManager.getGlobalMap().getSpecialCheckBuilderTaskTurretCreate(builder.getPosition())<30*11){
+                    continue;
+                }
+
+                MoveAction m = null;
+                BuildAction b = null;
+                AttackAction a = null;
+                RepairAction r = null;
+                Vec2Int vec2Int1 = globalManager.getGlobalMap().checkBuildTurretSpecial(builder);
+                if (vec2Int1!=null) {
+
+                    //new MoveAction(vec2Int1, true, false);
+
+                    b = new BuildAction(EntityType.TURRET, vec2Int1);
+                    // checkCreate = true;
+                    a = null;
+
+                    builder.setDataTaskUnit(new DataTaskUnit(EUnitState.BUILD));
+                    builder.getDataTaskUnit().setEntityType(EntityType.TURRET);
+
+                    Final.DEBUG(TAG, "VECTOR BUILD: " + builder.toString() + " currentP: " + builder.getPosition());
+
+                    actionHashMap.put(builder.getId(), new EntityAction(m, b, a, r));
+                    break;
+                }
+            }
+        }
 
         if (myPlayer.getResource() > myPlayer.getCost(EntityType.TURRET) - 10 && myPlayer.getPopulationMax() >= 50 && Final.BUILD_TURRET) {
             int[][] positionTurret = {{5, 25}, {8, 25}, {11, 25}, {14, 25}, {12, 25},

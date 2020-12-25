@@ -59,6 +59,7 @@ public class MyEntity extends Entity {
     float minDisLeftSpecial;
     float minDisRightSpecial;
     boolean okey;
+    boolean okeyV2;
 
     public MyEntity(Entity entity) {
         super(entity.getId(), entity.getPlayerId(), entity.getEntityType(), entity.getPosition(), entity.getHealth(), entity.isActive());
@@ -89,6 +90,7 @@ public class MyEntity extends Entity {
         oldTikPosition = null;
         oldTwoTikPosition = null;
         okey=false;
+        okeyV2=false;
         clear();
     }
 
@@ -427,5 +429,13 @@ public class MyEntity extends Entity {
 
     public void setOkey(boolean okey) {
         this.okey = okey;
+    }
+
+    public boolean isOkeyV2() {
+        return okeyV2;
+    }
+
+    public void setOkeyV2(boolean okeyV2) {
+        this.okeyV2 = okeyV2;
     }
 }

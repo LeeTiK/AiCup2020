@@ -1256,6 +1256,10 @@ public class GlobalMap {
                 if (!checkCoord(vec2Int.getX() + x, vec2Int.getY() + y)) return false;
                 if (mMapPotField.getMapPotField()[vec2Int.getX() + x][vec2Int.getY() + y].getSafetyTurret()>0) return false;
                 if (mMapPotField.getMapPotField()[vec2Int.getX() + x][vec2Int.getY() + y].getSafetyHouse()>0) return false;
+                if (Final.BUILD_TURRET_SPECIAL_V2) {
+                    if (mMapPotField.getMapPotField()[vec2Int.getX() + x][vec2Int.getY() + y].getBuildUnit() == 0)
+                        return false;
+                }
                 if (map[vec2Int.getX() + x][vec2Int.getY() + y].getEntityType() != EntityType.Empty) return false;
             }
         }
@@ -2134,6 +2138,24 @@ public class GlobalMap {
             }
         }
 
+
+        if (arrayList.size()==0)
+        {
+            for (int x = -5; x<=0; x++ )
+            {
+                for (int y = 0; y<=sizeSearchY; y++ )
+                {
+                    Vec2Int positionNew = Vec2Int.createVector(positionDistanHome.getX()+x,positionDistanHome.getY()+y);
+                    if (checkEmptyAndFogIsWar(positionNew,5)){
+
+                        ArrayList Position = getCoordAround(positionNew, entityProperties.getSize(), true);
+                        if (Position.size()>9) {
+                            arrayList.add(positionNew);
+                        }
+                    }
+                }
+            }
+        }
 
 
         if (arrayList.size()==0)

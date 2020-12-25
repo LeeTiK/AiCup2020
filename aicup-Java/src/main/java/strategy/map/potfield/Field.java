@@ -17,6 +17,7 @@ public class Field {
     int dangerContourRanger;
     int dangerContourMelee;
     int dangerContourTurret;
+    int buildUnit;
 
     int safetyContour;
 
@@ -83,6 +84,7 @@ public class Field {
         repairPositionClose=false;
 
         seeFogOfWar = false;
+        buildUnit=0;
     }
 
 
@@ -322,7 +324,9 @@ public class Field {
     }
 
     public void setSafetyContour(int safetyContour) {
-        if (this.safetyContour>safetyContour || (this.safetyContour==0 && safetyContour!=0)) {
+        if (this.safetyContour<safetyContour
+              //  || (this.safetyContour==0 && safetyContour!=0)
+        ) {
             this.safetyContour = safetyContour;
         }
     }
@@ -365,5 +369,13 @@ public class Field {
 
     public boolean isDontUpdateFogOfWar() {
         return dontUpdateFogOfWar;
+    }
+
+    public void addBuildUnit() {
+        this.buildUnit++;
+    }
+
+    public int getBuildUnit() {
+        return buildUnit;
     }
 }

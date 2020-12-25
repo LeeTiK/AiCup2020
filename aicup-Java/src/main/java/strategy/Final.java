@@ -6,7 +6,7 @@ import model.PlayerView;
 public class Final {
 
 
-    final static boolean RELEASE = false;
+    final static boolean RELEASE = true;
 
 
     final static boolean TEST = false;
@@ -16,7 +16,7 @@ public class Final {
     final static boolean debug = false;
     final static boolean debugERROR = true;
     final static boolean debugRelease = true;
-    public final static boolean debugGraphic = true;
+    public final static boolean debugGraphic = false;
 
     ////////////////////////////РЕЖИМЫ РАБОТЫ/////////////////////////////////
     public static boolean FOG_OF_WAR_MAP = true;
@@ -27,6 +27,7 @@ public class Final {
     // элементы игры
     public final static boolean BUILD_TURRET = false;
     public final static boolean BUILD_TURRET_SPECIAL = false;
+    public final static boolean BUILD_TURRET_SPECIAL_V2 = true;
 
     //////////////УСТАРЕВШИЕ
 

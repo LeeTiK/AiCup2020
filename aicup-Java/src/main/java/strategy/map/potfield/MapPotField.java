@@ -77,6 +77,11 @@ public class MapPotField {
                     addSafare(map[i][j], map);
                 } else {
                     addDanger(map[i][j], map);
+
+                    if (Final.BUILD_TURRET_SPECIAL_V2)
+                    {
+                        addBuildUnit(map[i][j], map);
+                    }
                 }
 
                 // отмечаем вражеские войска
@@ -99,6 +104,27 @@ public class MapPotField {
 
         //    globalMap.getMap()
 
+    }
+
+    private void addBuildUnit(MyEntity entity, MyEntity[][] map) {
+        if (entity.getEntityType() != EntityType.BUILDER_UNIT)
+            return;
+
+        EntityProperties entityProperties = FinalConstant.getEntityProperties(entity);
+
+        Vec2Int position = entity.getPosition();
+
+        byte[][] bytes = GlobalMap.sightRangeUnit;
+
+        // danger
+        for (int i = 0; i < bytes.length; i++) {
+            int x = bytes[i][0];
+            int y = bytes[i][1];
+
+            if (!checkCoord(position.getX() + x, position.getY() + y)) continue;
+
+            mMapPotField[x + position.getX()][y + position.getY()].addBuildUnit();
+        }
     }
 
     private void addResource(int x, int y) {
