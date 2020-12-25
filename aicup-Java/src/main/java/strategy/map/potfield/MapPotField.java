@@ -295,12 +295,12 @@ public class MapPotField {
         }
 
         if (mGlobalMap.checkCoord(vec2IntRigth)){
-            if (mGlobalMap.getMap()[vec2IntLeft.getX()][vec2IntLeft.getY()].getEntityType()==EntityType.RESOURCE ||
-                    mGlobalMap.getMap()[vec2IntLeft.getX()][vec2IntLeft.getY()].getEntityType()==EntityType.HOUSE ||
-                    mGlobalMap.getMap()[vec2IntLeft.getX()][vec2IntLeft.getY()].getEntityType()==EntityType.RANGED_BASE ||
-                    mGlobalMap.getMap()[vec2IntLeft.getX()][vec2IntLeft.getY()].getEntityType()==EntityType.BUILDER_BASE ||
-                    mGlobalMap.getMap()[vec2IntLeft.getX()][vec2IntLeft.getY()].getEntityType()==EntityType.WALL ||
-                    mGlobalMap.getMap()[vec2IntLeft.getX()][vec2IntLeft.getY()].getEntityType()==EntityType.MELEE_BASE
+            if (mGlobalMap.getMap()[vec2IntRigth.getX()][vec2IntRigth.getY()].getEntityType()==EntityType.RESOURCE ||
+                    mGlobalMap.getMap()[vec2IntRigth.getX()][vec2IntRigth.getY()].getEntityType()==EntityType.HOUSE ||
+                    mGlobalMap.getMap()[vec2IntRigth.getX()][vec2IntRigth.getY()].getEntityType()==EntityType.RANGED_BASE ||
+                    mGlobalMap.getMap()[vec2IntRigth.getX()][vec2IntRigth.getY()].getEntityType()==EntityType.BUILDER_BASE ||
+                    mGlobalMap.getMap()[vec2IntRigth.getX()][vec2IntRigth.getY()].getEntityType()==EntityType.WALL ||
+                    mGlobalMap.getMap()[vec2IntRigth.getX()][vec2IntRigth.getY()].getEntityType()==EntityType.MELEE_BASE
             )
             {
                 rigth = false;
@@ -308,12 +308,12 @@ public class MapPotField {
         }
 
         if (mGlobalMap.checkCoord(vec2IntUp)){
-            if (mGlobalMap.getMap()[vec2IntLeft.getX()][vec2IntLeft.getY()].getEntityType()==EntityType.RESOURCE ||
-                    mGlobalMap.getMap()[vec2IntLeft.getX()][vec2IntLeft.getY()].getEntityType()==EntityType.HOUSE ||
-                    mGlobalMap.getMap()[vec2IntLeft.getX()][vec2IntLeft.getY()].getEntityType()==EntityType.RANGED_BASE ||
-                    mGlobalMap.getMap()[vec2IntLeft.getX()][vec2IntLeft.getY()].getEntityType()==EntityType.BUILDER_BASE ||
-                    mGlobalMap.getMap()[vec2IntLeft.getX()][vec2IntLeft.getY()].getEntityType()==EntityType.WALL ||
-                    mGlobalMap.getMap()[vec2IntLeft.getX()][vec2IntLeft.getY()].getEntityType()==EntityType.MELEE_BASE
+            if (mGlobalMap.getMap()[vec2IntUp.getX()][vec2IntUp.getY()].getEntityType()==EntityType.RESOURCE ||
+                    mGlobalMap.getMap()[vec2IntUp.getX()][vec2IntUp.getY()].getEntityType()==EntityType.HOUSE ||
+                    mGlobalMap.getMap()[vec2IntUp.getX()][vec2IntUp.getY()].getEntityType()==EntityType.RANGED_BASE ||
+                    mGlobalMap.getMap()[vec2IntUp.getX()][vec2IntUp.getY()].getEntityType()==EntityType.BUILDER_BASE ||
+                    mGlobalMap.getMap()[vec2IntUp.getX()][vec2IntUp.getY()].getEntityType()==EntityType.WALL ||
+                    mGlobalMap.getMap()[vec2IntUp.getX()][vec2IntUp.getY()].getEntityType()==EntityType.MELEE_BASE
             )
             {
                 up = false;
@@ -321,12 +321,12 @@ public class MapPotField {
         }
 
         if (mGlobalMap.checkCoord(vec2IntDown)){
-            if (mGlobalMap.getMap()[vec2IntLeft.getX()][vec2IntLeft.getY()].getEntityType()==EntityType.RESOURCE ||
-                    mGlobalMap.getMap()[vec2IntLeft.getX()][vec2IntLeft.getY()].getEntityType()==EntityType.HOUSE ||
-                    mGlobalMap.getMap()[vec2IntLeft.getX()][vec2IntLeft.getY()].getEntityType()==EntityType.RANGED_BASE ||
-                    mGlobalMap.getMap()[vec2IntLeft.getX()][vec2IntLeft.getY()].getEntityType()==EntityType.BUILDER_BASE ||
-                    mGlobalMap.getMap()[vec2IntLeft.getX()][vec2IntLeft.getY()].getEntityType()==EntityType.WALL ||
-                    mGlobalMap.getMap()[vec2IntLeft.getX()][vec2IntLeft.getY()].getEntityType()==EntityType.MELEE_BASE
+            if (mGlobalMap.getMap()[vec2IntDown.getX()][vec2IntDown.getY()].getEntityType()==EntityType.RESOURCE ||
+                    mGlobalMap.getMap()[vec2IntDown.getX()][vec2IntDown.getY()].getEntityType()==EntityType.HOUSE ||
+                    mGlobalMap.getMap()[vec2IntDown.getX()][vec2IntDown.getY()].getEntityType()==EntityType.RANGED_BASE ||
+                    mGlobalMap.getMap()[vec2IntDown.getX()][vec2IntDown.getY()].getEntityType()==EntityType.BUILDER_BASE ||
+                    mGlobalMap.getMap()[vec2IntDown.getX()][vec2IntDown.getY()].getEntityType()==EntityType.WALL ||
+                    mGlobalMap.getMap()[vec2IntDown.getX()][vec2IntDown.getY()].getEntityType()==EntityType.MELEE_BASE
             )
             {
                 down = false;
