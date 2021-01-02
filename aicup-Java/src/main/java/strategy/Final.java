@@ -24,13 +24,17 @@ public class Final {
     public static boolean GLOBAL_DODGE = false;
     public static boolean SPECIAL_ATTACK_ENEMY_BUILDER = true;
 
+    public static boolean SPECIAL_RUSH = false;
+
+
     // элементы игры
     public final static boolean BUILD_TURRET = false;
     public final static boolean BUILD_TURRET_SPECIAL = false;
     public final static boolean BUILD_TURRET_SPECIAL_V2 = true;
+    public final static boolean BUILD_TURRET_SPECIAL_V2_ALL = true;
 
     //////////////УСТАРЕВШИЕ
-
+    public static boolean PLAYER_AREA_CALCULATE = false;
     public static boolean A_STAR_BLOCK_ALL_BUILD_UNIT = false;
     public static boolean A_STAR_CHECK_FIRST_NODE_BLOCK = false;
     public final static boolean A_NEED_MOVE = false;
@@ -50,19 +54,19 @@ public class Final {
     public final static boolean BIOM_RESOURCE = false;
     public final static boolean SAFETY_CONTOUR = false;
     public final static boolean ATTACK_RANGE_REGION = false;
-    public final static boolean DISTRICT_REGION = true;
+    public final static boolean DISTRICT_REGION = false;
     public final static boolean HP_NO_ACTIVE = false;
     public final static boolean NEXT_TIK_POSITION = true;
     public final static boolean ENEMY_ATTACK = true;
     public final static boolean INFO_RECOURCE = false;
-    public final static boolean INFO_FOG_OF_WAR_MAP = true;
+    public final static boolean INFO_FOG_OF_WAR_MAP = false;
 
 
     public final static boolean CHECK_SEARCH_WAVE_BUILDER = false;
     public final static boolean CHECK_SEARCH_WAVE_START_END = false;
 
-    public final static boolean CHECK_SEARCH_PATH_RANGER = true;
-    public final static boolean CHECK_SEARCH_PATH_ASTAR = true;
+    public final static boolean CHECK_SEARCH_PATH_RANGER = false;
+    public final static boolean CHECK_SEARCH_PATH_ASTAR = false;
 
     static public Player getMyPlayer(PlayerView playerView) {
         int myID = playerView.getMyId();

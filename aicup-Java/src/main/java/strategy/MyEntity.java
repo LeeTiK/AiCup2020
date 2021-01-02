@@ -55,6 +55,7 @@ public class MyEntity extends Entity {
 
     DodgePositionAnswer mDodgePositionAnswer;
     AttackRangeAnswer mAttackRangeAnswer;
+    Vec2Int dodgeNew;
 
     float minDisLeftSpecial;
     float minDisRightSpecial;
@@ -125,6 +126,7 @@ public class MyEntity extends Entity {
         mAttackRangeAnswer=null;
         minDisLeftSpecial = 0xFFFF;
         minDisRightSpecial = 0xFFFF;
+        dodgeNew=null;
     }
 
     public void update(Entity entity) {
@@ -252,6 +254,10 @@ public class MyEntity extends Entity {
         }
         if (getEntityAction().getAttackAction() != null) {
             str += " A:T";
+        }
+
+        if (getDodgeNew() != null) {
+            str += " D:" + getDodgeNew().toString();
         }
       /*  str += " " + isDodge();
         str += " " + isNeedMove();
@@ -437,5 +443,13 @@ public class MyEntity extends Entity {
 
     public void setOkeyV2(boolean okeyV2) {
         this.okeyV2 = okeyV2;
+    }
+
+    public void setDodgeNew(Vec2Int vec2IntDodge) {
+        this.dodgeNew = vec2IntDodge;
+    }
+
+    public Vec2Int getDodgeNew() {
+        return dodgeNew;
     }
 }

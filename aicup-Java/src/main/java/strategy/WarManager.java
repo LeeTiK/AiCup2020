@@ -22,8 +22,8 @@ public class WarManager {
     int sizeRight;
     int sizeMy;
 
-    Vec2Int mVec2IntLeft = Vec2Int.createVector(70,15);
-    Vec2Int mVec2IntRight = Vec2Int.createVector(15,70);
+    Vec2Int mVec2IntLeft = Vec2Int.createVector(15,70);
+    Vec2Int mVec2IntRight = Vec2Int.createVector(70,15);
 
     int globalPositionDefense = 0;
 
@@ -202,7 +202,9 @@ public class WarManager {
                     //m = new MoveAction(dataAttack.getMyEntity().getPosition(), true, true);
                 } else {
 
-                    if (range.isDodge() || range.isDangerMove())
+                    if (range.isDodge()
+                          //  || range.isDangerMove()
+                    )
                     {
                         if (dataAttack.getTargetEntity().getEntityType()==EntityType.MELEE_UNIT)
                         {
@@ -527,7 +529,7 @@ public class WarManager {
 
             if (range.isDodge()) continue;
             if (range.isDangerMove()) continue;
-            if (range.isUpdate()) continue;
+            //if (range.isUpdate()) continue;
 
             EntityAction entityAction = actionHashMap.get(range.getId());
             if (entityAction == null) entityAction = new EntityAction(null, null, null, null);

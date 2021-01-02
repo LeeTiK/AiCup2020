@@ -29,6 +29,7 @@ public class EconomicManager {
     int countMaxUnit;
 
     int createHouse;
+    int createHouseAndNoActive;
     int createTurret;
     int createBase;
 
@@ -38,6 +39,8 @@ public class EconomicManager {
 
     boolean init;
     boolean init2;
+
+    boolean checkSpecialRush = true;
 
     public EconomicManager() {
         init = false;
@@ -49,7 +52,7 @@ public class EconomicManager {
 
         if (!init) {
             if (globalManager.getGlobalStatistic().getPlayers().size() == 2) {
-                MAX_BUILDER_UNIT = 75;
+                MAX_BUILDER_UNIT = 80;
             } else {
                 MAX_BUILDER_UNIT = 71;
             }
@@ -89,12 +92,20 @@ public class EconomicManager {
             dodgeBuilderV2(myPlayer, playerView, globalManager, actionHashMap);
         }
 
+        if (Final.SPECIAL_RUSH && globalManager.getGlobalStatistic().getPlayers().size()==2)
+        {
+            specialPushBuilder(myPlayer, playerView, globalManager, actionHashMap);
+           /* ArrayList<MyEntity> arrayList =
+            for ()*/
+        }
+
         //всё что связанно с починкой
         repairBuilder(myPlayer, playerView, globalManager, actionHashMap);
 
 
         createHouse = 0;
         createTurret=0;
+        createHouseAndNoActive=0;
 
         ArrayList<MyEntity> builderUnitArrayList = myPlayer.getEntityArrayList(EntityType.BUILDER_UNIT);
         for (int i = 0; i < builderUnitArrayList.size(); i++)
@@ -104,8 +115,19 @@ public class EconomicManager {
             if (builder.getUnitState()==EUnitState.BUILD)
             {
                 createHouse++;
+                createHouseAndNoActive++;
             }
         }
+
+        ArrayList<MyEntity> houseArrayList = myPlayer.getEntityArrayList(EntityType.HOUSE);
+        for (int i=0; i<houseArrayList.size(); i++)
+        {
+            if (!houseArrayList.get(i).isActive())
+            {
+                createHouseAndNoActive++;
+            }
+        }
+
         ArrayList<MyEntity> turretArray = myPlayer.getEntityArrayList(EntityType.TURRET);
         for (int i=0; i<turretArray.size(); i++)
         {
@@ -114,6 +136,8 @@ public class EconomicManager {
                 createTurret++;
             }
         }
+
+       // Final.DEBUGRelease("CREATE_HOUSE", FinalConstant.getCurrentTik() + " " + createHouseAndNoActive);
 
         //всё что связанно с новые зданиями
         buildBuilder(myPlayer, playerView, globalManager, actionHashMap);
@@ -152,6 +176,78 @@ public class EconomicManager {
         return actionHashMap;
     }
 
+    private void specialPushBuilder(MyPlayer myPlayer, PlayerView playerView, GlobalManager globalManager, HashMap<Integer, EntityAction> actionHashMap) {
+        if (!checkSpecialRush) return;
+        if (myPlayer.getEntityArrayList(EntityType.HOUSE).size()==0) return;
+        if (!myPlayer.getEntityArrayList(EntityType.HOUSE).get(0).isActive()) return;
+
+        ArrayList<MyEntity> builderUnitArrayList = myPlayer.getEntityArrayList(EntityType.BUILDER_UNIT);
+
+        Vec2Int vec2Int = Vec2Int.createVector(73,73);
+
+        float minDis = 0xFFFF;
+        MyEntity current = null;
+
+        ArrayList<MyEntity> okeyArrayList = new ArrayList<>();
+
+        for (int i = 0; i < builderUnitArrayList.size(); i++)
+        {
+            MyEntity builder =  builderUnitArrayList.get(i);
+
+            if (builder.isOkey()) {
+                okeyArrayList.add(builder);
+                if (okeyArrayList.size()>=3) {
+                    current = null;
+                    break;
+                }
+                continue;
+            }
+
+            float dis = (float) vec2Int.distance(builder.getPosition());
+
+            if (dis<minDis)
+            {
+                minDis = dis;
+                current = builder;
+            }
+        }
+        if (current!=null)
+        {
+            okeyArrayList.add(current);
+        }
+
+        for (int i=0; i<okeyArrayList.size(); i++)
+        {
+            current = okeyArrayList.get(i);
+
+            current.setOkey(true);
+
+            current.setDodge(true);
+            current.setUpdate(true);
+
+            List<Node> list = globalManager.getMoveManager().findPath(current.getPosition(),vec2Int,current.getEntityType());
+
+            GlobalMap globalMap = globalManager.getGlobalMap();
+
+            for (int j=0; j<list.size(); j++)
+            {
+                if (globalMap.getMapNoCheck(list.get(j).getVec2Int()).getEntityType()==EntityType.RESOURCE)
+                {
+                    checkSpecialRush = false;
+                    return;
+                }
+            }
+
+            MoveAction m = globalManager.getMoveManager().getMoveActionPosition(current,vec2Int);
+            //new MoveAction(resourceMidDis.getPosition(),true,true);
+            BuildAction b = null;
+            AttackAction a = null;
+            RepairAction r = null;
+
+            actionHashMap.put(current.getId(), new EntityAction(m, b, a, r));
+        }
+    }
+
     //ресурсы
     private HashMap resurceBuilder(MyPlayer myPlayer, PlayerView playerView, GlobalManager globalManager, HashMap<Integer, EntityAction> actionHashMap) {
         GlobalStatistic globalStatistic = globalManager.getGlobalStatistic();
@@ -163,7 +259,7 @@ public class EconomicManager {
 
         ArrayList<MyPlayer> arrayList = globalManager.getGlobalStatistic().getPlayers();
 
-        boolean checkTargetAttack = true;
+
 
        /* if (arrayList.size()==2)
         {
@@ -175,10 +271,19 @@ public class EconomicManager {
 
             ArrayList<MyEntity> resource;
 
-            if (entity.isUpdate()) continue;
-            if (entity.isDodge()) continue;
             if (entity.getDataTaskUnit().getUnitState() == EUnitState.REPAIR || entity.getDataTaskUnit().getUnitState() == EUnitState.BUILD) continue;
 
+            boolean checkTargetAttack = true;
+
+            if (entity.isDodge())
+            {
+                if (entity.getPosition().equals(entity.getDodgeNew())) {
+                    checkTargetAttack = false;
+                }
+                else {
+                    continue;
+                }
+            }
 
             resource = globalManager.getGlobalMap().getEntityMapResourceSpecial(entity.getPosition(),checkTargetAttack);
 
@@ -458,6 +563,7 @@ public class EconomicManager {
 
                 builderUnit.getEntityAction().setAttackAction(null);
                 builderUnit.getEntityAction().setMoveAction(m);
+                builderUnit.setDodgeNew(vec2IntDodge);
                 builderUnit.setDodge(true);
                 myPlayer.addCountBuildDodge();
 
@@ -516,23 +622,42 @@ public class EconomicManager {
 
         ArrayList<MyEntity> builderUnitArrayList = myPlayer.getEntityArrayList(EntityType.BUILDER_UNIT);
 
+      //  Final.DEBUGRelease("CHECK: ", FinalConstant.getCurrentTik() + " " + checkCreateMoreOneHouse(myPlayer));
+
         //boolean checkCreate = false;
 
-        if ((myPlayer.getResource() - createHouse * myPlayer.getCost(EntityType.HOUSE)) > myPlayer.getCost(EntityType.HOUSE) - builderUnitArrayList.size() &&
-                ((myPlayer.getPopulationCurrent() * 1.2 >= myPlayer.getPopulationMax() && myPlayer.getResource() > myPlayer.getCost(EntityType.HOUSE) * 2) || myPlayer.getPopulationMax() < 80)
+        if ((myPlayer.getResource() - createHouse * myPlayer.getCost(EntityType.HOUSE)) > myPlayer.getCost(EntityType.HOUSE) - builderUnitArrayList.size()
+                && ((myPlayer.getPopulationCurrent() * 1.2 >= myPlayer.getPopulationMax() && myPlayer.getResource() > myPlayer.getCost(EntityType.HOUSE) * 2) || myPlayer.getPopulationMax() < 80)
                 && (myPlayer.getPopulationMax() < 180)
                 && (myPlayer.getCountBuildDontCreate(EntityType.HOUSE) < 3 || (myPlayer.getResource() > 50 && myPlayer.getCountBuildDontCreate(EntityType.HOUSE) < 7 && myPlayer.getPopulationMax() < 70))
         ) {
-            if ( (myPlayer.getEntityArrayList(EntityType.RANGED_BASE).size()>0 &&
-                    myPlayer.getEntityArrayList(EntityType.BUILDER_BASE).size()>0) ||
-                myPlayer.getEntityArrayList(EntityType.HOUSE).size() < 5 ||
-            ( myPlayer.getResource()>550 && myPlayer.getEntityArrayList(EntityType.HOUSE).size() < 7)
-            || (globalManager.getGlobalStatistic().getPlayers().size()==2 && myPlayer.getEntityArrayList(EntityType.HOUSE).size() < START_HOUSE_SPECIAL)
-            ) {
+            if (globalManager.getGlobalStatistic().getPlayers().size()==2) {
+                if ((myPlayer.getEntityArrayList(EntityType.RANGED_BASE).size() > 0 &&
+                        myPlayer.getEntityArrayList(EntityType.BUILDER_BASE).size() > 0) ||
+                        myPlayer.getEntityArrayList(EntityType.HOUSE).size() < 5 ||
+                        (myPlayer.getResource() > 550 && myPlayer.getEntityArrayList(EntityType.HOUSE).size() < 7)
+                        || (globalManager.getGlobalStatistic().getPlayers().size() == 2 && myPlayer.getEntityArrayList(EntityType.HOUSE).size() < START_HOUSE_SPECIAL)
+                ) {
 
-             //   System.out.println("size HOME: " +  myPlayer.getEntityArrayList(EntityType.HOUSE).size());
-              //  System.out.println("size RANGED_BASE: " +  myPlayer.getEntityArrayList(EntityType.RANGED_BASE).size());
-                createHouseV2(builderUnitArrayList, globalManager, actionHashMap);
+                    //   System.out.println("size HOME: " +  myPlayer.getEntityArrayList(EntityType.HOUSE).size());
+                    //  System.out.println("size RANGED_BASE: " +  myPlayer.getEntityArrayList(EntityType.RANGED_BASE).size());
+                    if (checkCreateMoreOneHouse(myPlayer)) {
+                        createHouseV2(builderUnitArrayList, globalManager, actionHashMap);
+                    }
+                }
+            } else {
+                if ((myPlayer.getEntityArrayList(EntityType.RANGED_BASE).size() > 0 &&
+                        myPlayer.getEntityArrayList(EntityType.BUILDER_BASE).size() > 0) ||
+                        myPlayer.getEntityArrayList(EntityType.HOUSE).size() < 5 ||
+                        (myPlayer.getResource() > 550 && myPlayer.getEntityArrayList(EntityType.HOUSE).size() < 6)
+                ) {
+
+                    //   System.out.println("size HOME: " +  myPlayer.getEntityArrayList(EntityType.HOUSE).size());
+                    //  System.out.println("size RANGED_BASE: " +  myPlayer.getEntityArrayList(EntityType.RANGED_BASE).size());
+                    if (checkCreateMoreOneHouse(myPlayer)) {
+                        createHouseV2(builderUnitArrayList, globalManager, actionHashMap);
+                    }
+                }
             }
         }
 
@@ -610,7 +735,9 @@ public class EconomicManager {
             }
         }
 
-        if (Final.BUILD_TURRET_SPECIAL_V2 && globalManager.getGlobalStatistic().getPlayers().size()==2 && globalManager.getGlobalStatistic().isCheckFirstEnemyUnits() &&
+        if (Final.BUILD_TURRET_SPECIAL_V2 &&
+                (globalManager.getGlobalStatistic().getPlayers().size()==2 || Final.BUILD_TURRET_SPECIAL_V2_ALL) &&
+                        globalManager.getGlobalStatistic().isCheckFirstEnemyUnits() &&
                 globalManager.getGlobalStatistic().getMyPlayer().getEntityArrayList(EntityType.RANGED_BASE).size()>0 && createTurret<3 &&
                 myPlayer.getResource()>strategy.FinalConstant.getEntityProperties(EntityType.TURRET).getCost()
         )
@@ -624,7 +751,7 @@ public class EconomicManager {
                     continue;
                 }
 
-                if (globalManager.getGlobalMap().getSpecialCheckBuilderTaskTurretCreate(builder.getPosition())<30*11){
+                if (globalManager.getGlobalMap().getSpecialCheckBuilderTaskTurretCreate(builder.getPosition())<30*10){
                     continue;
                 }
 
@@ -719,6 +846,14 @@ public class EconomicManager {
 
 
         return actionHashMap;
+    }
+
+    private boolean checkCreateMoreOneHouse(MyPlayer myPlayer) {
+        if (createHouseAndNoActive<1) return true;
+
+        if ((createHouseAndNoActive)*3.5*myPlayer.getCost(EntityType.BUILDER_UNIT)<myPlayer.getResource()) return true;
+
+        return false;
     }
 
     private void createBase(ArrayList<MyEntity> builderUnitArrayList, GlobalManager globalManager, HashMap<Integer, EntityAction> actionHashMap, EntityType entityType) {
@@ -1158,6 +1293,11 @@ public class EconomicManager {
                 needBuilderRepait=MAX_BUILDER_REPAIR_BASE;
             }
 
+            if (myEntityBuilding.isActive())
+            {
+                needBuilderRepait = 2;
+            }
+
             if (myEntityBuilding.getRepairCounter()>=needBuilderRepait) continue;
 
             ArrayList<MyEntity> arrayList = new ArrayList<>();
@@ -1261,13 +1401,19 @@ public class EconomicManager {
                 " " + (( myPlayer.getEntityArrayList(EntityType.RANGED_BASE).size()==0 ||(myPlayer.getEntityArrayList(EntityType.RANGED_BASE).size()>0 && !myPlayer.getEntityArrayList(EntityType.RANGED_BASE).get(0).isActive())) && builderUnitArrayList.size() < MAX_BUILDER_UNIT));
 */
         // создаем новые юниты
-        if ((builderUnitArrayList.size() < myPlayer.getPopulationMax() * 0.75 && builderUnitArrayList.size() < MAX_BUILDER_UNIT) || builderUnitArrayList.size() < 13 ||
-                (( myPlayer.getEntityArrayList(EntityType.RANGED_BASE).size()==0 ||(myPlayer.getEntityArrayList(EntityType.RANGED_BASE).size()>0 && !myPlayer.getEntityArrayList(EntityType.RANGED_BASE).get(0).isActive())) && builderUnitArrayList.size() < MAX_BUILDER_UNIT-10)
+        if (((builderUnitArrayList.size() < myPlayer.getPopulationMax() * 0.75 && builderUnitArrayList.size() < MAX_BUILDER_UNIT)
+                || builderUnitArrayList.size() < 13
+                ||
+                (
+                        ( myPlayer.getEntityArrayList(EntityType.RANGED_BASE).size()==0 ||
+                        (myPlayer.getEntityArrayList(EntityType.RANGED_BASE).size()>0 && !myPlayer.getEntityArrayList(EntityType.RANGED_BASE).get(0).isActive()))
+                                && builderUnitArrayList.size() < MAX_BUILDER_UNIT-10)
+        )
                /* && !(globalManager.getGlobalMap().getResourceMap() < 10000 && builderUnitArrayList.size() > 15) &&
                 !(globalManager.getGlobalMap().getResourceMap() < 20000 && builderUnitArrayList.size() > 25
                 )*/
               //  && !globalManager.getMapPotField().checkAttackBase(myPlayer.getId(), globalManager.getGlobalStatistic())
-                && !checkAttackBaseV2(myPlayer)
+                && !checkAttackBaseV2(myPlayer,globalManager)
                 && myPlayer.getResource()>=(myPlayer.getCost(EntityType.BUILDER_UNIT)-myPlayer.getEntityArrayList(EntityType.BUILDER_UNIT).size())
                 && MAX_BUILDER_UNIT_ALL_GAME>myPlayer.getCountAllBiuld()
             //    && ((myPlayer.getEntityArrayList(EntityType.RANGED_UNIT).size() + myPlayer.getEntityArrayList(EntityType.MELEE_UNIT).size())>1 || myPlayer.getEntityArrayList(EntityType.RANGED_BASE).size()==0)
@@ -1317,8 +1463,8 @@ public class EconomicManager {
         }
 
         Final.DEBUG(TAG, "arrayList RANGED_BASE BASE: " + rangeBaseArrayList.size() + " resource: " + myPlayer.getResource());
-        if (myPlayer.getResource() >= myPlayer.getCost(EntityType.RANGED_UNIT)-myPlayer.getEntityArrayList(EntityType.RANGED_UNIT).size() &&
-                (globalManager.getMapPotField().checkAttackBaseTwo(myPlayer.getId()) || FinalConstant.getCurrentTik() > 1)
+        if (myPlayer.getResource() >= myPlayer.getCost(EntityType.RANGED_UNIT)-myPlayer.getEntityArrayList(EntityType.RANGED_UNIT).size()
+            //    && (globalManager.getMapPotField().checkAttackBaseTwo(myPlayer.getId()) || FinalConstant.getCurrentTik() > 1)
         && true
                 //&& globalManager.getGlobalStatistic().isCheckFirstEnemyUnits()
         ) {
@@ -1338,8 +1484,8 @@ public class EconomicManager {
 
         if (myPlayer.getResource() > myPlayer.getCost(EntityType.MELEE_UNIT)-myPlayer.getEntityArrayList(EntityType.MELEE_UNIT).size() &&
                 6
-                        * meleeUnitArrayList.size() < rangedUnitArrayList.size() &&
-                (globalManager.getMapPotField().checkAttackBaseTwo(myPlayer.getId()) || FinalConstant.getCurrentTik() > 1)
+                        * meleeUnitArrayList.size() < rangedUnitArrayList.size()
+             //   && (globalManager.getMapPotField().checkAttackBaseTwo(myPlayer.getId()) || FinalConstant.getCurrentTik() > 1)
                 && meleeUnitArrayList.size()<2
 
             && myPlayer.getPopulationCurrent()>60
@@ -1361,9 +1507,29 @@ public class EconomicManager {
         return actionHashMap;
     }
 
-    private boolean checkAttackBaseV2(MyPlayer myPlayer) {
+    private boolean checkAttackBaseV2(MyPlayer myPlayer,GlobalManager globalManager) {
         ArrayList<MyEntity> arrayList = myPlayer.getEnemyArrayList();
-        if (arrayList.size()*2.5>myPlayer.getEntityArrayList(EntityType.RANGED_UNIT).size() + myPlayer.getEntityArrayList(EntityType.MELEE_UNIT).size()) return true;
+      //  Final.DEBUGRelease("CHECKATTACK", FinalConstant.getCurrentTik() + " " + arrayList.size());
+        if (arrayList.size()==0)
+        {
+            return false;
+        }
+        int sizeUnit = 0;
+
+        MyPlayer myPlayer1 = globalManager.getGlobalStatistic().getPlayer(arrayList.get(0).getPlayerId());
+
+
+
+        if (myPlayer1!=null) {
+            sizeUnit = myPlayer1.getEntityArrayList(EntityType.RANGED_UNIT).size() + myPlayer.getEntityArrayList(EntityType.MELEE_UNIT).size();
+        }
+
+     //   Final.DEBUGRelease("CHECKATTACK", FinalConstant.getCurrentTik() + " sizeUnit: " + sizeUnit);
+
+
+        if (arrayList.size()*2.5>myPlayer.getEntityArrayList(EntityType.RANGED_UNIT).size() + myPlayer.getEntityArrayList(EntityType.MELEE_UNIT).size()
+        || sizeUnit+5 > myPlayer.getEntityArrayList(EntityType.RANGED_UNIT).size() + myPlayer.getEntityArrayList(EntityType.MELEE_UNIT).size()
+        ) return true;
         else return false;
     }
 

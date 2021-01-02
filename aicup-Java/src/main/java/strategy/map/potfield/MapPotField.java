@@ -72,13 +72,15 @@ public class MapPotField {
                 // отмечаем свои владения
                 if (map[i][j].getPlayerId() == FinalConstant.getMyID()) {
 
-                    addPlayerArea(map[i][j], Vec2Int.createVector(i, j), map);
+                    if (Final.PLAYER_AREA_CALCULATE){
+                        addPlayerArea(map[i][j], Vec2Int.createVector(i, j), map);
+                    }
 
                     addSafare(map[i][j], map);
                 } else {
                     addDanger(map[i][j], map);
 
-                    if (Final.BUILD_TURRET_SPECIAL_V2)
+                    if (Final.BUILD_TURRET_SPECIAL_V2 || Final.BUILD_TURRET_SPECIAL_V2_ALL)
                     {
                         addBuildUnit(map[i][j], map);
                     }
@@ -1428,7 +1430,7 @@ public class MapPotField {
                 if (resource)
                 {
                     Final.DEBUG("TAG", "pos: " + entity.getPosition().toString() + " resource  ");
-                    return null;
+                    return entity.getPosition();
                 }
                 else {
                     if (dangerPositionAnswer.currentSafety!=null || needMove) {
