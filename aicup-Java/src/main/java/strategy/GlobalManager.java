@@ -163,6 +163,11 @@ public class GlobalManager {
             mMoveManager.calculateDodgeUnits(playerView,this,mActionHashMap);
         }
 
+        if (CHECK_POSITION_NEXT_TIK)
+        {
+            getMoveManager().checkPositionNextTik(this,mActionHashMap);
+        }
+
         timeAllStrategy += System.nanoTime() - startTime;
 
         if (Final.debug)

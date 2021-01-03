@@ -3,6 +3,7 @@ package strategy;
 import model.*;
 import strategy.map.astar.AStar;
 import strategy.map.astar.Node;
+import strategy.map.potfield.Field;
 import strategy.map.potfield.MapPotField;
 
 import java.util.*;
@@ -66,6 +67,11 @@ public class MoveManager {
             return moveAction;
         }
 
+       /* if (targetPosition!=null) {
+            Final.DEBUGRelease("CHECK_MOVE", FinalConstant.getCurrentTik() + " " + entity.getPosition().toString() +
+                    " targetPosition: " + targetPosition.toString() + " DIS: " + entity.getPosition().distance(targetPosition));
+        }*/
+
         if (targetPosition!=null && entity.getPosition().distance(targetPosition)<1.1) {
             moveAction.setTarget(targetPosition);
             MyEntity entity1 = getGlobalMap().setPositionNextTick(entity, targetPosition);
@@ -80,6 +86,7 @@ public class MoveManager {
             }
             //mAStar.addNewBlock(targetPosition);
             entity.getEntityAction().setMoveAction(moveAction);
+            return moveAction;
         }
         else {
             // поиск Astar интересно
@@ -108,7 +115,14 @@ public class MoveManager {
                     MyEntity entity1 = getGlobalMap().setPositionNextTick(entity,current.getChild().getVec2Int());
                     if (entity1!=null) {
                         if (current.getChild().getChild()!=null) {
-                            boolean rotation = addMoveTargetUnit(entity1,current.getChild());
+                            boolean rotation = false;
+                            if (entity1.isDangerMove())
+                            {
+                                rotation = false;
+                            }
+                            else {
+                                rotation = addMoveTargetUnit(entity1,current.getChild());
+                            }
                             if (!rotation) {
                                 entity.getEntityAction().setMoveAction(null);
                                 return null;
@@ -407,4 +421,59 @@ public class MoveManager {
     }
 
 
+    public void checkPositionNextTik(GlobalManager globalManager, HashMap<Integer, EntityAction> actionHashMap) {
+
+        if (!Final.A_STAR) return;
+
+        globalManager.getMapPotField().calculateAttackNextTik(globalManager);
+
+        MapPotField mapPotField = globalManager.getMapPotField();
+
+        MyPlayer myPlayer = globalManager.getGlobalStatistic().getMyPlayer();
+
+        ArrayList<MyEntity> rangerArrayList= myPlayer.getEntityArrayList(EntityType.RANGED_UNIT);
+
+        for (int i=0; i<rangerArrayList.size(); i++)
+        {
+            MyEntity ranger = rangerArrayList.get(i);
+
+            if (ranger.getEntityAction().getMoveAction()!=null)
+            {
+                Field field = mapPotField.getMapPotField()[ranger.getEntityAction().getMoveAction().getTarget().getX()][ranger.getEntityAction().getMoveAction().getTarget().getY()];
+                int countDanger = field.getDangerRanger();
+
+                if (countDanger==0) continue;
+
+                int countDangerAttackNextTikMax =0;
+
+                for (int j=0; j<field.getDangerArrayList().size();j++)
+                {
+                    if (field.getDangerArrayList().get(j).getAttackNextTik()>countDangerAttackNextTikMax)
+                    {
+                        countDangerAttackNextTikMax = field.getDangerArrayList().get(j).getAttackNextTik();
+                    }
+                }
+
+                /*
+                for (int j=0; j<field.getDangerCounterArrayList().size();j++)
+                {
+                    if (field.getDangerArrayList().get(j).getAttackNextTik()>countDangerAttackNextTikMax)
+                    {
+                        countDangerAttackNextTikMax = field.getDangerArrayList().get(j).getAttackNextTik();
+                    }
+                }*/
+
+                if (countDangerAttackNextTikMax<countDanger)
+                {
+                    ranger.getEntityAction().setMoveAction(null);
+                    EntityAction entityAction = actionHashMap.get(ranger.getId());
+                    if (entityAction == null) entityAction = new EntityAction(null, null, null, null);
+                    entityAction.setMoveAction(null);
+                //    Final.DEBUGRelease("CPNT", FinalConstant.getCurrentTik() + " " + ranger.getId() + " " + ranger.getPosition().toString() +
+                //            " C: " + countDangerAttackNextTikMax + " CD: " + countDanger);
+                    actionHashMap.put(ranger.getId(),entityAction);
+                }
+            }
+        }
+    }
 }

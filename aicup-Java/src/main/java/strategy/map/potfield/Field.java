@@ -4,6 +4,8 @@ import model.EntityType;
 import model.Vec2Int;
 import strategy.MyEntity;
 
+import java.util.ArrayList;
+
 public class Field {
     Vec2Int position;
     MyEntity mMyEntity;
@@ -18,6 +20,9 @@ public class Field {
     int dangerContourMelee;
     int dangerContourTurret;
     int buildUnit;
+
+    ArrayList<MyEntity> dangerArrayList;
+    ArrayList<MyEntity> dangerCounterArrayList;
 
     int safetyContour;
 
@@ -41,10 +46,13 @@ public class Field {
     boolean seeFogOfWar;
     boolean dontUpdateFogOfWar;
 
+
     public Field(Vec2Int position) {
         this.position = position;
         mMyEntity = null;
         dontUpdateFogOfWar = false;
+        dangerArrayList = new ArrayList<>();
+        dangerCounterArrayList = new ArrayList<>();
         clear();
     }
 
@@ -85,6 +93,8 @@ public class Field {
 
         seeFogOfWar = false;
         buildUnit=0;
+        dangerArrayList.clear();
+        dangerCounterArrayList.clear();
     }
 
 
@@ -192,8 +202,9 @@ public class Field {
         this.dangerMelee++;
     }
 
-    public void addDangerRanger() {
+    public void addDangerRanger(MyEntity entity) {
         this.dangerRanger++;
+        this.dangerArrayList.add(entity);
     }
 
     public void addDangerTurret() {
@@ -224,8 +235,9 @@ public class Field {
         this.dangerContourMelee++;
     }
 
-    public void addDangerContourRanger() {
+    public void addDangerContourRanger(MyEntity entity) {
         this.dangerContourRanger++;
+        dangerArrayList.add(entity);
     }
 
     public void addDangerContourTurret() {
@@ -377,5 +389,13 @@ public class Field {
 
     public int getBuildUnit() {
         return buildUnit;
+    }
+
+    public ArrayList<MyEntity> getDangerArrayList() {
+        return dangerArrayList;
+    }
+
+    public ArrayList<MyEntity> getDangerCounterArrayList() {
+        return dangerCounterArrayList;
     }
 }

@@ -25,13 +25,17 @@ public class Final {
     public static boolean SPECIAL_ATTACK_ENEMY_BUILDER = true;
 
     public static boolean SPECIAL_RUSH = false;
+    public final static boolean CHECK_POSITION_NEXT_TIK = true;
 
+    public final static boolean ADD_CALCULATE_TWO_COUNTER = true;
+    public final static boolean CALCULATE_DISTRICT_REGION = true;
 
     // элементы игры
     public final static boolean BUILD_TURRET = false;
     public final static boolean BUILD_TURRET_SPECIAL = false;
     public final static boolean BUILD_TURRET_SPECIAL_V2 = true;
     public final static boolean BUILD_TURRET_SPECIAL_V2_ALL = true;
+
 
     //////////////УСТАРЕВШИЕ
     public static boolean PLAYER_AREA_CALCULATE = false;

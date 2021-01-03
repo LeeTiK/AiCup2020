@@ -285,6 +285,11 @@ public class EconomicManager {
                 }
             }
 
+            if (entity.isRotation())
+            {
+                continue;
+            }
+
             resource = globalManager.getGlobalMap().getEntityMapResourceSpecial(entity.getPosition(),checkTargetAttack);
 
             if (resource.size() > 0)

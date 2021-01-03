@@ -62,6 +62,8 @@ public class MyEntity extends Entity {
     boolean okey;
     boolean okeyV2;
 
+    int attackNextTik = 0;
+
     public MyEntity(Entity entity) {
         super(entity.getId(), entity.getPlayerId(), entity.getEntityType(), entity.getPosition(), entity.getHealth(), entity.isActive());
 
@@ -127,6 +129,7 @@ public class MyEntity extends Entity {
         minDisLeftSpecial = 0xFFFF;
         minDisRightSpecial = 0xFFFF;
         dodgeNew=null;
+        attackNextTik=0;
     }
 
     public void update(Entity entity) {
@@ -451,5 +454,13 @@ public class MyEntity extends Entity {
 
     public Vec2Int getDodgeNew() {
         return dodgeNew;
+    }
+
+    public void addAttackNextTik() {
+        this.attackNextTik++;
+    }
+
+    public int getAttackNextTik() {
+        return attackNextTik;
     }
 }

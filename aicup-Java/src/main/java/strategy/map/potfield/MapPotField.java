@@ -62,8 +62,10 @@ public class MapPotField {
                 if (map[i][j].getEntityType() == EntityType.Empty) {
                     if (mMapPotField[i][j].getDistrict()==-1)
                     {
-                        addDistrict(i,j,district);
-                        district++;
+                        if (Final.CALCULATE_DISTRICT_REGION) {
+                            addDistrict(i, j, district);
+                            district++;
+                        }
                     }
                 }
 
@@ -241,6 +243,8 @@ public class MapPotField {
 
         Vec2Int position = entity.getPosition();
 
+        boolean checkAttack = false;
+
         // danger
         for (int i = 0; i < GlobalMap.getRadiusUnit(entity.getEntityType()).length; i++) {
             int x = GlobalMap.getRadiusUnit(entity.getEntityType())[i][0];
@@ -253,7 +257,7 @@ public class MapPotField {
                     mMapPotField[x + position.getX()][y + position.getY()].addDangerMelee();
                     break;
                 case RANGED_UNIT:
-                    mMapPotField[x + position.getX()][y + position.getY()].addDangerRanger();
+                    mMapPotField[x + position.getX()][y + position.getY()].addDangerRanger(entity);
                     break;
                 case TURRET:
                     if (entity.isActive()) {
@@ -261,6 +265,15 @@ public class MapPotField {
                     }
                     break;
             }
+
+            MyEntity entity1 = mGlobalMap.getMap()[x + position.getX()][y + position.getY()];
+            if (entity1.getEntityType()==EntityType.Empty || entity1.getEntityType()==EntityType.RESOURCE) continue;
+
+            if (entity1.getPlayerId()==FinalConstant.getMyID())
+            {
+                checkAttack = true;
+            }
+
         }
       /*  int sizeMyUnitTwoCounter =0;
         if (entity.getEntityType()==EntityType.RANGED_UNIT)
@@ -363,6 +376,7 @@ public class MapPotField {
 
        /* if (left && rigth && down && up)
         {*/
+        if (!checkAttack) {
             for (int i = 0; i < GlobalMap.getRadiusContourUnit(entity.getEntityType()).length; i++) {
                 int x = GlobalMap.getRadiusContourUnit(entity.getEntityType())[i][0];
                 int y = GlobalMap.getRadiusContourUnit(entity.getEntityType())[i][1];
@@ -374,7 +388,7 @@ public class MapPotField {
                         mMapPotField[x + position.getX()][y + position.getY()].addDangerContourMelee();
                         break;
                     case RANGED_UNIT:
-                        mMapPotField[x + position.getX()][y + position.getY()].addDangerContourRanger();
+                        mMapPotField[x + position.getX()][y + position.getY()].addDangerContourRanger(entity);
                         //     mMapPotField[x + position.getX()][y + position.getY()].setSafetyContour(sizeMyUnitTwoCounter);
                         break;
                     case TURRET:
@@ -382,6 +396,7 @@ public class MapPotField {
                         break;
                 }
             }
+        }
        /* }
         else {
 
@@ -425,8 +440,15 @@ public class MapPotField {
         Vec2Int position = entity.getPosition();
 
 
-        int sizeMyUnitTwoCounter =0;
-      /*  if (entity.getEntityType()==EntityType.RANGED_UNIT)
+        int sizeMyUnitTwoCounterV2 =0;
+
+        if (Final.ADD_CALCULATE_TWO_COUNTER) {
+            ArrayList<MyEntity> arrayListTwoContour = mGlobalMap.getEntityMap(position, GlobalMap.rangerTwoContourArray, -1, FinalConstant.getMyID(), true, EntityType.RANGED_UNIT, true);
+
+            sizeMyUnitTwoCounterV2 = arrayListTwoContour.size();
+        }
+/*
+        if (entity.getEntityType()==EntityType.RANGED_UNIT)
         {
             //  mGlobalMap.checkNextPositionUnit(entity);
 
@@ -455,16 +477,16 @@ public class MapPotField {
             }
         }*/
 
-        sizeMyUnitTwoCounter =0;
+        int sizeMyUnitCounter =0;
         if (entity.getEntityType()==EntityType.RANGED_UNIT)
         {
             //  mGlobalMap.checkNextPositionUnit(entity);
 
             ArrayList<MyEntity> arrayList = mGlobalMap.getEntityMap(position,GlobalMap.rangerContourArray,-1,FinalConstant.getMyID(),true,EntityType.RANGED_UNIT,true);
-            sizeMyUnitTwoCounter = arrayList.size();
+            sizeMyUnitCounter = arrayList.size();
         }
 
-        if (sizeMyUnitTwoCounter>0) {
+        if (sizeMyUnitCounter>0) {
             for (int i = 0; i < GlobalMap.rangerDamageContourArray.length; i++) {
                 int x = GlobalMap.rangerDamageContourArray[i][0];
                 int y = GlobalMap.rangerDamageContourArray[i][1];
@@ -475,7 +497,7 @@ public class MapPotField {
                     case MELEE_UNIT:
                         break;
                     case RANGED_UNIT:
-                        mMapPotField[x + position.getX()][y + position.getY()].setSafetyContour(sizeMyUnitTwoCounter);
+                        mMapPotField[x + position.getX()][y + position.getY()].setSafetyContour(sizeMyUnitCounter);
                         break;
                     case TURRET:
                         break;
@@ -492,7 +514,7 @@ public class MapPotField {
                     case MELEE_UNIT:
                         break;
                     case RANGED_UNIT:
-                        mMapPotField[x + position.getX()][y + position.getY()].setSafetyContour(sizeMyUnitTwoCounter);
+                        mMapPotField[x + position.getX()][y + position.getY()].setSafetyContour(sizeMyUnitCounter + sizeMyUnitTwoCounterV2);
                         break;
                     case TURRET:
                         break;
@@ -1817,5 +1839,47 @@ public class MapPotField {
 
     public Field getMapPotField(Vec2Int position) {
         return mMapPotField[position.getX()][position.getY()];
+    }
+
+    public void calculateAttackNextTik(GlobalManager globalManager){
+
+        if (!Final.A_STAR) return;
+
+        MyPlayer myPlayer = globalManager.getGlobalStatistic().getMyPlayer();
+
+        ArrayList<MyEntity> rangerArrayList= myPlayer.getEntityArrayList(EntityType.RANGED_UNIT);
+
+        for (int k=0; k<rangerArrayList.size(); k++)
+        {
+            MyEntity entity = rangerArrayList.get(k);
+
+            if (entity.getEntityAction().getMoveAction()!=null)
+            {
+                EntityProperties entityProperties = FinalConstant.getEntityProperties(entity);
+
+                Vec2Int position = entity.getEntityAction().getMoveAction().getTarget();
+
+                // danger
+                for (int i = 0; i < GlobalMap.getRadiusUnit(entity.getEntityType()).length; i++) {
+                    int x = GlobalMap.getRadiusUnit(entity.getEntityType())[i][0];
+                    int y = GlobalMap.getRadiusUnit(entity.getEntityType())[i][1];
+
+                    if (!checkCoord(position.getX() + x, position.getY() + y)) continue;
+
+                    MyEntity entity1 = mGlobalMap.getMap()[position.getX() + x][position.getY() + y];
+
+                    if (entity1.getEntityType() == EntityType.Empty || entity1.getEntityType()==EntityType.RESOURCE) continue;
+
+                    if (entity1.getEntityType()==EntityType.RANGED_UNIT || entity1.getEntityType()==EntityType.MELEE_UNIT)
+                    {
+                        if (entity1.getPlayerId()!=FinalConstant.getMyID())
+                        {
+                            entity1.addAttackNextTik();
+                        }
+                    }
+                }
+            }
+        }
+
     }
 }
