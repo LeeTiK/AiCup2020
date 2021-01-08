@@ -2,6 +2,7 @@ package strategy.map.potfield;
 
 import model.EntityType;
 import model.Vec2Int;
+import strategy.Final;
 import strategy.MyEntity;
 
 import java.util.ArrayList;
@@ -336,10 +337,18 @@ public class Field {
     }
 
     public void setSafetyContour(int safetyContour) {
-        if (this.safetyContour<safetyContour
-              //  || (this.safetyContour==0 && safetyContour!=0)
-        ) {
-            this.safetyContour = safetyContour;
+        if (Final.MINIMAL_SAFETY) {
+            if (this.safetyContour > safetyContour
+                    || (this.safetyContour == 0 && safetyContour != 0)
+            ) {
+                this.safetyContour = safetyContour;
+            }
+        }
+        else {
+            if (this.safetyContour < safetyContour)
+            {
+                this.safetyContour = safetyContour;
+            }
         }
     }
 

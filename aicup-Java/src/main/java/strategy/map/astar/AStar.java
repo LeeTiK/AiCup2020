@@ -22,6 +22,7 @@ public class AStar {
     private static int DEFAULT_HV_COST_RESOURSCE_BUILD_UNIT = 30; //
     private static int DEFAULT_HV_COST_BUILD_UNIT = 3; //
     private static int DEFAULT_HV_COST_ATTACK_UNIT = 3; //
+    private static int DEFAULT_HV_COST_TURRET = 4; //
     private int hvCost;
     private int diagonalCost;
     private Node[][] searchArea;
@@ -119,6 +120,11 @@ public class AStar {
                             this.searchArea[i][j].setH2(DEFAULT_HV_COST_ATTACK_UNIT);
                         }
                     }
+                }
+
+                if (mapPotField.getMapPotFieldNoCheck(vec2Int).getDangerTurret()>0)
+                {
+                    this.searchArea[i][j].setH2( this.searchArea[i][j].getH2()+DEFAULT_HV_COST_TURRET);
                 }
             }
         }
@@ -301,7 +307,7 @@ public class AStar {
 
     public void addNewBlock(Vec2Int vec2Int)
     {
-        this.searchArea[vec2Int.getX()][vec2Int.getY()].setBlockFirst(true);
+        this.searchArea[vec2Int.getX()][vec2Int.getY()].setBlock(true);
     }
 }
 

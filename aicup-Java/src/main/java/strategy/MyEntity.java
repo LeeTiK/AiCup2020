@@ -64,6 +64,8 @@ public class MyEntity extends Entity {
 
     int attackNextTik = 0;
 
+    boolean dangerResource;
+
     public MyEntity(Entity entity) {
         super(entity.getId(), entity.getPlayerId(), entity.getEntityType(), entity.getPosition(), entity.getHealth(), entity.isActive());
 
@@ -130,6 +132,7 @@ public class MyEntity extends Entity {
         minDisRightSpecial = 0xFFFF;
         dodgeNew=null;
         attackNextTik=0;
+        dangerResource=false;
     }
 
     public void update(Entity entity) {
@@ -462,5 +465,13 @@ public class MyEntity extends Entity {
 
     public int getAttackNextTik() {
         return attackNextTik;
+    }
+
+    public void setDangerResource(boolean dangerResource) {
+        this.dangerResource = dangerResource;
+    }
+
+    public boolean isDangerResource() {
+        return dangerResource;
     }
 }

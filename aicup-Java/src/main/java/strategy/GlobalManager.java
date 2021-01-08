@@ -71,6 +71,14 @@ public class GlobalManager {
 
         mGlobalStatistic.updateInfo(playerView, this);
 
+        if (mGlobalStatistic.getPlayers().size()==2)
+        {
+            MINIMAL_SAFETY = true;
+        }
+        else {
+            MINIMAL_SAFETY = false;
+        }
+
         if (FinalConstant.isFogOfWar() && !RELEASE)
         {
             A_STAR = true;

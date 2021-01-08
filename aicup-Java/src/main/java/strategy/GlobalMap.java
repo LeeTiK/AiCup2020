@@ -5,6 +5,8 @@ import strategy.map.potfield.MapPotField;
 import strategy.map.wave.SearchAnswer;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 import static strategy.GlobalManager.waveSearchModule;
 
@@ -495,6 +497,9 @@ public class GlobalMap {
                 if (!checkCoord(x,y)) continue;
 
                 mMapPotField.getMapPotField()[x][y].setSeeFogOfWar(true);
+                if (map[x][y].getEntityType()==EntityType.Empty && entity.getEntityType()==EntityType.RANGED_UNIT) {
+                    mMapPotField.getMapPotField()[entity.getPosition().getX()][entity.getPosition().getY()].setDontUpdateFogOfWar(true);
+                }
             }
         }
     }
@@ -930,7 +935,7 @@ public class GlobalMap {
 
                 if (mapPotField!=null)
                 {
-                    if (mapPotField.getMapPotField(vec2Int1).getDistrict()!=district) {
+                    if (mapPotField.getMapPotFieldNoCheck(vec2Int1).getDistrict()!=district) {
                         check=false;
                     }
                 }
@@ -975,7 +980,7 @@ public class GlobalMap {
 
                 if (mapPotField!=null)
                 {
-                    if (mapPotField.getMapPotField(vec2Int1).getDistrict()!=district) {
+                    if (mapPotField.getMapPotFieldNoCheck(vec2Int1).getDistrict()!=district) {
                         check=false;
                     }
                 }
@@ -1019,7 +1024,7 @@ public class GlobalMap {
 
                 if (mapPotField!=null)
                 {
-                    if (mapPotField.getMapPotField(vec2Int1).getDistrict()!=district) {
+                    if (mapPotField.getMapPotFieldNoCheck(vec2Int1).getDistrict()!=district) {
                         check=false;
                     }
                 }
@@ -1063,7 +1068,7 @@ public class GlobalMap {
 
                 if (mapPotField!=null)
                 {
-                    if (mapPotField.getMapPotField(vec2Int1).getDistrict()!=district) {
+                    if (mapPotField.getMapPotFieldNoCheck(vec2Int1).getDistrict()!=district) {
                         check=false;
                     }
                 }
@@ -1095,13 +1100,17 @@ public class GlobalMap {
         double minDis = 0xFFFF;
         MyEntity current = null;
 
+        // specialMinDIs
+        double minDisSpecial= 0xFFFF;
+        MyEntity currentSpecial = null;
+
         ArrayList<MyEntity> allEntity;
 
         int myDist = -1;
 
         if (mapPotField!=null)
         {
-            myDist = mapPotField.getMapPotField(position).getDistrict();
+            myDist = mapPotField.getMapPotFieldNoCheck(position).getDistrict();
         }
 
         if (entityType==EntityType.RESOURCE)
@@ -1115,7 +1124,6 @@ public class GlobalMap {
         for (int i = 0; i < allEntity.size(); i++) {
             if (allEntity.get(i).getEntityType() != entityType) continue;
 
-            if (entityType==EntityType.RESOURCE && allEntity.get(i).getTargetEntity()!=null) continue;
 
             if (mapPotField!=null)
             {
@@ -1126,11 +1134,22 @@ public class GlobalMap {
              }
 
             double dis = position.distance(allEntity.get(i).getPosition());
-            if (dis < minDis) {
 
-                ArrayList<Vec2Int> arrayList = getCoordAround(allEntity.get(i).getPosition(), 1, true, myID, mapPotField.getMapPotField(position).getDistrict(),mapPotField);
+
+                ArrayList<Vec2Int> arrayList = getCoordAround(allEntity.get(i).getPosition(), 1, true, myID, mapPotField.getMapPotFieldNoCheck(position).getDistrict(),mapPotField);
                 if (arrayList.size() == 0 && checkEmpty) continue;
 
+                if (entityType==EntityType.RESOURCE) {
+                    if (allEntity.get(i).getTargetEntity() != null) {
+                        if (dis < minDisSpecial) {
+                            currentSpecial = allEntity.get(i);
+                            minDisSpecial = dis;
+                        }
+                        continue;
+                    }
+                }
+
+            if (dis < minDis) {
                 if (mapPotField!=null) {
                     boolean check = false;
                     boolean allDistrict = false;
@@ -1151,6 +1170,11 @@ public class GlobalMap {
                 minDis = dis;
             }
         }
+        if (current==null)
+        {
+            return currentSpecial;
+        }
+
         return current;
     }
 
@@ -1158,7 +1182,7 @@ public class GlobalMap {
         double minDis = 0xFFFF;
         Vec2Int current = null;
         for (int i = 0; i < arrayList.size(); i++) {
-            if (repair && mMapPotField.getMapPotField(arrayList.get(i)).isRepairPositionClose())
+            if (repair && mMapPotField.getMapPotFieldNoCheck(arrayList.get(i)).isRepairPositionClose())
             {
                 continue;
             }
@@ -1244,6 +1268,14 @@ public class GlobalMap {
         Vec2Int vec2Int = building.getPosition();
 
         ArrayList<Vec2Int> arrayList = getCoordAround(vec2Int,entityProperties.getSize(),true);
+
+        Collections.sort(arrayList, new Comparator<Vec2Int>() {
+            public int compare(Vec2Int a, Vec2Int b) {
+                if (a.getX()+a.getY() > b.getX()+b.getY()) return 1;
+                if (a.getX()+a.getY() < b.getX()+b.getY()) return -1;
+                return 0;
+            }
+        });
 
         SearchAnswer searchAnswer = waveSearchModule.waveSearchNeedEntity(arrayList,50,EntityType.RESOURCE);
 
@@ -1664,6 +1696,10 @@ public class GlobalMap {
 
                 double dis = map[i][j].getPosition().distance(vec2Int);
 
+                if (map[i][j].getEntityType() == EntityType.TURRET){
+                    dis+=15;
+                }
+
                 if (dis < minDis) {
                     minDis = dis;
                     current = map[i][j];
@@ -1803,6 +1839,16 @@ public class GlobalMap {
                 if (y + position.getY() < 0 || y + position.getY() >= FinalConstant.getMapSize()) continue;
 
                 MyEntity entity = map[x + position.getX()][y + position.getY()];
+
+                if (Final.DANGER_RESOURCE)
+                {
+                    if (entity.getEntityType()==EntityType.RESOURCE && entity.isDangerResource())
+                    {
+                        arrayList.add(entity);
+                        continue;
+                    }
+                }
+
                 if (((entity.getEntityType() == EntityType.RANGED_UNIT || entity.getEntityType() == EntityType.MELEE_UNIT) || !onlyUnit) &&
 
                         (entity.getEntityType() != EntityType.Empty && entity.getEntityType() != EntityType.RESOURCE)
@@ -1856,7 +1902,7 @@ public class GlobalMap {
                 if (specialMapPot)
                 {
                     if (entity.getHealth()<=5) continue;
-                    if (mMapPotField.getMapPotField(entity.getPosition()).getSumDanger()>0) continue;
+                    if (mMapPotField.getMapPotFieldNoCheck(entity.getPosition()).getSumDanger()>0) continue;
                     // проверяем возможность прохода
                     if (position.getX()==entity.getPosition().getX())
                     {
@@ -2213,6 +2259,10 @@ public class GlobalMap {
             return null;
         }
 
+        if (entityTwo.isDangerMove())
+        {
+            Final.DEBUG("ERROR ", "position is Danger MOVE " + entity.getPosition().toString() + " To: " + positionTwo.toString());
+        }
       /*  if (entityTwo.getEntityType()!=EntityType.Empty){
             Final.DEBUG("NEED_MOVE", "V2 ERROR NO EMPTY " + entityTwo.toString());
             return null;

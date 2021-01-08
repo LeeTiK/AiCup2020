@@ -4,11 +4,18 @@ import model.Vec2Int;
 import strategy.Final;
 import strategy.MyEntity;
 
+import java.util.ArrayList;
+
 public class AttackRangeAnswer {
 
     Field attackPosition;
     Field defencePosition;
     Field defencePositionUnit;
+
+
+    ArrayList<Field> attackPositionArrayList;
+    ArrayList<Field> defencePositionArrayList;
+    ArrayList<Field> defencePositionUnitArrayList;
 
     MyEntity myEntityUnit;
 
@@ -16,10 +23,16 @@ public class AttackRangeAnswer {
     int maxCounterDanger;
 
     public AttackRangeAnswer(){
+        attackPositionArrayList = new ArrayList<>(2);
+        defencePositionArrayList = new ArrayList<>(2);
+        defencePositionUnitArrayList = new ArrayList<>(2);
         clear();
     }
 
     public void clear(){
+        attackPositionArrayList.clear();
+        defencePositionArrayList.clear();
+        defencePositionUnitArrayList.clear();
         attackPosition = null;
         defencePosition = null;
         defencePositionUnit = null;
@@ -36,20 +49,32 @@ public class AttackRangeAnswer {
         return maxCounterDanger;
     }
 
-    public Field getAttackPosition() {
-        return attackPosition;
+    public MyEntity getMyEntityUnit() {
+        return myEntityUnit;
     }
 
     public Field getDefencePosition() {
         return defencePosition;
     }
 
-    public Field getDefencePositionUnit() {
-        return defencePositionUnit;
+    public Field getAttackPosition() {
+        return attackPosition;
     }
 
-    public MyEntity getMyEntityUnit() {
-        return myEntityUnit;
+    public ArrayList<Field> getAttackPositionArrayList() {
+        return attackPositionArrayList;
+    }
+
+    public ArrayList<Field> getDefencePositionArrayList() {
+        return defencePositionArrayList;
+    }
+
+    public ArrayList<Field> getDefencePositionUnitArrayList() {
+        return defencePositionUnitArrayList;
+    }
+
+    public Field getDefencePositionUnit() {
+        return defencePositionUnit;
     }
 }
 

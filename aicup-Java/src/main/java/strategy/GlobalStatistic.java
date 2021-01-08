@@ -186,8 +186,8 @@ public class GlobalStatistic {
             switch (myID)
             {
                 case 1:
-                    left = getPlayer(3);
-                    right = getPlayer(4);
+                    left = getPlayer(4);
+                    right = getPlayer(3);
 
                     if (left.getPopulationCurrent() == 0 && left.getBuildingArrayList().size() == 0) {
                         left = getPlayer(2);
@@ -198,8 +198,8 @@ public class GlobalStatistic {
                     }
                     break;
                 case 2:
-                    left = getPlayer(4);
-                    right = getPlayer(3);
+                    left = getPlayer(3);
+                    right = getPlayer(4);
 
                     if (left.getPopulationCurrent() == 0 && left.getBuildingArrayList().size() == 0) {
                         left = getPlayer(1);
@@ -210,8 +210,8 @@ public class GlobalStatistic {
                     }
                     break;
                 case 3:
-                    left = getPlayer(2);
-                    right = getPlayer(1);
+                    left = getPlayer(1);
+                    right = getPlayer(2);
 
                     if (left.getPopulationCurrent() == 0 && left.getBuildingArrayList().size() == 0) {
                         left = getPlayer(4);
@@ -222,8 +222,8 @@ public class GlobalStatistic {
                     }
                     break;
                 case 4:
-                    left = getPlayer(1);
-                    right = getPlayer(2);
+                    left = getPlayer(2);
+                    right = getPlayer(1);
 
                     if (left.getPopulationCurrent() == 0 && left.getBuildingArrayList().size() == 0) {
                         left = getPlayer(3);

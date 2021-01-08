@@ -60,6 +60,8 @@ public class DodgeManager {
                 actionHashMap.put(builderUnit.getId(), entityAction);*/
             }
         }
+
+        calculateDodgeUnits(unitDodgeArrayList,globalManager,actionHashMap);
     }
 
     void calculateDodgeUnits(ArrayList<MyEntity> unitDodgeArrayList, GlobalManager globalManager, HashMap<Integer,EntityAction> actionHashMap){
@@ -68,11 +70,18 @@ public class DodgeManager {
 
         Collections.sort(unitDodgeArrayList, mMyEntityComparator);
 
+        if (unitDodgeArrayList.size()>5)
+        {
+            int k =0;
+        }
+
         ArrayList<MyEntity> unitDodgeNextArrayList = new ArrayList<>();
 
         for (int i=0; i<unitDodgeArrayList.size(); i++)
         {
             MyEntity entity = unitDodgeArrayList.get(i);
+
+            if (entity.isDodge()) continue;
 
             Final.DEBUG("NEED_MOVE", entity.getEntityType() + " " + entity.getPosition().toString());
 
@@ -87,14 +96,17 @@ public class DodgeManager {
                     EntityAction entityAction = actionHashMap.get(entity.getId());
                     if (entityAction == null) entityAction = new EntityAction(null, null, null, null);
 
-                    //    ArrayList<MyEntity> resource = globalManager.getGlobalMap().getEntityMap(entity.getPosition(),GlobalMap.aroundArray,FinalConstant.getMyID(),-1,false,EntityType.RESOURCE);
+                        ArrayList<MyEntity> resource = globalManager.getGlobalMap().getEntityMap(entity.getPosition(),GlobalMap.aroundArray,FinalConstant.getMyID(),-1,false,EntityType.RESOURCE);
                     Vec2Int vec2IntDodge  =null;
+
+                    DodgePositionAnswer dodgePositionAnswer = globalManager.getMapPotField().getDodgePositionBuild(entity,resource.size()>0,entity.isNeedMove());
+
                     // увороты от всех по ПП
-                    if (entity.getDodgePositionAnswer().getSafetyArrayList().size()>0)
+                    if (dodgePositionAnswer.getSafetyArrayList().size()>0)
                     {
-                        for (int j=0; j<entity.getDodgePositionAnswer().getSafetyArrayList().size(); j++)
+                        for (int j=0; j<dodgePositionAnswer.getSafetyArrayList().size(); j++)
                         {
-                            Vec2Int vec2Int = entity.getDodgePositionAnswer().getSafetyArrayList().get(j).getPosition();
+                            Vec2Int vec2Int = dodgePositionAnswer.getSafetyArrayList().get(j).getPosition();
 
                             if (globalMap.checkEmpty(globalMap.getMapNextTick(),vec2Int))
                             {
@@ -104,18 +116,18 @@ public class DodgeManager {
                     }
 
                     if (vec2IntDodge==null) {
-                        if (entity.getDodgePositionAnswer().getSafetyPositionUnitArrayList().size()>0)
+                        if (dodgePositionAnswer.getSafetyPositionUnitArrayList().size()>0)
                         {
-                            vec2IntDodge = entity.getDodgePositionAnswer().getSafetyPositionUnitArrayList().get(0).getPosition();
+                            vec2IntDodge = dodgePositionAnswer.getSafetyPositionUnitArrayList().get(0).getPosition();
                         }
                         else {
                             Final.DEBUG("NEED_MOVE", "BAD_NEED_MOVE: " + entity.getPosition().toString());
                         }
                     }
                     if (vec2IntDodge==null) {
-                        if (entity.getDodgePositionAnswer().getSafetyCounterArrayList().size() > 0) {
-                            for (int j = 0; j < entity.getDodgePositionAnswer().getSafetyCounterArrayList().size(); j++) {
-                                Vec2Int vec2Int = entity.getDodgePositionAnswer().getSafetyCounterArrayList().get(j).getPosition();
+                        if (dodgePositionAnswer.getSafetyCounterArrayList().size() > 0) {
+                            for (int j = 0; j < dodgePositionAnswer.getSafetyCounterArrayList().size(); j++) {
+                                Vec2Int vec2Int = dodgePositionAnswer.getSafetyCounterArrayList().get(j).getPosition();
 
                                 if (globalMap.checkEmpty(globalMap.getMapNextTick(), vec2Int)) {
                                     vec2IntDodge = vec2Int;
@@ -140,15 +152,35 @@ public class DodgeManager {
                         player.addCountBuildDodge();
 
                         MyEntity entity1 = globalMap.setPositionNextTick(entity,vec2IntDodge);
-                        if (entity1.getEntityType()==EntityType.BUILDER_UNIT || entity1.getEntityType()==EntityType.RANGED_UNIT)
-                        {
-                            unitDodgeNextArrayList.add(entity1);
+                        globalManager.getMoveManager().getAStar().addNewBlock(vec2IntDodge);
+
+                        if (entity1!=null) {
+                            if (entity1.getEntityType() == EntityType.BUILDER_UNIT) {
+                                entity1.setNeedMove(true);
+                                unitDodgeNextArrayList.add(entity1);
+                            }
                         }
 
                         actionHashMap.put(entity.getId(), entityAction);
                     }
                     break;
             }
+        }
+        if (unitDodgeNextArrayList.size()>0)
+        {
+            unitDodgeArrayList.clear();
+            for (int i=0; i<unitDodgeNextArrayList.size(); i++){
+                MyEntity builderUnit = unitDodgeNextArrayList.get(i);
+                ArrayList<MyEntity> resource = globalManager.getGlobalMap().getEntityMap(builderUnit.getPosition(),GlobalMap.aroundArray,FinalConstant.getMyID(),-1,false,EntityType.RESOURCE);
+
+                // увороты от всех по ПП
+                DodgePositionAnswer dodgePositionAnswer = globalManager.getMapPotField().getDodgePositionBuild(builderUnit,resource.size()>0,true);
+
+                builderUnit.setDodgePositionAnswer(dodgePositionAnswer);
+                unitDodgeArrayList.add(builderUnit);
+            }
+            unitDodgeNextArrayList.clear();
+            calculateDodgeUnits(unitDodgeArrayList,globalManager,actionHashMap);
         }
     }
 

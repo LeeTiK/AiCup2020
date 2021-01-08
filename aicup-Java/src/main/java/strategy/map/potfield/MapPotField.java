@@ -239,6 +239,8 @@ public class MapPotField {
         if (entity.getEntityType() != EntityType.RANGED_UNIT && entity.getEntityType() != EntityType.MELEE_UNIT && entity.getEntityType() != EntityType.TURRET)
             return;
 
+        if (entity.getEntityType()==EntityType.TURRET && !entity.isActive()) return;
+
         EntityProperties entityProperties = FinalConstant.getEntityProperties(entity);
 
         Vec2Int position = entity.getPosition();
@@ -503,7 +505,9 @@ public class MapPotField {
                         break;
                 }
             }
+        }
 
+        if (sizeMyUnitCounter + sizeMyUnitTwoCounterV2>0) {
             for (int i = 0; i < GlobalMap.rangerContourArray.length; i++) {
                 int x = GlobalMap.rangerContourArray[i][0];
                 int y = GlobalMap.rangerContourArray[i][1];
@@ -728,7 +732,7 @@ public class MapPotField {
                     }
 
                     if (Final.DANGER_AND_SAFETY_AREA_TEXT) {
-                        if (getMapPotField()[i][j].getSumDanger()+getMapPotField()[i][j].getSumSafaty()+getMapPotField()[i][j].getSumDangerContour()>0) {
+                        if (getMapPotField()[i][j].getSumDanger()+ getMapPotField()[i][j].getSumSafaty()+ getMapPotField()[i][j].getSumDangerContour()>0) {
                             FinalGraphic.sendText(debugInterface, new Vec2Float(i * 1.0f, j * 1.0f + 0.85f), 11, "D:" +
                                     getMapPotField()[i][j].getDangerRanger() + "," + getMapPotField()[i][j].getDangerMelee() + "," + getMapPotField()[i][j].getDangerTurret());
                             FinalGraphic.sendText(debugInterface, new Vec2Float(i * 1.0f, j * 1.0f + 0.65f), 11, "C:" +
@@ -1226,16 +1230,11 @@ public class MapPotField {
 
     PositionAnswer mPositionAnswer = new PositionAnswer();
 
-    public PositionAnswer getDangerAttackRangerV3(MyEntity entity, boolean needMove) {
-
-        mPositionAnswer.clear();
-
-        AttackRangeAnswer attackRangeAnswer = calculateAttackRange(entity,needMove);
-
+    public PositionAnswer getDangerAttackRangerV4(MyEntity entity, AttackRangeAnswer attackRangeAnswer, boolean needMove){
         Field currentPosition = mMapPotField[entity.getPosition().getX()][entity.getPosition().getY()];
 
-        Final.DEBUG("DangeAttack: ", FinalConstant.getCurrentTik() + " " + entity.getId() + " " +
-                currentPosition.getPosition().toString() + " " + " NM: " + needMove + " " +
+        Final.DEBUG("DangeAttack: ", FinalConstant.getCurrentTik() + " " + entity.getId() + " NM: " + needMove + " " +
+                (currentPosition!=null?currentPosition.toString():"") + " " +
                 (attackRangeAnswer.attackPosition!=null?attackRangeAnswer.attackPosition.toString():"") + " " +
                 (attackRangeAnswer.defencePosition!=null?attackRangeAnswer.defencePosition.toString():"") + " " +
                 (attackRangeAnswer.defencePositionUnit!=null?attackRangeAnswer.defencePositionUnit.toString():"") + " " +
@@ -1243,6 +1242,8 @@ public class MapPotField {
         );
 
         if (!needMove){
+            if (currentPosition.getSumDanger()>0) return mPositionAnswer.init(currentPosition.getPosition());
+
             if (attackRangeAnswer.attackPosition!=null) {
                 return mPositionAnswer.init(attackRangeAnswer.attackPosition.getPosition());
             }
@@ -1268,7 +1269,7 @@ public class MapPotField {
                         return mPositionAnswer.init(entity.getPosition());
                     }
                 }
-                }
+            }
         }
 
         if (needMove)
@@ -1285,6 +1286,15 @@ public class MapPotField {
         }
 
         return null;
+    }
+
+    public PositionAnswer getDangerAttackRangerV3(MyEntity entity, boolean needMove) {
+
+        mPositionAnswer.clear();
+
+        AttackRangeAnswer attackRangeAnswer = calculateAttackRange(entity,needMove);
+
+        return getDangerAttackRangerV4(entity,attackRangeAnswer,needMove);
     }
 
     public AttackRangeAnswer calculateAttackRange(MyEntity entity, boolean needMove)
@@ -1310,6 +1320,11 @@ public class MapPotField {
             // if (mGlobalMap.getMap(newPosition).getEntityType()==EntityType.RESOURCE) continue;
             if (mGlobalMap.checkUnit(mGlobalMap.getMapNextTick(), newPosition)) {
                 unitPosition = true;
+                if (mGlobalMap.getMapNextTick()[newPosition.getX()][newPosition.getY()].isDangerMove() ||
+                        mGlobalMap.getMapNextTick()[newPosition.getX()][newPosition.getY()].isDodge()
+                ) {
+                    unitPosition = false;
+                }
             }
 
             if (mGlobalMap.checkEmpty(mGlobalMap.getMapNextTick(), newPosition)) {
@@ -1337,18 +1352,12 @@ public class MapPotField {
             if (newPosition.equals(entity.getPosition()) && needMove) continue;
 
             if (emptyPosition) {
-                if (field.getSumDanger() == 1 && field.getSumDangerContour() == 0) {
-                    attackRangeAnswer.attackPosition = field;
-                }
-
-                if (field.getSumDanger() == 0 && field.getSumDangerContour() == 1) {
-                    attackRangeAnswer.attackPosition = field;
-                }
-
-                if (field.getSumDanger() + field.getSumDangerContour() > 0 &&
-                        field.getSumDanger() + field.getSumDangerContour() - field.getSafetyContour() <= 0
+                if ((field.getSumDanger() == 1 && field.getSumDangerContour() == 0) ||
+                        (field.getSumDanger() == 0 && field.getSumDangerContour() == 1) ||
+                        (field.getSumDanger() + field.getSumDangerContour() > 0 && field.getSumDanger() + field.getSumDangerContour() - field.getSafetyContour() <= 0)
                 ) {
                     attackRangeAnswer.attackPosition = field;
+                    attackRangeAnswer.getAttackPositionArrayList().add(field);
                 }
 
                 if (field.getSumDanger()>=4)
@@ -1361,26 +1370,33 @@ public class MapPotField {
                         if (arrayList.size()>=5)
                         {
                             attackRangeAnswer.attackPosition = field;
+                            attackRangeAnswer.getAttackPositionArrayList().add(field);
                         }
                     }
                 }
 
-                if (attackRangeAnswer.defencePosition==null)
-                {
-                    attackRangeAnswer.defencePosition = field;
-                }
+                if (attackRangeAnswer.defencePosition==null ||
+                        (attackRangeAnswer.defencePosition.getSumDanger()>field.getSumDanger()))
 
-                if (attackRangeAnswer.defencePosition.getSumDanger()>field.getSumDanger())
                 {
                     attackRangeAnswer.defencePosition = field;
+                    attackRangeAnswer.getDefencePositionArrayList().add(field);
                 }
                 else
                 {
                     if (attackRangeAnswer.defencePosition.getSumDanger()==field.getSumDanger())
                     {
-                        if (attackRangeAnswer.defencePosition.getSumDanger() + attackRangeAnswer.defencePosition.getSumDangerContour() - attackRangeAnswer.defencePosition.getSafetyContour() >
-                                field.getSumDanger() + field.getSumDangerContour() - field.getSafetyContour()){
+                        if (field.getSumDanger()+field.getSumDangerContour()==0)
+                        {
                             attackRangeAnswer.defencePosition = field;
+                            attackRangeAnswer.getDefencePositionArrayList().add(field);
+                        }
+                        else {
+                            if (attackRangeAnswer.defencePosition.getSumDanger() + attackRangeAnswer.defencePosition.getSumDangerContour() - attackRangeAnswer.defencePosition.getSafetyContour() >
+                                    field.getSumDanger() + field.getSumDangerContour() - field.getSafetyContour()) {
+                                attackRangeAnswer.defencePosition = field;
+                                attackRangeAnswer.getDefencePositionArrayList().add(field);
+                            }
                         }
                     }
                 }
@@ -1388,14 +1404,10 @@ public class MapPotField {
 
             if (unitPosition)
             {
-                if (attackRangeAnswer.defencePositionUnit==null)
+                if (attackRangeAnswer.defencePositionUnit==null || (attackRangeAnswer.defencePositionUnit.getSumDanger()>field.getSumDanger()))
                 {
                     attackRangeAnswer.defencePositionUnit = field;
-                }
-
-                if (attackRangeAnswer.defencePositionUnit.getSumDanger()>field.getSumDanger())
-                {
-                    attackRangeAnswer.defencePositionUnit = field;
+                    attackRangeAnswer.getDefencePositionUnitArrayList().add(field);
                 }
                 else
                 {
@@ -1404,6 +1416,7 @@ public class MapPotField {
                         if (attackRangeAnswer.defencePositionUnit.getSumDanger() + attackRangeAnswer.defencePositionUnit.getSumDangerContour() - attackRangeAnswer.defencePositionUnit.getSafetyContour() >
                                 field.getSumDanger() + field.getSumDangerContour() - field.getSafetyContour()){
                             attackRangeAnswer.defencePositionUnit = field;
+                            attackRangeAnswer.getDefencePositionUnitArrayList().add(field);
                         }
                     }
                 }
@@ -1594,7 +1607,7 @@ public class MapPotField {
         boolean unitPosition;
         boolean emptyPosition;
 
-        if (getMapPotField(position).getSumDangerContour()+getMapPotField(position).getSumDanger()>0) {
+        if (getMapPotFieldNoCheck(position).getSumDangerContour()+ getMapPotFieldNoCheck(position).getSumDanger()>0) {
             dangerPositionAnswer.currentCounterDanger = true;
         }
 
@@ -1727,7 +1740,7 @@ public class MapPotField {
         boolean unitPosition;
         boolean emptyPosition;
 
-        if (getMapPotField(position).getSumDangerContour()+getMapPotField(position).getSumDanger()>0) {
+        if (getMapPotFieldNoCheck(position).getSumDangerContour()+ getMapPotFieldNoCheck(position).getSumDanger()>0) {
             dodgePositionAnswer.currentSafety = true;
         }
 
@@ -1742,6 +1755,12 @@ public class MapPotField {
             if (mGlobalMap.checkUnit(mGlobalMap.getMapNextTick(),newPosition))
             {
                 unitPosition = true;
+
+                if (mGlobalMap.getMapNextTick()[newPosition.getX()][newPosition.getY()].isDangerMove() ||
+                        mGlobalMap.getMapNextTick()[newPosition.getX()][newPosition.getY()].isDodge()
+                ) {
+                    unitPosition = false;
+                }
             }
 
             if (mGlobalMap.checkEmpty(mGlobalMap.getMapNextTick(),newPosition))
@@ -1767,6 +1786,11 @@ public class MapPotField {
             }
 
             if (!unitPosition && !emptyPosition) continue;
+
+            if (unitPosition)
+            {
+
+            }
 
 
             int sizeEmptyPosition =  mGlobalMap.getCoordAround(newPosition, 1, true).size();
@@ -1833,11 +1857,36 @@ public class MapPotField {
         return true;
     }
 
+    public boolean checkSafetyBuilding(Vec2Int vec2Int, int size) {
+        return checkSafety(vec2Int, size, size);
+    }
+
+    public boolean checkSafetyBuilding(Vec2Int vec2Int, int width, int height) {
+        int offset = 4;
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                if (!checkCoord(vec2Int.getX() + x, vec2Int.getY() + y)) return false;
+                if (mGlobalMap.getMap()[vec2Int.getX() + x][vec2Int.getY() + y].getEntityType() == EntityType.BUILDER_UNIT ) continue;
+                if (mGlobalMap.getMap()[vec2Int.getX() + x][vec2Int.getY() + y].getEntityType() != EntityType.Empty ) return false;
+            }
+        }
+
+        for (int x = -offset; x < width+offset; x++) {
+            for (int y = -offset; y < height+offset; y++) {
+                if (!checkCoord(vec2Int.getX() + x, vec2Int.getY() + y)) continue;
+                if (mMapPotField[vec2Int.getX() + x][vec2Int.getY() + y].getSumDanger() > 0) return false;
+                if (mMapPotField[vec2Int.getX() + x][vec2Int.getY() + y].getSumDangerContour() > 0) return false;
+            }
+        }
+
+        return true;
+    }
+
     public void changeBlockPositionAttack(Vec2Int endMove) {
         getMapPotField()[endMove.getX()][endMove.getY()].setTargetAttackClosed(true);
     }
 
-    public Field getMapPotField(Vec2Int position) {
+    public Field getMapPotFieldNoCheck(Vec2Int position) {
         return mMapPotField[position.getX()][position.getY()];
     }
 

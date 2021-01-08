@@ -73,10 +73,15 @@ public class MoveManager {
         }*/
 
         if (targetPosition!=null && entity.getPosition().distance(targetPosition)<1.1) {
+
             moveAction.setTarget(targetPosition);
             MyEntity entity1 = getGlobalMap().setPositionNextTick(entity, targetPosition);
             if (entity1!=null) {
                 // тут нужен додж
+                if (entity1.isDangerMove())
+                {
+                    Final.DEBUG("ERROR ", "position is Danger MOVE " + entity.getPosition().toString() + " To: " + targetPosition.toString());
+                }
                /* boolean rotation = addMoveTargetUnit(entity1, entity.getPosition());
                 if (!rotation)
                 {
@@ -105,6 +110,16 @@ public class MoveManager {
                     }
 
                     current = path.get(0);
+
+                    if (Final.DANGER_RESOURCE) {
+                        for (int i = 0; i < 5; i++) {
+                            if (path.size()<=i) break;
+                            if (mGlobalMap.getMapNoCheck(path.get(i).getVec2Int()).getEntityType()==EntityType.RESOURCE)
+                            {
+                                mGlobalMap.getMapNoCheck(path.get(i).getVec2Int()).setDangerResource(true);
+                            }
+                        }
+                    }
                 }
             }
 
@@ -119,6 +134,7 @@ public class MoveManager {
                             if (entity1.isDangerMove())
                             {
                                 rotation = false;
+                                getGlobalMap().setPositionNextTick(entity1,current.getChild().getVec2Int());
                             }
                             else {
                                 rotation = addMoveTargetUnit(entity1,current.getChild());
@@ -164,10 +180,14 @@ public class MoveManager {
 
     private boolean addMoveTargetUnit(MyEntity entity, Node current) {
         if (entity.isRotation()) return false;
+        if (entity.isDodge()) return false;
+        if (entity.isDangerMove()) return false;
         entity.setUpdate(true);
         entity.setRotation(true);
 
         MoveAction moveAction = getMoveActionPosition(entity,null,true,current);
+
+        if (moveAction==null) return false;
 
         EntityAction entityAction = new EntityAction();
         entityAction.clear();
@@ -475,5 +495,9 @@ public class MoveManager {
                 }
             }
         }
+    }
+
+    public AStar getAStar() {
+        return mAStar;
     }
 }

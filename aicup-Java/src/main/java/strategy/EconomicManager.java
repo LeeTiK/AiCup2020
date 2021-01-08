@@ -2,7 +2,6 @@ package strategy;
 
 import model.*;
 import strategy.map.astar.Node;
-import strategy.map.potfield.DangerPositionAnswer;
 import strategy.map.potfield.DodgePositionAnswer;
 
 import java.util.*;
@@ -360,18 +359,20 @@ public class EconomicManager {
 
                     Vec2Int positionToResource = globalManager.getGlobalMap().getPositionToResourceSpecial(builder.getPosition(),resourceMidDis.getPosition());
 
-                    MoveAction m = globalManager.getMoveManager().getMoveActionPosition(builder,positionToResource);
-                    //new MoveAction(resourceMidDis.getPosition(),true,true);
-                    BuildAction b = null;
-                    AttackAction a = null;
-                    RepairAction r = null;
+                    if (positionToResource!=null) {
+                        MoveAction m = globalManager.getMoveManager().getMoveActionPosition(builder, positionToResource);
+                        //new MoveAction(resourceMidDis.getPosition(),true,true);
+                        BuildAction b = null;
+                        AttackAction a = null;
+                        RepairAction r = null;
 
-                    a = null;
-                    resourceMidDis.setTargetEntity(builder);
-                    builder.setTargetEntity(resourceMidDis);
-                    // strategy.Final.DEBUG(TAG, "arrayList.get(i).getId() " + builderUnitArrayList.get(i).getId() + " " +builderUnitArrayList.get(i).getPosition().toString());
+                        a = null;
+                        resourceMidDis.setTargetEntity(builder);
+                        builder.setTargetEntity(resourceMidDis);
+                        // strategy.Final.DEBUG(TAG, "arrayList.get(i).getId() " + builderUnitArrayList.get(i).getId() + " " +builderUnitArrayList.get(i).getPosition().toString());
 
-                    actionHashMap.put(builder.getId(), new EntityAction(m, b, a, r));
+                        actionHashMap.put(builder.getId(), new EntityAction(m, b, a, r));
+                    }
                 } else {
                     resourceMidDis.setTargetEntity(builder);
                     continue;
@@ -1153,6 +1154,9 @@ public class EconomicManager {
                 Final.DEBUG(TAG, "VECTOR BUILD: " + positionHouse.toString() + " currentP: " + current.getPosition() + " vec2Int1: " + vec2Int1);
 
                 actionHashMap.put(current.getId(), new EntityAction(m, b, a, r));
+
+                // добавляем призрачную копию дома следующего хода
+                //If
             }
             else {
                 Final.DEBUG("HOUSE"," BAD POSITION MinPositionBuilding");
@@ -1367,7 +1371,7 @@ public class EconomicManager {
 
                     currentUnit.setDataTaskUnit(new DataTaskUnit(EUnitState.REPAIR));
 
-                    globalManager.getMapPotField().getMapPotField(vec2Int1).setRepairPositionClose(true);
+                    globalManager.getMapPotField().getMapPotFieldNoCheck(vec2Int1).setRepairPositionClose(true);
 
                     myEntityBuilding.addRepairCounter();
 
@@ -1406,7 +1410,7 @@ public class EconomicManager {
                 " " + (( myPlayer.getEntityArrayList(EntityType.RANGED_BASE).size()==0 ||(myPlayer.getEntityArrayList(EntityType.RANGED_BASE).size()>0 && !myPlayer.getEntityArrayList(EntityType.RANGED_BASE).get(0).isActive())) && builderUnitArrayList.size() < MAX_BUILDER_UNIT));
 */
         // создаем новые юниты
-        if (((builderUnitArrayList.size() < myPlayer.getPopulationMax() * 0.75 && builderUnitArrayList.size() < MAX_BUILDER_UNIT)
+        if ((((builderUnitArrayList.size() < myPlayer.getPopulationMax() * 0.75 || globalManager.getGlobalStatistic().getPlayers().size()==2) && builderUnitArrayList.size() < MAX_BUILDER_UNIT)
                 || builderUnitArrayList.size() < 13
                 ||
                 (
@@ -1515,21 +1519,31 @@ public class EconomicManager {
     private boolean checkAttackBaseV2(MyPlayer myPlayer,GlobalManager globalManager) {
         ArrayList<MyEntity> arrayList = myPlayer.getEnemyArrayList();
       //  Final.DEBUGRelease("CHECKATTACK", FinalConstant.getCurrentTik() + " " + arrayList.size());
-        if (arrayList.size()==0)
+        if (arrayList.size()==0  && globalManager.getGlobalStatistic().getPlayers().size()==4)
         {
             return false;
         }
         int sizeUnit = 0;
 
-        MyPlayer myPlayer1 = globalManager.getGlobalStatistic().getPlayer(arrayList.get(0).getPlayerId());
+        if (arrayList.size()>0) {
+            MyPlayer myPlayer1 = globalManager.getGlobalStatistic().getPlayer(arrayList.get(0).getPlayerId());
 
 
-
-        if (myPlayer1!=null) {
-            sizeUnit = myPlayer1.getEntityArrayList(EntityType.RANGED_UNIT).size() + myPlayer.getEntityArrayList(EntityType.MELEE_UNIT).size();
+            if (myPlayer1 != null) {
+                sizeUnit = myPlayer1.getEntityArrayList(EntityType.RANGED_UNIT).size() + myPlayer.getEntityArrayList(EntityType.MELEE_UNIT).size();
+            }
         }
 
-     //   Final.DEBUGRelease("CHECKATTACK", FinalConstant.getCurrentTik() + " sizeUnit: " + sizeUnit);
+        //Final.DEBUGRelease("CHECKATTACK", FinalConstant.getCurrentTik() + " sizeUnit: " + sizeUnit);
+
+        if (globalManager.getGlobalStatistic().getPlayers().size()==2)
+        {
+            MyPlayer player =globalManager.getGlobalStatistic().getLeftPlyer();
+           // Final.DEBUGRelease("CHECKATTACK", FinalConstant.getCurrentTik() + " check: " +  player.getEntityArrayList(EntityType.RANGED_UNIT).size()*4);
+            if ( player.getEntityArrayList(EntityType.RANGED_UNIT).size()*4>
+                    myPlayer.getEntityArrayList(EntityType.RANGED_UNIT).size() + myPlayer.getEntityArrayList(EntityType.MELEE_UNIT).size()) return true;
+            else return false;
+        }
 
 
         if (arrayList.size()*2.5>myPlayer.getEntityArrayList(EntityType.RANGED_UNIT).size() + myPlayer.getEntityArrayList(EntityType.MELEE_UNIT).size()
@@ -1562,6 +1576,13 @@ public class EconomicManager {
                 if (entity.getEntityType() == EntityType.RANGED_UNIT) {
                     if (entity.getHealth() <=5) {
                         Final.DEBUG(TAG, "Heal RANGER!!!");
+                        return entity;
+                    }
+                }
+
+                if (entity.getEntityType() == EntityType.BUILDER_UNIT) {
+                    if (entity.getHealth() ==5) {
+                        Final.DEBUG(TAG, "Heal BUILDER!!!");
                         return entity;
                     }
                 }

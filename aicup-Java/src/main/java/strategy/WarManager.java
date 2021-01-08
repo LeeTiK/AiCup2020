@@ -1,6 +1,7 @@
 package strategy;
 
 import model.*;
+import strategy.map.potfield.AttackRangeAnswer;
 import strategy.map.potfield.PositionAnswer;
 import strategy.map.wave.SearchAnswer;
 
@@ -212,6 +213,13 @@ public class WarManager {
                         }
                     }
 
+                    if (dataAttack.getTargetEntity().getEntityType()==EntityType.RESOURCE)
+                    {
+                        if (range.getEntityAction().getMoveAction()!=null) {
+                            continue;
+                        }
+                    }
+
                     a = new AttackAction(
                             dataAttack.getIdEntity(),
                             new AutoAttack(
@@ -289,6 +297,7 @@ public class WarManager {
                 range.setDangerMove(true);
                 range.setDodge(true);
                 range.setEnemyMinDis(null);
+
                 actionHashMap.put(range.getId(), entityAction);
                 continue;
             }
@@ -304,6 +313,9 @@ public class WarManager {
                         range.setUpdate(true);
                         range.setDodge(true);
                         range.setEnemyMinDis(null);
+                        if (Final.A_STAR) {
+                            globalManager.getMoveManager().getAStar().addNewBlock(moveAction.getTarget());
+                        }
                         actionHashMap.put(range.getId(), entityAction);
                         continue;
                     }
@@ -312,6 +324,9 @@ public class WarManager {
         }
 
 
+        dangerAttackRangeSpecial(myPlayer,globalManager,actionHashMap);
+
+        /*
         for (int i = 0; i < rangeArrayList.size(); i++) {
             MyEntity range = rangeArrayList.get(i);
 
@@ -319,7 +334,7 @@ public class WarManager {
 
             dangerAttackRange(range,globalManager,actionHashMap,false);
         }
-
+*/
 
 
         if (Final.SPECIAL_ATTACK_ENEMY_BUILDER && globalManager.getGlobalStatistic().getPlayers().size()==2)
@@ -534,7 +549,13 @@ public class WarManager {
             EntityAction entityAction = actionHashMap.get(range.getId());
             if (entityAction == null) entityAction = new EntityAction(null, null, null, null);
 
-            MyEntity enemy = globalManager.getGlobalMap().getNearestPlayer(range.getPosition(), myPlayer.getId(), -1,true);
+            int enemyID = -1;
+
+          /*  if (FinalConstant.getCurrentTik()<300 && rangeArrayList.size()>3){
+                enemyID = globalManager.getGlobalStatistic().getLeftPlyer().getId();
+            }*/
+
+            MyEntity enemy = globalManager.getGlobalMap().getNearestPlayer(range.getPosition(), myPlayer.getId(), enemyID,true);
 
             if (enemy!=null)
             {
@@ -658,6 +679,75 @@ public class WarManager {
 
     }
 
+    ArrayList<MyEntity> arrayListAttack = new ArrayList<>();
+    ArrayList<MyEntity> arrayListDefence = new ArrayList<>();
+
+    private void dangerAttackRangeSpecial(MyPlayer myPlayer, GlobalManager globalManager, HashMap<Integer, EntityAction> actionHashMap) {
+
+        ArrayList<MyEntity> rangeArrayList = myPlayer.getEntityArrayList(EntityType.RANGED_UNIT);
+
+        arrayListAttack.clear();
+        arrayListDefence.clear();
+
+        for (int i = 0; i < rangeArrayList.size(); i++) {
+            MyEntity range = rangeArrayList.get(i);
+
+            if (range.isDodge()) continue;
+
+            AttackRangeAnswer attackRangeAnswer = globalManager.getMapPotField().calculateAttackRange(range,false);
+
+            if (attackRangeAnswer.getMaxDanger()+attackRangeAnswer.getMaxCounterDanger()>0) {
+
+                if (attackRangeAnswer.getAttackPositionArrayList().size()+
+                        attackRangeAnswer.getDefencePositionArrayList().size() +
+                attackRangeAnswer.getDefencePositionUnitArrayList().size()>5){
+                    int k=0;
+                    Final.DEBUG("ERORR", " " + range.getPosition().toString() + " BIG SIZE ATTACK RANGER POSITION");
+                }
+
+                range.setAttackRangeAnswer(attackRangeAnswer);
+
+                if (attackRangeAnswer.getAttackPositionArrayList().size()>0) {
+                    arrayListAttack.add(range);
+                }
+                else {
+                    arrayListDefence.add(range);
+                }
+            }
+          //  dangerAttackRange(range,globalManager,actionHashMap,false);
+        }
+
+        Collections.sort(arrayListAttack, new Comparator<MyEntity>() {
+            public int compare(MyEntity a, MyEntity b) {
+                if (a.getAttackRangeAnswer().getAttackPositionArrayList().size() > b.getAttackRangeAnswer().getAttackPositionArrayList().size()) return 1;
+                if (a.getAttackRangeAnswer().getAttackPositionArrayList().size() < b.getAttackRangeAnswer().getAttackPositionArrayList().size()) return -1;
+                return 0;
+            }
+        });
+
+        Collections.sort(arrayListDefence, new Comparator<MyEntity>() {
+            public int compare(MyEntity a, MyEntity b) {
+                if (a.getAttackRangeAnswer().getAttackPositionArrayList().size() > b.getAttackRangeAnswer().getAttackPositionArrayList().size()) return 1;
+                if (a.getAttackRangeAnswer().getAttackPositionArrayList().size() < b.getAttackRangeAnswer().getAttackPositionArrayList().size()) return -1;
+                return 0;
+            }
+        });
+
+        for (int i = 0; i < arrayListDefence.size(); i++) {
+            MyEntity range = arrayListDefence.get(i);
+
+            if (range.isDangerMove()) continue;
+
+            dangerAttackRange(range,globalManager,actionHashMap,false);
+        }
+
+        for (int i = 0; i < arrayListAttack.size(); i++) {
+            MyEntity range = arrayListAttack.get(i);
+
+            dangerAttackRange(range,globalManager,actionHashMap,false);
+        }
+    }
+
     private void dangerAttackRange(MyEntity range,GlobalManager globalManager,HashMap<Integer,EntityAction> actionHashMap, boolean needMove) {
 
         EntityAction entityAction = actionHashMap.get(range.getId());
@@ -665,12 +755,18 @@ public class WarManager {
 
         PositionAnswer positionAnswer = globalManager.getMapPotField().getDangerAttackRangerV3(range,needMove);
 
-        if (range.getPosition().equals(Vec2Int.createVector(42,47)))
+        if (range.getPosition().equals(Vec2Int.createVector(13,35)))
         {
             int k=0;
         }
 
         if (positionAnswer != null) {
+            if (range.getPosition().equals(Vec2Int.createVector(13,35))
+            && positionAnswer.getPosition().equals(Vec2Int.createVector(13,34)))
+            {
+                int k=0;
+            }
+
             MoveAction m = globalManager.getMoveManager().getMoveActionPosition(range, positionAnswer.getPosition());
             //new MoveAction(vec2IntDanger, true, false);
             globalManager.getGlobalMap().setPositionNextTick(range,positionAnswer.getPosition());
@@ -678,6 +774,7 @@ public class WarManager {
             entityAction.setMoveAction(m);
             range.setUpdate(true);
             range.setDangerMove(true);
+            globalManager.getMoveManager().getAStar().addNewBlock(positionAnswer.getPosition());
 
             actionHashMap.put(range.getId(), entityAction);
 
@@ -793,6 +890,8 @@ public class WarManager {
 
             range.getEntityAction().setAttackAction(null);
             range.setDodge(true);
+            globalManager.getMoveManager().getAStar().addNewBlock(vec2IntDodge);
+
 
             return true;
         }
@@ -819,6 +918,7 @@ public class WarManager {
         int minHPTurret = 0xFFFF;
         int minHPBuilding = 0xFFFF;
         int minHPWall = 0xFFFF;
+        int minHPResource = 0xFFFF;
 
         MyEntity range = null;
         MyEntity buildUnit = null;
@@ -826,6 +926,7 @@ public class WarManager {
         MyEntity turret = null;
         MyEntity building = null;
         MyEntity wall = null;
+        MyEntity resource = null;
 
         for (int i = 0; i < arrayList.size(); i++) {
             MyEntity entity1 = arrayList.get(i);
@@ -872,6 +973,9 @@ public class WarManager {
                         turret = entity1;
                         minHPTurret = entity1.getSimulationHP();
                     }
+                    break;
+                case RESOURCE:
+                    resource = entity1;
                     break;
             }
         }
@@ -927,6 +1031,12 @@ public class WarManager {
             wall.attackHP(entityProperties.getAttack().getDamage());
             return new DataAttack(wall);
         }
+
+        if (resource != null) {
+            resource.attackHP(entityProperties.getAttack().getDamage());
+            return new DataAttack(resource);
+        }
+
 
         return null;
     }

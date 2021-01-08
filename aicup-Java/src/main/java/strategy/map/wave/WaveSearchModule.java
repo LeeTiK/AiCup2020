@@ -2,6 +2,7 @@ package strategy.map.wave;
 
 import model.*;
 import strategy.*;
+import strategy.map.potfield.AttackRangeAnswer;
 import strategy.map.potfield.Field;
 
 import java.util.ArrayList;
@@ -112,6 +113,94 @@ public class WaveSearchModule {
         Final.DEBUG("WaveSearch", "time: " +(System.nanoTime()-timeStart) +" " + "BAD ");
         return null;
     }
+
+    public ArrayList<SearchAnswer> waveSearchNeedEntityV2(ArrayList<Vec2Int> startPoints, int maxCount, EntityType needEntity) {
+
+        clearMapPath();
+
+        ArrayList<SearchAnswer> answers = new ArrayList<>();
+
+        int count = 1;
+
+        long timeStart = System.nanoTime();
+
+        ArrayList<Vec2Int> points = new ArrayList<>(startPoints.size());
+        for (int i=0; i<startPoints.size(); i++)
+        {
+            points.add(startPoints.get(i));
+            map[points.get(i).getX()][points.get(i).getY()].setCost(0);
+        }
+
+
+        ArrayList<Vec2Int> nextStep = new ArrayList<>();
+
+        boolean checkComplite = false;
+
+        while (count<maxCount)
+        {
+            int startSizeArray = points.size();
+
+            for (int i=0;i<points.size(); i++)
+            {
+                boolean check = waveOneСross(nextStep,points.get(i),count,needEntity);
+                if (check)
+                {
+                    checkComplite =true;
+                    break;
+                    // return nextStep.get(nextStep.size()-1);
+                }
+            }
+
+            if (checkComplite) break;
+
+            ArrayList<Vec2Int> a = points;
+            points = nextStep;
+            nextStep = a;
+            nextStep.clear();
+
+            count++;
+        }
+        //map[x][y] = size;
+        if (checkComplite)
+        {
+            Vec2Int end = nextStep.get(nextStep.size()-1);
+            int cost = map[end.getX()][end.getY()].getCost();
+            int cost1 = cost;
+            Vec2Int start = end;
+            while (cost>0) {
+                byte[][] array = GlobalMap.aroundArray;
+
+                cost--;
+
+                for (int i = 0; i < array.length; i++) {
+                    int x = start.getX() + array[i][0];
+                    int y = start.getY() + array[i][1];
+
+                    if (x < 0 || x >= size || y < 0 || y >= size) continue;
+
+                    if (map[x][y].getCost()==cost)
+                    {
+                        start = Vec2Int.createVector(x,y);
+                        break;
+                    }
+                }
+            }
+
+            SearchAnswer searchAnswer = new SearchAnswer();
+            searchAnswer.setEnd(end);
+            searchAnswer.setStart(start);
+            searchAnswer.setCost(cost1);
+
+            Final.DEBUG("WaveSearch", "time: " +(System.nanoTime()-timeStart) +" " + searchAnswer.toString());
+
+            return answers;
+        }
+
+        Final.DEBUG("WaveSearch", "time: " +(System.nanoTime()-timeStart) +" " + "BAD ");
+        return null;
+    }
+
+
 
     private void clearMapPath() {
         for (int x=0; x<size; x++)
