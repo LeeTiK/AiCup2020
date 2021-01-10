@@ -1354,10 +1354,13 @@ public class MapPotField {
             if (emptyPosition) {
                 if ((field.getSumDanger() == 1 && field.getSumDangerContour() == 0) ||
                         (field.getSumDanger() == 0 && field.getSumDangerContour() == 1) ||
-                        (field.getSumDanger() + field.getSumDangerContour() > 0 && field.getSumDanger() + field.getSumDangerContour() - field.getSafetyContour() <= 0)
+                        (field.getSumDanger() + field.getSumDangerContour() > 0 && field.getSumDanger() + field.getSumDangerContour() - field.getSafetyContour() <= 0 && (!Final.ATTACK_WITH_ADVANTAGE || field.equals(position)))||
+                        (field.getSumDanger() + field.getSumDangerContour() > 0 && field.getSumDanger() + field.getSumDangerContour() - field.getSafetyContour() < 0 && Final.ATTACK_WITH_ADVANTAGE)
+
                 ) {
-                    attackRangeAnswer.attackPosition = field;
-                    attackRangeAnswer.getAttackPositionArrayList().add(field);
+                        attackRangeAnswer.attackPosition = field;
+                        attackRangeAnswer.getAttackPositionArrayList().add(field);
+
                 }
 
                 if (field.getSumDanger()>=4)

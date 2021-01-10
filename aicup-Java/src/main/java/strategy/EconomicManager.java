@@ -289,6 +289,11 @@ public class EconomicManager {
                 continue;
             }
 
+            if (!Final.TARGET_RESOURCE)
+            {
+                checkTargetAttack = false;
+            }
+
             resource = globalManager.getGlobalMap().getEntityMapResourceSpecial(entity.getPosition(),checkTargetAttack);
 
             if (resource.size() > 0)
@@ -311,6 +316,7 @@ public class EconomicManager {
 
                     entity.setTargetEntity(resource.get(0));
                     resource.get(0).setTargetEntity(entity);
+                    resource.get(0).attackHP(1);
                     // strategy.Final.DEBUG(TAG, "arrayList.get(i).getId() " + builderUnitArrayList.get(i).getId() + " " +builderUnitArrayList.get(i).getPosition().toString());
 
                     actionHashMap.put(entity.getId(), new EntityAction(m, b, a, r));
@@ -344,11 +350,11 @@ public class EconomicManager {
 
             MyEntity resourceMidDis;
 
-            if (builder.getEnemyMinDis()!=null && builder.getEnemyMinDis().getTargetEntity()!=null) {
-                resourceMidDis =globalManager.getGlobalMap().getNearest(builder.getPosition(), EntityType.RESOURCE, true, -1, globalManager.getMapPotField());
+            if (builder.getEnemyMinDis()!=null && builder.getEnemyMinDis().getSimulationHP()>0 && (builder.getEnemyMinDis().getTargetEntity()==null || !Final.TARGET_RESOURCE) ) {
+                resourceMidDis = builder.getEnemyMinDis();
             }
             else {
-                resourceMidDis = builder.getEnemyMinDis();
+                resourceMidDis =globalManager.getGlobalMap().getNearest(builder.getPosition(), EntityType.RESOURCE, true, -1, globalManager.getMapPotField());
             }
 
             if (resourceMidDis!=null)
@@ -1211,7 +1217,7 @@ public class EconomicManager {
             EntityProperties entityProperties = FinalConstant.getEntityProperties(myEntityBuilding.getEntityType());
 
 
-            if (myEntityBuilding.getHealth() >= entityProperties.getMaxHealth()) continue;
+            if (myEntityBuilding.getHealth() >= entityProperties.getMaxHealth() || myEntityBuilding.getEntityType()==EntityType.MELEE_BASE) continue;
 
 
            // if (myEntityBuilding.getRepairCounter()>2 && myEntityBuilding.getEntityType()!=EntityType.RANGED_BASE) continue;
@@ -1565,7 +1571,7 @@ public class EconomicManager {
             if (entity != null) {
                 if (entity.getEntityType() == EntityType.BUILDER_BASE || entity.getEntityType() == EntityType.RANGED_BASE ||
                         entity.getEntityType() == EntityType.HOUSE || entity.getEntityType() == EntityType.TURRET
-                        || entity.getEntityType() == EntityType.WALL || entity.getEntityType() == EntityType.MELEE_BASE) {
+                        || entity.getEntityType() == EntityType.WALL) {
                     if (entity.getPlayerId() == FinalConstant.getMyID()) {
                         EntityProperties entityProperties = FinalConstant.getEntityProperties(entity);
                         if (entity.getHealth() < entityProperties.getMaxHealth()) {
@@ -1573,15 +1579,15 @@ public class EconomicManager {
                         }
                     }
                 }
-                if (entity.getEntityType() == EntityType.RANGED_UNIT) {
+                if (entity.getEntityType() == EntityType.RANGED_UNIT && entity.getPlayerId()==FinalConstant.getMyID()) {
                     if (entity.getHealth() <=5) {
                         Final.DEBUG(TAG, "Heal RANGER!!!");
                         return entity;
                     }
                 }
 
-                if (entity.getEntityType() == EntityType.BUILDER_UNIT) {
-                    if (entity.getHealth() ==5) {
+                if (entity.getEntityType() == EntityType.BUILDER_UNIT  && entity.getPlayerId()==FinalConstant.getMyID()) {
+                    if (entity.getHealth() <=5) {
                         Final.DEBUG(TAG, "Heal BUILDER!!!");
                         return entity;
                     }

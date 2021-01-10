@@ -23,7 +23,10 @@ public class Final {
     public static boolean A_STAR = true;
     public static boolean GLOBAL_DODGE = true;
     public static boolean SPECIAL_ATTACK_ENEMY_BUILDER = true;
-    public static boolean MINIMAL_SAFETY = false;
+    public static boolean MINIMAL_SAFETY = true;
+    public static boolean ATTACK_WITH_ADVANTAGE = false;
+    public static boolean TARGET_RESOURCE = true;
+
 
     public static boolean SPECIAL_RUSH = false;
     public final static boolean CHECK_POSITION_NEXT_TIK = true;
@@ -73,7 +76,7 @@ public class Final {
     public final static boolean CHECK_SEARCH_WAVE_START_END = false;
 
     public final static boolean CHECK_SEARCH_PATH_RANGER = false;
-    public final static boolean CHECK_SEARCH_PATH_ASTAR = false;
+    public final static boolean CHECK_SEARCH_PATH_ASTAR = true;
 
     static public Player getMyPlayer(PlayerView playerView) {
         int myID = playerView.getMyId();

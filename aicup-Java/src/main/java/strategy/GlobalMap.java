@@ -1140,7 +1140,7 @@ public class GlobalMap {
                 if (arrayList.size() == 0 && checkEmpty) continue;
 
                 if (entityType==EntityType.RESOURCE) {
-                    if (allEntity.get(i).getTargetEntity() != null) {
+                    if ((allEntity.get(i).getTargetEntity() != null || !Final.TARGET_RESOURCE) && allEntity.get(i).getSimulationHP()>0) {
                         if (dis < minDisSpecial) {
                             currentSpecial = allEntity.get(i);
                             minDisSpecial = dis;
@@ -2196,7 +2196,7 @@ public class GlobalMap {
 
             MyEntity entity = map[x][y];
 
-            if (entity.getEntityType()==EntityType.RESOURCE && (entity.getTargetEntity()==null || !checkTargetAttack)) {
+            if (entity.getEntityType()==EntityType.RESOURCE && (entity.getTargetEntity()==null || !checkTargetAttack) && entity.getSimulationHP()>0) {
                 arrayList.add(entity);
                 continue;
             }

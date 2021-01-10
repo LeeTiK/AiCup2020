@@ -71,12 +71,16 @@ public class GlobalManager {
 
         mGlobalStatistic.updateInfo(playerView, this);
 
-        if (mGlobalStatistic.getPlayers().size()==2)
-        {
-            MINIMAL_SAFETY = true;
-        }
-        else {
-            MINIMAL_SAFETY = false;
+        if (RELEASE) {
+            if (mGlobalStatistic.getPlayers().size() == 2) {
+                ATTACK_WITH_ADVANTAGE = false;
+                MINIMAL_SAFETY = true;
+            } else {
+                ATTACK_WITH_ADVANTAGE = false;
+                MINIMAL_SAFETY = true;
+            }
+
+
         }
 
         if (FinalConstant.isFogOfWar() && !RELEASE)

@@ -23,8 +23,8 @@ public class WarManager {
     int sizeRight;
     int sizeMy;
 
-    Vec2Int mVec2IntLeft = Vec2Int.createVector(15,70);
-    Vec2Int mVec2IntRight = Vec2Int.createVector(70,15);
+    Vec2Int mVec2IntLeft = Vec2Int.createVector(10,70);
+    Vec2Int mVec2IntRight = Vec2Int.createVector(70,10);
 
     int globalPositionDefense = 0;
 
@@ -337,10 +337,15 @@ public class WarManager {
 */
 
 
-        if (Final.SPECIAL_ATTACK_ENEMY_BUILDER && globalManager.getGlobalStatistic().getPlayers().size()==2)
+        if (Final.SPECIAL_ATTACK_ENEMY_BUILDER && globalManager.getGlobalStatistic().getPlayers().size()==2 && rangeArrayList.size()>5)
         {
-
             int needCountAttack = 2;
+            if (rangeArrayList.size()>25){
+                needCountAttack = 3;
+            }
+            if (rangeArrayList.size()>40){
+                needCountAttack = 4;
+            }
             int count = 0;
 
 
@@ -356,7 +361,7 @@ public class WarManager {
                 range.setMinDisLeftSpecial((float) mVec2IntLeft.distance(range.getPosition()));
                 range.setMinDisRightSpecial((float) mVec2IntRight.distance(range.getPosition()));
 
-                if (range.getMinDisRightSpecial()> 15 && range.getMinDisLeftSpecial()>15) {
+                if (range.getMinDisRightSpecial()> 14 && range.getMinDisLeftSpecial()>14) {
                     mRangerSpecialArrayList.add(range);
                 }
                 else {
@@ -385,6 +390,7 @@ public class WarManager {
                 entityAction.setMoveAction(moveAction);
 
                 range.setUpdate(true);
+                range.setDodge(true);
 
                 actionHashMap.put(range.getId(), entityAction);
 
@@ -414,6 +420,7 @@ public class WarManager {
                 entityAction.setMoveAction(moveAction);
 
                 range.setUpdate(true);
+                range.setDodge(true);
 
                 actionHashMap.put(range.getId(), entityAction);
 
